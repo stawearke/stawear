@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Stawear - Kenya's #1 Taekwondo Branding Store</title>
     
-    <!-- EmailJS Library -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
     <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- EmailJS Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Same CSS as before - keep your existing styles */
+        /* ===== ROOT VARIABLES ===== */
         :root {
             --primary: #C62828;
             --primary-dark: #8B0000;
@@ -1067,6 +1067,9 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 2rem; }
     </style>
 </head>
 <body>
@@ -1088,7 +1091,10 @@
             <div class="cart-close" onclick="toggleCart()">&times;</div>
         </div>
         <div class="cart-items" id="cartItems">
-            <!-- Cart items loaded by JavaScript -->
+            <div class="text-center mt-4">
+                <i class="fas fa-shopping-cart" style="font-size:3rem; color:#ddd;"></i>
+                <p>Your cart is empty</p>
+            </div>
         </div>
         <div class="cart-footer" id="cartFooter" style="display: none;">
             <div class="cart-total">
@@ -1125,7 +1131,7 @@
                 
                 <div class="form-group">
                     <label>Phone Number *</label>
-                    <input type="tel" id="customerPhone" required placeholder="0712 345 678" pattern="[0-9]{10,12}" title="Please enter a valid Kenyan phone number">
+                    <input type="tel" id="customerPhone" required placeholder="0712 345 678" pattern="[0-9]{10,12}">
                 </div>
                 
                 <div class="form-group">
@@ -1160,14 +1166,12 @@
                 
                 <div class="form-group">
                     <label>Payment Method</label>
-                    <div class="payment-methods" style="display: flex; gap: 10px;">
-                        <div class="payment-method selected" onclick="selectPaymentMethod('mpesa', this)" style="flex:1; padding:12px; border:2px solid #ddd; border-radius:8px; text-align:center; cursor:pointer;">
-                            <i class="fas fa-mobile-alt"></i>
-                            <span>M-Pesa</span>
+                    <div style="display: flex; gap: 10px;">
+                        <div class="payment-method selected" onclick="selectPaymentMethod('mpesa', this)" style="flex:1; padding:12px; border:2px solid #c62828; border-radius:8px; text-align:center; cursor:pointer; background:#f5f5f5;">
+                            <i class="fas fa-mobile-alt"></i> M-Pesa
                         </div>
                         <div class="payment-method" onclick="selectPaymentMethod('card', this)" style="flex:1; padding:12px; border:2px solid #ddd; border-radius:8px; text-align:center; cursor:pointer;">
-                            <i class="fas fa-credit-card"></i>
-                            <span>Card</span>
+                            <i class="fas fa-credit-card"></i> Card
                         </div>
                     </div>
                     <input type="hidden" id="paymentMethod" value="mpesa">
@@ -1201,7 +1205,7 @@
             
             <div class="form-group">
                 <label>Order ID</label>
-                <input type="text" id="trackOrderId" placeholder="e.g., STA123456789" style="width:100%; padding:12px;">
+                <input type="text" id="trackOrderId" placeholder="e.g., STA-20250314-1234" style="width:100%; padding:12px;">
             </div>
             
             <button class="btn btn-block" onclick="trackOrder()">Track Order</button>
@@ -1221,7 +1225,6 @@
             <h2 style="color: var(--primary); margin-bottom: 20px;">Custom Branding Request</h2>
             
             <form id="customizeForm" onsubmit="submitCustomOrder(event)">
-                <!-- Personal Information -->
                 <h3 style="color: var(--secondary); margin: 20px 0 10px;">1. Personal Information</h3>
                 
                 <div class="form-row">
@@ -1248,7 +1251,6 @@
                     </div>
                 </div>
                 
-                <!-- Order Details -->
                 <h3 style="color: var(--secondary); margin: 30px 0 10px;">2. Order Details</h3>
                 
                 <div class="form-row-3">
@@ -1283,7 +1285,6 @@
                     </div>
                 </div>
                 
-                <!-- Branding Options -->
                 <h3 style="color: var(--secondary); margin: 30px 0 10px;">3. Branding Options</h3>
                 
                 <div class="form-row">
@@ -1312,7 +1313,6 @@
                     </div>
                 </div>
                 
-                <!-- Color Selection -->
                 <div class="form-group">
                     <label>Primary Colors *</label>
                     <div class="color-picker" id="colorPicker">
@@ -1328,34 +1328,17 @@
                     <input type="hidden" id="selectedColor" value="">
                 </div>
                 
-                <!-- Size Distribution -->
                 <div class="form-group">
                     <label>Size Distribution</label>
                     <div class="form-row-3">
-                        <div class="form-group">
-                            <label>Small</label>
-                            <input type="number" id="sizeS" value="2" min="0" onchange="updateCustomSummary()">
-                        </div>
-                        <div class="form-group">
-                            <label>Medium</label>
-                            <input type="number" id="sizeM" value="3" min="0" onchange="updateCustomSummary()">
-                        </div>
-                        <div class="form-group">
-                            <label>Large</label>
-                            <input type="number" id="sizeL" value="3" min="0" onchange="updateCustomSummary()">
-                        </div>
-                        <div class="form-group">
-                            <label>XL</label>
-                            <input type="number" id="sizeXL" value="2" min="0" onchange="updateCustomSummary()">
-                        </div>
-                        <div class="form-group">
-                            <label>XXL</label>
-                            <input type="number" id="sizeXXL" value="0" min="0" onchange="updateCustomSummary()">
-                        </div>
+                        <div><label>S</label><input type="number" id="sizeS" value="2" min="0" onchange="updateCustomSummary()"></div>
+                        <div><label>M</label><input type="number" id="sizeM" value="3" min="0" onchange="updateCustomSummary()"></div>
+                        <div><label>L</label><input type="number" id="sizeL" value="3" min="0" onchange="updateCustomSummary()"></div>
+                        <div><label>XL</label><input type="number" id="sizeXL" value="2" min="0" onchange="updateCustomSummary()"></div>
+                        <div><label>XXL</label><input type="number" id="sizeXXL" value="0" min="0" onchange="updateCustomSummary()"></div>
                     </div>
                 </div>
                 
-                <!-- Additional Options -->
                 <h3 style="color: var(--secondary); margin: 30px 0 10px;">4. Additional Options</h3>
                 
                 <div class="checkbox-group">
@@ -1373,23 +1356,15 @@
                     <label for="sampleNeeded">Send sample first (+Ksh 500)</label>
                 </div>
                 
-                <!-- Logo Upload Area (hidden by default) -->
                 <div id="uploadArea" style="display: none;" class="upload-area" onclick="triggerFileUpload()">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p>Click to upload your logo (PNG, JPG, AI, EPS)</p>
                     <input type="file" id="logoFile" accept="image/*,.ai,.eps" style="display: none;" onchange="handleFileUpload()">
                 </div>
                 
-                <!-- Design Description -->
                 <div class="form-group">
                     <label>Design Description *</label>
-                    <textarea id="designDescription" required rows="4" placeholder="Describe your design in detail: 
-- What text should be printed?
-- Any specific fonts?
-- Describe any graphics or symbols
-- Where should each element be placed?
-- Any special instructions?"
-onchange="updateCustomSummary()"></textarea>
+                    <textarea id="designDescription" required rows="4" placeholder="Describe your design in detail..." onchange="updateCustomSummary()"></textarea>
                 </div>
                 
                 <div class="form-row">
@@ -1399,7 +1374,7 @@ onchange="updateCustomSummary()"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label>Budget Range (Ksh)</label>
+                        <label>Budget Range</label>
                         <select id="budgetRange" onchange="updateCustomSummary()">
                             <option value="">Select budget</option>
                             <option value="<5000">Less than 5,000</option>
@@ -1411,65 +1386,29 @@ onchange="updateCustomSummary()"></textarea>
                     </div>
                 </div>
                 
-                <!-- Live Order Summary -->
                 <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin: 30px 0;">
                     <h4 style="display: flex; justify-content: space-between; align-items: center; color: var(--primary);">
                         <span><i class="fas fa-calculator"></i> Live Order Summary</span>
-                        <button type="button" class="edit-btn" onclick="resetCustomForm()">
-                            <i class="fas fa-redo"></i> Reset
-                        </button>
+                        <button type="button" class="edit-btn" onclick="resetCustomForm()"><i class="fas fa-redo"></i> Reset</button>
                     </h4>
                     
                     <div id="customSummary">
-                        <div class="summary-item">
-                            <span>Customer:</span>
-                            <span id="summaryName">Not set</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Dojang/Team:</span>
-                            <span id="summaryDojang">Not set</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Item:</span>
-                            <span id="summaryItem">Not selected</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Quantity:</span>
-                            <span id="summaryQty">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Branding:</span>
-                            <span id="summaryBranding">Not selected</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Color:</span>
-                            <span id="summaryColor">Not selected</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Size Distribution:</span>
-                            <span id="summarySizes">S:0, M:0, L:0, XL:0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Urgency:</span>
-                            <span id="summaryUrgency">Standard</span>
-                        </div>
-                        <div class="summary-total" id="summaryTotal">
-                            Total: Ksh 0
-                        </div>
+                        <div class="summary-item"><span>Customer:</span> <span id="summaryName">Not set</span></div>
+                        <div class="summary-item"><span>Dojang/Team:</span> <span id="summaryDojang">Not set</span></div>
+                        <div class="summary-item"><span>Item:</span> <span id="summaryItem">Not selected</span></div>
+                        <div class="summary-item"><span>Quantity:</span> <span id="summaryQty">0</span></div>
+                        <div class="summary-item"><span>Branding:</span> <span id="summaryBranding">Not selected</span></div>
+                        <div class="summary-item"><span>Color:</span> <span id="summaryColor">Not selected</span></div>
+                        <div class="summary-item"><span>Sizes:</span> <span id="summarySizes">S:0, M:0, L:0, XL:0</span></div>
+                        <div class="summary-item"><span>Urgency:</span> <span id="summaryUrgency">Standard</span></div>
+                        <div class="summary-total" id="summaryTotal">Total: Ksh 0</div>
                     </div>
                 </div>
                 
                 <div style="display: flex; gap: 15px;">
-                    <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeCustomizeModal()">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="submit" class="btn" style="flex:2;">
-                        <i class="fab fa-whatsapp"></i> Submit via WhatsApp
-                    </button>
+                    <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeCustomizeModal()">Cancel</button>
+                    <button type="submit" class="btn" style="flex:2;">Submit via WhatsApp</button>
                 </div>
-                <p style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--gray);">
-                    <i class="fas fa-info-circle"></i> Your request will be sent via WhatsApp and saved to our system
-                </p>
             </form>
         </div>
     </div>
@@ -1487,15 +1426,12 @@ onchange="updateCustomSummary()"></textarea>
                     <li><a onclick="scrollToSection('home')"><i class="fas fa-home"></i> Home</a></li>
                     <li><a onclick="scrollToSection('products')"><i class="fas fa-tshirt"></i> Products</a></li>
                     <li><a onclick="openCustomizeModal()"><i class="fas fa-palette"></i> Custom Branding</a></li>
-                    <li><a onclick="scrollToSection('testimonials')"><i class="fas fa-star"></i> Reviews</a></li>
                     <li><a onclick="showTrackOrder()"><i class="fas fa-truck"></i> Track Order</a></li>
                 </ul>
             </nav>
             
             <div class="header-actions">
-                <a href="tel:0727394165" class="user-icon">
-                    <i class="fas fa-phone-alt"></i>
-                </a>
+                <a href="tel:0727394165" class="user-icon"><i class="fas fa-phone-alt"></i></a>
                 <div class="cart-icon" onclick="toggleCart()">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-count" id="cartCount">0</span>
@@ -1503,9 +1439,6 @@ onchange="updateCustomSummary()"></textarea>
                 <a href="https://wa.me/254727394165" target="_blank" class="user-icon" style="color:#25D366;">
                     <i class="fab fa-whatsapp"></i>
                 </a>
-                <div class="mobile-menu-btn">
-                    <i class="fas fa-bars"></i>
-                </div>
             </div>
         </div>
     </header>
@@ -1518,7 +1451,7 @@ onchange="updateCustomSummary()"></textarea>
                 <p>Premium custom Taekwondo clothing and gear. Quality prints for dojangs and competitors across Kenya.</p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                     <a onclick="scrollToSection('products')" class="btn">Shop Now</a>
-                    <a href="https://wa.me/254727394165?text=Hello%20Stawear!%20I%20have%20a%20question%20about%20your%20products" target="_blank" class="btn btn-whatsapp">
+                    <a href="https://wa.me/254727394165?text=Hello%20Stawear!%20I%20have%20a%20question" target="_blank" class="btn btn-whatsapp">
                         <i class="fab fa-whatsapp"></i> Chat on WhatsApp
                     </a>
                 </div>
@@ -1531,24 +1464,15 @@ onchange="updateCustomSummary()"></textarea>
         <div class="container kenyan-container">
             <div class="kenyan-item">
                 <i class="fas fa-phone-alt kenyan-icon"></i>
-                <div>
-                    <h3>Call Us Now</h3>
-                    <a href="tel:0727394165">0727 394 165</a>
-                </div>
+                <div><h3>Call Us Now</h3><a href="tel:0727394165">0727 394 165</a></div>
             </div>
             <div class="kenyan-item">
                 <i class="fab fa-whatsapp kenyan-icon"></i>
-                <div>
-                    <h3>WhatsApp</h3>
-                    <a href="https://wa.me/254727394165" target="_blank">Chat Now</a>
-                </div>
+                <div><h3>WhatsApp</h3><a href="https://wa.me/254727394165" target="_blank">Chat Now</a></div>
             </div>
             <div class="kenyan-item">
                 <i class="fas fa-map-marker-alt kenyan-icon"></i>
-                <div>
-                    <h3>Nairobi, Kenya</h3>
-                    <p>Nationwide Delivery</p>
-                </div>
+                <div><h3>Nairobi, Kenya</h3><p>Nationwide Delivery</p></div>
             </div>
         </div>
     </section>
@@ -1557,13 +1481,11 @@ onchange="updateCustomSummary()"></textarea>
     <section class="products" id="products">
         <div class="container">
             <h2 class="section-title">OUR PRODUCTS</h2>
-            <div id="productsLoading" style="text-align: center;">
+            <div id="productsLoading" class="text-center" style="display: block;">
                 <div class="loading-spinner"></div>
                 <p>Loading products...</p>
             </div>
-            <div class="products-grid" id="productsGrid" style="display: none;">
-                <!-- Products loaded by JavaScript -->
-            </div>
+            <div class="products-grid" id="productsGrid" style="display: none;"></div>
         </div>
     </section>
 
@@ -1579,17 +1501,14 @@ onchange="updateCustomSummary()"></textarea>
                             <label>Your Name *</label>
                             <input type="text" id="quickName" required placeholder="John Kamau">
                         </div>
-                        
                         <div class="form-group">
                             <label>Email *</label>
                             <input type="email" id="quickEmail" required placeholder="you@example.com">
                         </div>
-                        
                         <div class="form-group">
                             <label>Dojang/Team Name *</label>
                             <input type="text" id="quickDojang" required placeholder="e.g., Nairobi Taekwondo Club">
                         </div>
-                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Item Type</label>
@@ -1606,10 +1525,7 @@ onchange="updateCustomSummary()"></textarea>
                                 <input type="number" id="quickQty" value="10" min="1">
                             </div>
                         </div>
-                        
-                        <button type="submit" class="btn btn-block" style="margin-top: 20px;">
-                            <i class="fas fa-arrow-right"></i> Open Full Customization
-                        </button>
+                        <button type="submit" class="btn btn-block" style="margin-top: 20px;">Open Full Customization</button>
                     </form>
                 </div>
                 
@@ -1620,39 +1536,7 @@ onchange="updateCustomSummary()"></textarea>
                         <li style="margin-bottom: 15px;">✓ <strong>Choose Your Colors</strong></li>
                         <li style="margin-bottom: 15px;">✓ <strong>Bulk Order Discounts</strong></li>
                         <li style="margin-bottom: 15px;">✓ <strong>Free Design Consultation</strong></li>
-                        <li style="margin-bottom: 15px;">✓ <strong>Quality Guaranteed</strong></li>
                     </ul>
-                    <div style="text-align: center; margin-top: 30px;">
-                        <a href="https://wa.me/254727394165?text=Hello%20Stawear!%20I'm%20interested%20in%20custom%20branding%20for%20my%20dojang." 
-                           target="_blank" 
-                           class="btn btn-whatsapp">
-                            <i class="fab fa-whatsapp"></i> Quick WhatsApp Inquiry
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <h2 class="section-title">WHAT OUR CUSTOMERS SAY</h2>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">Best quality Taekwondo gear in Kenya! Our dojang ordered 30 custom t-shirts and they were perfect. The printing quality is excellent.</p>
-                    <div class="testimonial-author">Sensei Kamau</div>
-                    <div class="testimonial-role">Nairobi Taekwondo Club</div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-text">Stawear delivered our tournament uniforms just in time. The design was exactly what we wanted and the material is perfect for active training.</p>
-                    <div class="testimonial-author">Coach Wanjiku</div>
-                    <div class="testimonial-role">Mombasa Martial Arts Academy</div>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-text">As a national competitor, I need gear that can handle intense training. Stawear's hoodies and t-shirts have been durable and comfortable.</p>
-                    <div class="testimonial-author">David Omondi</div>
-                    <div class="testimonial-role">National Taekwondo Team</div>
                 </div>
             </div>
         </div>
@@ -1664,85 +1548,57 @@ onchange="updateCustomSummary()"></textarea>
             <div class="footer-container">
                 <div class="footer-column">
                     <h3>Stawear Kenya</h3>
-                    <p style="color: rgba(255,255,255,0.8);">Kenya's premier Taekwondo branding store. Quality martial arts apparel with authentic Kenyan style.</p>
+                    <p>Kenya's premier Taekwondo branding store.</p>
                 </div>
-                
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a onclick="scrollToSection('home')"><i class="fas fa-chevron-right"></i> Home</a></li>
-                        <li><a onclick="scrollToSection('products')"><i class="fas fa-chevron-right"></i> Products</a></li>
-                        <li><a onclick="openCustomizeModal()"><i class="fas fa-chevron-right"></i> Custom Branding</a></li>
-                        <li><a onclick="scrollToSection('testimonials')"><i class="fas fa-chevron-right"></i> Reviews</a></li>
-                        <li><a onclick="showTrackOrder()"><i class="fas fa-chevron-right"></i> Track Order</a></li>
+                        <li><a onclick="scrollToSection('home')">Home</a></li>
+                        <li><a onclick="scrollToSection('products')">Products</a></li>
+                        <li><a onclick="openCustomizeModal()">Custom Branding</a></li>
                     </ul>
                 </div>
-                
                 <div class="footer-column">
                     <h3>Contact Info</h3>
                     <ul>
-                        <li><a href="tel:0727394165"><i class="fas fa-phone"></i> 0727 394 165</a></li>
-                        <li><a href="https://wa.me/254727394165" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
-                        <li><a href="mailto:info@stawear.co.ke"><i class="fas fa-envelope"></i> info@stawear.co.ke</a></li>
-                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
+                        <li><a href="tel:0727394165">0727 394 165</a></li>
+                        <li><a href="https://wa.me/254727394165" target="_blank">WhatsApp</a></li>
                     </ul>
                 </div>
             </div>
-            
             <div class="copyright">
-                <p>&copy; 2026 Stawear Taekwondo Branding Store. All rights reserved. | Proudly Kenyan 🇰🇪</p>
+                <p>&copy; 2026 Stawear. All rights reserved. 🇰🇪</p>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-        // ===== SUPABASE CONFIGURATION =====
+        // ============================================
+        // SUPABASE CONFIGURATION
+        // ============================================
         const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ===== EMAILJS INITIALIZATION =====
-        (function() {
-            emailjs.init("rOBcEHt9BFgYEOL1Z");
-            window.EMAILJS_SERVICE_ID = "service_ym1oijj";
-            window.ORDER_TEMPLATE = "template_jra9me1";
-        })();
+        // ============================================
+        // EMAILJS INITIALIZATION
+        // ============================================
+        emailjs.init("rOBcEHt9BFgYEOL1Z");
+        const EMAILJS_SERVICE_ID = "service_ym1oijj";
+        const ORDER_TEMPLATE = "template_jra9me1";
 
-        // ===== PRODUCT DATA =====
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
         let products = [];
-
-        // ===== SHOPPING CART =====
         let cart = {
-            items: [],
-            total: 0,
+            items: JSON.parse(localStorage.getItem('stawearCart')) || [],
             count: 0,
+            total: 0,
             
-            addItem: function(product, size = "M", quantity = 1) {
-                const existingItemIndex = this.items.findIndex(
-                    item => item.id === product.id && item.size === size
-                );
-                
-                if (existingItemIndex !== -1) {
-                    this.items[existingItemIndex].quantity += quantity;
-                } else {
-                    this.items.push({...product, size, quantity});
-                }
-                
-                this.updateCart();
-                this.saveToLocalStorage();
-                showNotification(product.name + " added to cart!");
-            },
-            
-            removeItem: function(index) {
-                this.items.splice(index, 1);
-                this.updateCart();
-                this.saveToLocalStorage();
-            },
-            
-            updateCart: function() {
-                this.count = this.items.reduce((total, item) => total + item.quantity, 0);
+            update() {
+                this.count = this.items.reduce((sum, item) => sum + item.quantity, 0);
                 this.total = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 
                 document.getElementById('cartCount').textContent = this.count;
@@ -1752,7 +1608,7 @@ onchange="updateCustomSummary()"></textarea>
                 const cartFooter = document.getElementById('cartFooter');
                 
                 if (this.items.length === 0) {
-                    cartContainer.innerHTML = '<div style="text-align:center; padding:40px 20px;"><i class="fas fa-shopping-cart" style="font-size:3rem; color:#ddd;"></i><p>Your cart is empty</p><button class="btn btn-secondary" onclick="toggleCart()">Continue Shopping</button></div>';
+                    cartContainer.innerHTML = '<div class="text-center mt-4"><i class="fas fa-shopping-cart" style="font-size:3rem; color:#ddd;"></i><p>Your cart is empty</p></div>';
                     cartFooter.style.display = 'none';
                 } else {
                     cartContainer.innerHTML = this.items.map((item, index) => `
@@ -1768,31 +1624,38 @@ onchange="updateCustomSummary()"></textarea>
                     `).join('');
                     cartFooter.style.display = 'block';
                 }
-            },
-            
-            saveToLocalStorage: function() {
+                
                 localStorage.setItem('stawearCart', JSON.stringify(this.items));
             },
             
-            loadFromLocalStorage: function() {
-                const saved = localStorage.getItem('stawearCart');
-                if (saved) {
-                    this.items = JSON.parse(saved);
-                    this.updateCart();
+            addItem(product, size = 'M', quantity = 1) {
+                const existing = this.items.findIndex(i => i.id === product.id && i.size === size);
+                if (existing !== -1) {
+                    this.items[existing].quantity += quantity;
+                } else {
+                    this.items.push({...product, size, quantity});
                 }
+                this.update();
+                showNotification(product.name + ' added to cart!');
             },
             
-            clearCart: function() {
+            removeItem(index) {
+                this.items.splice(index, 1);
+                this.update();
+            },
+            
+            clear() {
                 this.items = [];
-                this.updateCart();
-                this.saveToLocalStorage();
+                this.update();
             }
         };
 
-        // ===== LOAD PRODUCTS FROM SUPABASE =====
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProductsFromSupabase();
-            cart.loadFromLocalStorage();
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            cart.update();
+            await loadProducts();
             
             // Check for tracking parameter in URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -1800,15 +1663,19 @@ onchange="updateCustomSummary()"></textarea>
             if (trackId) {
                 document.getElementById('trackOrderId').value = trackId;
                 showTrackOrder();
-                setTimeout(() => trackOrder(), 500);
+                setTimeout(trackOrder, 500);
             }
         });
 
-        async function loadProductsFromSupabase() {
+        // ============================================
+        // PRODUCT FUNCTIONS
+        // ============================================
+        async function loadProducts() {
             try {
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
+                    .eq('is_active', true)
                     .order('id');
                 
                 if (error) throw error;
@@ -1820,35 +1687,24 @@ onchange="updateCustomSummary()"></textarea>
                         category: p.category,
                         price: p.price,
                         originalPrice: p.original_price,
-                        image: p.image,
+                        image: p.image || 'https://via.placeholder.com/300',
                         description: p.description,
                         badge: p.badge,
                         sizes: p.sizes || ['S', 'M', 'L', 'XL']
                     }));
-                } else {
-                    // No products in Supabase, use defaults and insert them
-                    await insertDefaultProducts();
                 }
                 
                 renderProducts();
                 
-                // Hide loading, show grid
                 document.getElementById('productsLoading').style.display = 'none';
                 document.getElementById('productsGrid').style.display = 'grid';
                 
             } catch (error) {
                 console.error('Error loading products:', error);
-                showNotification('Error loading products. Using local data.', 'error');
+                showNotification('Error loading products', 'error');
                 
-                // Fallback to localStorage
-                const savedProducts = localStorage.getItem('stawearProducts');
-                if (savedProducts) {
-                    products = JSON.parse(savedProducts);
-                } else {
-                    products = getDefaultProducts();
-                    localStorage.setItem('stawearProducts', JSON.stringify(products));
-                }
-                
+                // Fallback to default products
+                products = getDefaultProducts();
                 renderProducts();
                 document.getElementById('productsLoading').style.display = 'none';
                 document.getElementById('productsGrid').style.display = 'grid';
@@ -1857,100 +1713,44 @@ onchange="updateCustomSummary()"></textarea>
 
         function getDefaultProducts() {
             return [
-                {
-                    id: 1,
-                    name: "Black Belt Master Hoodie",
-                    category: "Hoodies",
-                    price: 2499,
-                    originalPrice: 3200,
-                    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
-                    description: "Premium hoodie with embroidered black belt design",
-                    badge: "BEST SELLER",
-                    sizes: ["S", "M", "L", "XL"]
-                },
-                {
-                    id: 2,
-                    name: "Kenyan Taekwondo Tee",
-                    category: "T-Shirts",
-                    price: 1899,
-                    originalPrice: 2400,
-                    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
-                    description: "Cotton t-shirt with Kenyan flag colors",
-                    badge: "NEW",
-                    sizes: ["S", "M", "L", "XL"]
-                },
-                {
-                    id: 3,
-                    name: "Dojang Training Jacket",
-                    category: "Jackets",
-                    price: 3299,
-                    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=500&q=80",
-                    description: "Lightweight training jacket",
-                    badge: "LIMITED",
-                    sizes: ["M", "L", "XL"]
-                },
-                {
-                    id: 4,
-                    name: "Taekwondo Champion Tracksuit",
-                    category: "Tracksuits",
-                    price: 4999,
-                    originalPrice: 6500,
-                    image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=500&q=80",
-                    description: "Complete tracksuit set",
-                    badge: "SALE",
-                    sizes: ["S", "M", "L", "XL"]
-                }
+                { id: 1, name: 'Black Belt Master Hoodie', category: 'Hoodies', price: 2499, originalPrice: 3200, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', description: 'Premium hoodie with embroidered black belt design', badge: 'BEST SELLER', sizes: ['S','M','L','XL'] },
+                { id: 2, name: 'Kenyan Taekwondo Tee', category: 'T-Shirts', price: 1899, originalPrice: 2400, image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=500', description: 'Cotton t-shirt with Kenyan flag colors', badge: 'NEW', sizes: ['S','M','L','XL'] },
+                { id: 3, name: 'Dojang Training Jacket', category: 'Jackets', price: 3299, image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500', description: 'Lightweight training jacket', badge: 'LIMITED', sizes: ['M','L','XL'] },
+                { id: 4, name: 'Taekwondo Champion Tracksuit', category: 'Tracksuits', price: 4999, originalPrice: 6500, image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=500', description: 'Complete tracksuit set', badge: 'SALE', sizes: ['S','M','L','XL'] }
             ];
-        }
-
-        async function insertDefaultProducts() {
-            const defaultProducts = getDefaultProducts();
-            try {
-                const { error } = await supabase
-                    .from('products')
-                    .insert(defaultProducts);
-                
-                if (error) throw error;
-                
-                products = defaultProducts;
-                showNotification('Default products loaded to database');
-            } catch (error) {
-                console.error('Error inserting default products:', error);
-                products = defaultProducts;
-            }
         }
 
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             if (!grid) return;
             
-            grid.innerHTML = products.map(product => `
-                <div class="product-card" onclick="viewProduct(${product.id})">
-                    ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
-                    <div class="product-img">
-                        <img src="${product.image}" alt="${product.name}" loading="lazy">
-                    </div>
+            grid.innerHTML = products.map(p => `
+                <div class="product-card" onclick="viewProduct(${p.id})">
+                    ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+                    <div class="product-img"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
                     <div class="product-info">
-                        <div class="product-category">${product.category}</div>
-                        <h3 class="product-name">${product.name}</h3>
-                        <p class="product-description">${product.description}</p>
+                        <div class="product-category">${p.category}</div>
+                        <h3 class="product-name">${p.name}</h3>
+                        <p class="product-description">${p.description}</p>
                         <div class="product-price">
-                            Ksh ${product.price}
-                            ${product.originalPrice ? `<span>Ksh ${product.originalPrice}</span>` : ''}
+                            Ksh ${p.price}
+                            ${p.originalPrice ? `<span>Ksh ${p.originalPrice}</span>` : ''}
                         </div>
                         <div class="product-actions">
-                            <button class="btn" onclick="event.stopPropagation(); addToCart(${product.id})">Add to Cart</button>
-                            <button class="btn btn-secondary" onclick="event.stopPropagation(); viewProduct(${product.id})">View</button>
+                            <button class="btn" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); viewProduct(${p.id})">View</button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // ===== CART FUNCTIONS =====
+        // ============================================
+        // CART FUNCTIONS
+        // ============================================
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
-            cart.addItem(product);
+            if (product) cart.addItem(product);
         }
 
         function removeFromCart(index) {
@@ -1961,10 +1761,12 @@ onchange="updateCustomSummary()"></textarea>
             document.getElementById('cartSidebar').classList.toggle('active');
         }
 
-        // ===== PRODUCT MODAL =====
+        // ============================================
+        // PRODUCT MODAL
+        // ============================================
         function viewProduct(productId) {
             const product = products.find(p => p.id === productId);
-            const modal = document.getElementById('productModal');
+            if (!product) return;
             
             document.getElementById('modalBody').innerHTML = `
                 <div style="text-align:center; margin-bottom:20px;">
@@ -1974,25 +1776,17 @@ onchange="updateCustomSummary()"></textarea>
                 <p class="product-price">Ksh ${product.price}</p>
                 <p>${product.description}</p>
                 <div class="sizes">
-                    ${product.sizes.map(size => `<button class="size-btn" onclick="selectSize(this)">${size}</button>`).join('')}
+                    ${product.sizes.map(s => `<button class="size-btn" onclick="selectSize(this)">${s}</button>`).join('')}
                 </div>
                 <button class="btn btn-block" onclick="addToCartFromModal(${product.id})">Add to Cart</button>
-                <button class="btn btn-whatsapp btn-block" style="margin-top:10px;" onclick="whatsappInquiry('${product.name}')">
-                    <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
-                </button>
             `;
             
-            modal.classList.add('active');
-        }
-
-        function whatsappInquiry(productName) {
-            const message = `Hello Stawear! I'm interested in ${productName}. Can you provide more information?`;
-            window.open(`https://wa.me/254727394165?text=${encodeURIComponent(message)}`, '_blank');
+            document.getElementById('productModal').classList.add('active');
         }
 
         function addToCartFromModal(productId) {
             const product = products.find(p => p.id === productId);
-            cart.addItem(product);
+            if (product) cart.addItem(product);
             closeModal();
         }
 
@@ -2005,52 +1799,195 @@ onchange="updateCustomSummary()"></textarea>
             document.getElementById('productModal').classList.remove('active');
         }
 
-        // ===== CUSTOM BRANDING FUNCTIONS =====
+        // ============================================
+        // CHECKOUT FUNCTIONS
+        // ============================================
+        function openCheckout() {
+            if (cart.items.length === 0) {
+                showNotification('Your cart is empty');
+                return;
+            }
+            toggleCart();
+            document.getElementById('checkoutModal').classList.add('active');
+            updateDeliveryCost();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        function selectPaymentMethod(method, element) {
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.style.borderColor = '#ddd';
+                el.style.background = 'white';
+            });
+            element.style.borderColor = '#c62828';
+            element.style.background = '#f5f5f5';
+            document.getElementById('paymentMethod').value = method;
+        }
+
+        function updateDeliveryCost() {
+            const cost = parseInt(document.getElementById('deliveryCounty').value) || 0;
+            document.getElementById('displayDeliveryCost').value = `Ksh ${cost}`;
+            document.getElementById('mpesaAmount').textContent = cart.total + cost;
+        }
+
+        async function processOrder(event) {
+            event.preventDefault();
+            
+            const mpesaCode = document.getElementById('mpesaCode').value;
+            if (!mpesaCode) {
+                alert('Please enter M-Pesa code');
+                return;
+            }
+            
+            const order = {
+                id: 'STA-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.floor(Math.random()*10000),
+                customer_name: document.getElementById('customerName').value,
+                customer_phone: document.getElementById('customerPhone').value,
+                customer_email: document.getElementById('customerEmail').value,
+                county: document.getElementById('deliveryCounty').selectedOptions[0]?.text || 'Nairobi',
+                delivery_cost: parseInt(document.getElementById('deliveryCounty').value) || 0,
+                address: document.getElementById('deliveryAddress').value,
+                payment_method: document.getElementById('paymentMethod').value,
+                mpesa_code: mpesaCode,
+                items: cart.items,
+                subtotal: cart.total,
+                total: cart.total + (parseInt(document.getElementById('deliveryCounty').value) || 0),
+                status: 'pending',
+                date: new Date().toISOString()
+            };
+
+            try {
+                // Save to Supabase
+                const { error } = await supabase
+                    .from('orders')
+                    .insert([order]);
+                
+                if (error) throw error;
+                
+                // WhatsApp notification
+                const itemsList = order.items.map(i => `• ${i.quantity}x ${i.name} (${i.size}) - Ksh ${i.price*i.quantity}`).join('\n');
+                const whatsappMsg = `🔔 *NEW ORDER!*\n\nOrder: ${order.id}\nCustomer: ${order.customer_name}\nPhone: ${order.customer_phone}\nTotal: Ksh ${order.total}\nM-Pesa: ${order.mpesa_code}\n\nItems:\n${itemsList}`;
+                window.open(`https://wa.me/254727394165?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+                
+                // Email confirmation
+                emailjs.send(EMAILJS_SERVICE_ID, ORDER_TEMPLATE, {
+                    to_email: order.customer_email,
+                    to_name: order.customer_name,
+                    orderId: order.id,
+                    orderTotal: order.total,
+                    from_name: 'Stawear Kenya'
+                }).catch(console.log);
+                
+                cart.clear();
+                closeCheckout();
+                showNotification('✅ Order placed! Check your email');
+                
+            } catch (error) {
+                console.error('Error saving order:', error);
+                showNotification('Error placing order', 'error');
+            }
+        }
+
+        // ============================================
+        // TRACK ORDER
+        // ============================================
+        function showTrackOrder() {
+            document.getElementById('trackModal').classList.add('active');
+        }
+
+        function closeTrackModal() {
+            document.getElementById('trackModal').classList.remove('active');
+            document.getElementById('trackResult').style.display = 'none';
+        }
+
+        async function trackOrder() {
+            const orderId = document.getElementById('trackOrderId').value;
+            if (!orderId) {
+                alert('Please enter an order ID');
+                return;
+            }
+            
+            try {
+                const { data: order, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('id', orderId)
+                    .single();
+                
+                if (error || !order) {
+                    alert('Order not found');
+                    return;
+                }
+                
+                const steps = ['pending', 'processing', 'shipped', 'delivered'];
+                const currentStep = steps.indexOf(order.status);
+                
+                let statusHtml = '<div style="display: flex; justify-content: space-between; margin: 20px 0;">';
+                steps.forEach((step, i) => {
+                    statusHtml += `
+                        <div style="text-align: center; flex:1;">
+                            <div style="width:30px;height:30px;border-radius:50%;background:${i <= currentStep ? '#C62828' : '#ddd'};margin:0 auto;display:flex;align-items:center;justify-content:center;color:white;">
+                                ${i <= currentStep ? '✓' : (i+1)}
+                            </div>
+                            <div style="font-size:0.8rem;margin-top:5px;">${step}</div>
+                        </div>
+                    `;
+                });
+                statusHtml += '</div>';
+                
+                document.getElementById('trackStatus').innerHTML = statusHtml;
+                document.getElementById('trackDetails').innerHTML = `
+                    <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+                    <p><strong>Total:</strong> Ksh ${order.total}</p>
+                    <p><strong>Items:</strong> ${order.items.length}</p>
+                `;
+                document.getElementById('trackResult').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error tracking order:', error);
+                alert('Error tracking order');
+            }
+        }
+
+        // ============================================
+        // CUSTOM BRANDING
+        // ============================================
         let currentCustomOrder = {
-            name: '',
-            email: '',
-            phone: '',
-            dojang: '',
-            itemType: '',
-            quantity: 10,
-            brandingType: '',
-            printLocation: 'Front Only',
-            color: '',
+            name: '', email: '', phone: '', dojang: '', itemType: '', quantity: 10,
+            brandingType: '', printLocation: 'Front Only', color: '',
             sizes: { S: 2, M: 3, L: 3, XL: 2, XXL: 0 },
-            urgency: 'Standard',
-            includeLogo: false,
-            needDesign: false,
-            sampleNeeded: false,
-            description: '',
-            deadline: '',
-            budget: ''
+            urgency: 'Standard', includeLogo: false, needDesign: false,
+            sampleNeeded: false, description: '', deadline: '', budget: ''
         };
 
         function openCustomizeModal() {
-            // Pre-fill from quick form
-            const quickName = document.getElementById('quickName');
-            const quickEmail = document.getElementById('quickEmail');
-            const quickDojang = document.getElementById('quickDojang');
-            const quickItem = document.getElementById('quickItem');
-            const quickQty = document.getElementById('quickQty');
+            const quick = {
+                name: document.getElementById('quickName')?.value,
+                email: document.getElementById('quickEmail')?.value,
+                dojang: document.getElementById('quickDojang')?.value,
+                item: document.getElementById('quickItem')?.value,
+                qty: document.getElementById('quickQty')?.value
+            };
             
-            if (quickName && quickName.value) {
-                document.getElementById('customName').value = quickName.value;
-                document.getElementById('customEmail').value = quickEmail?.value || '';
-                document.getElementById('dojangName').value = quickDojang?.value || '';
-                currentCustomOrder.name = quickName.value;
-                currentCustomOrder.email = quickEmail?.value || '';
-                currentCustomOrder.dojang = quickDojang?.value || '';
+            if (quick.name) {
+                document.getElementById('customName').value = quick.name;
+                document.getElementById('customEmail').value = quick.email || '';
+                document.getElementById('dojangName').value = quick.dojang || '';
+                currentCustomOrder.name = quick.name;
+                currentCustomOrder.email = quick.email || '';
+                currentCustomOrder.dojang = quick.dojang || '';
             }
             
-            if (quickItem && quickItem.value) {
-                document.getElementById('itemType').value = quickItem.value;
-                currentCustomOrder.itemType = quickItem.value;
+            if (quick.item) {
+                document.getElementById('itemType').value = quick.item;
+                currentCustomOrder.itemType = quick.item;
             }
             
-            if (quickQty && quickQty.value) {
-                document.getElementById('customQuantity').value = quickQty.value;
-                currentCustomOrder.quantity = parseInt(quickQty.value);
+            if (quick.qty) {
+                document.getElementById('customQuantity').value = quick.qty;
+                currentCustomOrder.quantity = parseInt(quick.qty);
             }
             
             updateCustomSummary();
@@ -2082,7 +2019,7 @@ onchange="updateCustomSummary()"></textarea>
         }
 
         function updateCustomSummary() {
-            // Get all form values
+            // Get all values
             currentCustomOrder.name = document.getElementById('customName')?.value || '';
             currentCustomOrder.email = document.getElementById('customEmail')?.value || '';
             currentCustomOrder.phone = document.getElementById('customPhone')?.value || '';
@@ -2096,8 +2033,6 @@ onchange="updateCustomSummary()"></textarea>
             currentCustomOrder.needDesign = document.getElementById('needDesign')?.checked || false;
             currentCustomOrder.sampleNeeded = document.getElementById('sampleNeeded')?.checked || false;
             currentCustomOrder.description = document.getElementById('designDescription')?.value || '';
-            currentCustomOrder.deadline = document.getElementById('deadline')?.value || '';
-            currentCustomOrder.budget = document.getElementById('budgetRange')?.value || '';
             
             // Get sizes
             currentCustomOrder.sizes = {
@@ -2108,52 +2043,33 @@ onchange="updateCustomSummary()"></textarea>
                 XXL: parseInt(document.getElementById('sizeXXL')?.value) || 0
             };
             
-            // Show/hide upload area
-            document.getElementById('uploadArea').style.display = 
-                currentCustomOrder.includeLogo ? 'block' : 'none';
+            document.getElementById('uploadArea').style.display = currentCustomOrder.includeLogo ? 'block' : 'none';
             
-            // Calculate total quantity from sizes
-            const totalFromSizes = Object.values(currentCustomOrder.sizes).reduce((a, b) => a + b, 0);
-            if (totalFromSizes > 0) {
-                currentCustomOrder.quantity = totalFromSizes;
-            }
+            const totalFromSizes = Object.values(currentCustomOrder.sizes).reduce((a,b) => a+b, 0);
+            if (totalFromSizes > 0) currentCustomOrder.quantity = totalFromSizes;
             
-            // Calculate estimated price
+            // Calculate price
             let basePrice = 2000;
-            switch(currentCustomOrder.itemType) {
-                case 'Hoodies': basePrice = 2500; break;
-                case 'T-Shirts': basePrice = 1500; break;
-                case 'Jackets': basePrice = 3000; break;
-                case 'Tracksuits': basePrice = 4500; break;
-                case 'Pants': basePrice = 2000; break;
-                case 'Caps': basePrice = 1000; break;
-                case 'Bags': basePrice = 2500; break;
-                case 'Full Uniforms': basePrice = 3500; break;
-                default: basePrice = 2000;
-            }
-
-            let brandingMultiplier = 1;
-            switch(currentCustomOrder.brandingType) {
-                case 'Embroidery': brandingMultiplier = 1.3; break;
-                case 'Screen Printing': brandingMultiplier = 1.1; break;
-                case 'Heat Transfer': brandingMultiplier = 1.2; break;
-                case 'DTG Printing': brandingMultiplier = 1.15; break;
-                case 'Sublimation': brandingMultiplier = 1.25; break;
-                case 'Patch': brandingMultiplier = 1.2; break;
-                default: brandingMultiplier = 1;
-            }
+            if (currentCustomOrder.itemType === 'Hoodies') basePrice = 2500;
+            else if (currentCustomOrder.itemType === 'T-Shirts') basePrice = 1500;
+            else if (currentCustomOrder.itemType === 'Jackets') basePrice = 3000;
+            else if (currentCustomOrder.itemType === 'Tracksuits') basePrice = 4500;
             
-            let urgencyMultiplier = 1;
-            if (currentCustomOrder.urgency === 'Express') urgencyMultiplier = 1.15;
-            if (currentCustomOrder.urgency === 'Urgent') urgencyMultiplier = 1.3;
+            let multiplier = 1;
+            if (currentCustomOrder.brandingType === 'Embroidery') multiplier = 1.3;
+            else if (currentCustomOrder.brandingType === 'Screen Printing') multiplier = 1.1;
+            
+            let urgencyMult = 1;
+            if (currentCustomOrder.urgency === 'Express') urgencyMult = 1.15;
+            else if (currentCustomOrder.urgency === 'Urgent') urgencyMult = 1.3;
             
             let extras = 0;
             if (currentCustomOrder.needDesign) extras += 1500;
             if (currentCustomOrder.sampleNeeded) extras += 500;
             
-            const estimatedPrice = Math.round((basePrice * currentCustomOrder.quantity * brandingMultiplier * urgencyMultiplier) + extras);
-
-            // Update summary display
+            const estimatedPrice = Math.round((basePrice * currentCustomOrder.quantity * multiplier * urgencyMult) + extras);
+            
+            // Update summary
             document.getElementById('summaryName').textContent = currentCustomOrder.name || 'Not set';
             document.getElementById('summaryDojang').textContent = currentCustomOrder.dojang || 'Not set';
             document.getElementById('summaryItem').textContent = currentCustomOrder.itemType || 'Not selected';
@@ -2163,71 +2079,33 @@ onchange="updateCustomSummary()"></textarea>
             document.getElementById('summarySizes').textContent = `S:${currentCustomOrder.sizes.S}, M:${currentCustomOrder.sizes.M}, L:${currentCustomOrder.sizes.L}, XL:${currentCustomOrder.sizes.XL}`;
             document.getElementById('summaryUrgency').textContent = currentCustomOrder.urgency;
             document.getElementById('summaryTotal').innerHTML = `Total: Ksh ${estimatedPrice.toLocaleString()}`;
-            
-            // Save to localStorage for quick form
-            localStorage.setItem('customName', currentCustomOrder.name);
-            localStorage.setItem('customEmail', currentCustomOrder.email);
-            localStorage.setItem('customDojang', currentCustomOrder.dojang);
         }
 
         function resetCustomForm() {
-            if (confirm('Reset all form fields?')) {
+            if (confirm('Reset all fields?')) {
                 document.getElementById('customizeForm').reset();
                 currentCustomOrder = {
                     name: '', email: '', phone: '', dojang: '', itemType: '',
-                    quantity: 10, brandingType: '', printLocation: 'Front Only',
-                    color: '', sizes: { S: 2, M: 3, L: 3, XL: 2, XXL: 0 },
+                    quantity: 10, brandingType: '', printLocation: 'Front Only', color: '',
+                    sizes: { S: 2, M: 3, L: 3, XL: 2, XXL: 0 },
                     urgency: 'Standard', includeLogo: false, needDesign: false,
                     sampleNeeded: false, description: '', deadline: '', budget: ''
                 };
                 updateCustomSummary();
-                showNotification('Form reset');
             }
         }
 
         async function submitCustomOrder(event) {
             event.preventDefault();
             
-            // Validate required fields
             if (!currentCustomOrder.name || !currentCustomOrder.email || !currentCustomOrder.phone || 
                 !currentCustomOrder.dojang || !currentCustomOrder.itemType || !currentCustomOrder.brandingType || 
                 !currentCustomOrder.description) {
-                alert("Please fill in all required fields (*)");
+                alert('Please fill all required fields');
                 return;
             }
 
-            // Format order details
-            const sizeBreakdown = `S:${currentCustomOrder.sizes.S}, M:${currentCustomOrder.sizes.M}, L:${currentCustomOrder.sizes.L}, XL:${currentCustomOrder.sizes.XL}, XXL:${currentCustomOrder.sizes.XXL}`;
-            
-            // Calculate price
-            let basePrice = 2000;
-            switch(currentCustomOrder.itemType) {
-                case 'Hoodies': basePrice = 2500; break;
-                case 'T-Shirts': basePrice = 1500; break;
-                case 'Jackets': basePrice = 3000; break;
-                case 'Tracksuits': basePrice = 4500; break;
-                default: basePrice = 2000;
-            }
-            
-            let brandingMultiplier = 1;
-            switch(currentCustomOrder.brandingType) {
-                case 'Embroidery': brandingMultiplier = 1.3; break;
-                case 'Screen Printing': brandingMultiplier = 1.1; break;
-                default: brandingMultiplier = 1;
-            }
-            
-            let urgencyMultiplier = 1;
-            if (currentCustomOrder.urgency === 'Express') urgencyMultiplier = 1.15;
-            if (currentCustomOrder.urgency === 'Urgent') urgencyMultiplier = 1.3;
-            
-            let extras = 0;
-            if (currentCustomOrder.needDesign) extras += 1500;
-            if (currentCustomOrder.sampleNeeded) extras += 500;
-            
-            const estimatedPrice = (basePrice * currentCustomOrder.quantity * brandingMultiplier * urgencyMultiplier) + extras;
-
-            // SAVE TO SUPABASE
-            const brandingRequest = {
+            const request = {
                 id: Date.now(),
                 name: currentCustomOrder.name,
                 email: currentCustomOrder.email,
@@ -2240,304 +2118,47 @@ onchange="updateCustomSummary()"></textarea>
                 status: 'pending',
                 date: new Date().toISOString(),
                 details: {
-                    print_location: currentCustomOrder.printLocation,
-                    color: currentCustomOrder.color,
                     sizes: currentCustomOrder.sizes,
+                    color: currentCustomOrder.color,
                     urgency: currentCustomOrder.urgency,
-                    include_logo: currentCustomOrder.includeLogo,
-                    need_design: currentCustomOrder.needDesign,
-                    sample_needed: currentCustomOrder.sampleNeeded,
-                    deadline: currentCustomOrder.deadline,
-                    budget: currentCustomOrder.budget,
-                    estimated_price: estimatedPrice
+                    print_location: currentCustomOrder.printLocation
                 }
             };
-            
+
             try {
                 const { error } = await supabase
                     .from('branding_requests')
-                    .insert([brandingRequest]);
+                    .insert([request]);
                 
                 if (error) throw error;
                 
-                // Also save to localStorage as backup
-                const existingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
-                existingRequests.push(brandingRequest);
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(existingRequests));
+                const sizeStr = `S:${currentCustomOrder.sizes.S}, M:${currentCustomOrder.sizes.M}, L:${currentCustomOrder.sizes.L}, XL:${currentCustomOrder.sizes.XL}`;
+                const whatsappMsg = `🔔 *NEW BRANDING REQUEST*\n\nName: ${currentCustomOrder.name}\nPhone: ${currentCustomOrder.phone}\nDojang: ${currentCustomOrder.dojang}\nItem: ${currentCustomOrder.itemType}\nQty: ${currentCustomOrder.quantity}\nSizes: ${sizeStr}\nBranding: ${currentCustomOrder.brandingType}\n\nDescription: ${currentCustomOrder.description}`;
+                
+                window.open(`https://wa.me/254727394165?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+                
+                showNotification('✅ Request sent!');
+                closeCustomizeModal();
                 
             } catch (error) {
-                console.error('Error saving to Supabase:', error);
-                // Still save to localStorage
-                const existingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
-                existingRequests.push(brandingRequest);
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(existingRequests));
-            }
-
-            // Create WhatsApp message
-            const whatsappMessage = `🔔 *NEW CUSTOM BRANDING REQUEST!* 🔔
-
-*CUSTOMER DETAILS:*
-• Name: ${currentCustomOrder.name}
-• Phone: ${currentCustomOrder.phone}
-• Email: ${currentCustomOrder.email}
-• Dojang/Team: ${currentCustomOrder.dojang}
-
-*ORDER DETAILS:*
-• Item: ${currentCustomOrder.itemType}
-• Quantity: ${currentCustomOrder.quantity}
-• Size Breakdown: ${sizeBreakdown}
-• Branding Type: ${currentCustomOrder.brandingType}
-• Print Location: ${currentCustomOrder.printLocation}
-• Primary Color: ${currentCustomOrder.color || 'Not specified'}
-• Urgency: ${currentCustomOrder.urgency}
-
-*ADDITIONAL SERVICES:*
-• Has Logo: ${currentCustomOrder.includeLogo ? 'Yes' : 'No'}
-• Need Design: ${currentCustomOrder.needDesign ? 'Yes' : 'No'}
-• Sample Needed: ${currentCustomOrder.sampleNeeded ? 'Yes' : 'No'}
-• Deadline: ${currentCustomOrder.deadline || 'Not specified'}
-• Budget Range: ${currentCustomOrder.budget || 'Not specified'}
-
-*DESIGN DESCRIPTION:*
-${currentCustomOrder.description}
-
-*ESTIMATED PRICE: Ksh ${estimatedPrice.toLocaleString()}*
-
-Please contact this customer ASAP!`;
-
-            // Send via WhatsApp
-            window.open(`https://wa.me/254727394165?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
-
-            // Send email via EmailJS
-            emailjs.send(window.EMAILJS_SERVICE_ID, window.ORDER_TEMPLATE, {
-                to_email: currentCustomOrder.email,
-                to_name: currentCustomOrder.name,
-                customerName: currentCustomOrder.name,
-                orderId: "CUST" + Date.now(),
-                orderDate: new Date().toLocaleString(),
-                orderItems: `Custom ${currentCustomOrder.itemType} x${currentCustomOrder.quantity} (${currentCustomOrder.brandingType})`,
-                orderTotal: estimatedPrice,
-                deliveryAddress: "Custom order - to be confirmed",
-                trackingUrl: window.location.origin + "/?track=" + Date.now(),
-                customDetails: currentCustomOrder.description,
-                dojangName: currentCustomOrder.dojang,
-                from_name: "Stawear Kenya"
-            }).then(function() {
-                showNotification("✅ Request sent! Check your email for confirmation");
-            }).catch(function(error) {
-                console.log("Email error:", error);
-            });
-
-            showNotification("✅ Custom request sent and saved to database!");
-            closeCustomizeModal();
-        }
-
-        // ===== CHECKOUT FUNCTIONS =====
-        function openCheckout() {
-            if (cart.items.length === 0) {
-                showNotification('Your cart is empty');
-                return;
-            }
-            document.getElementById('cartSidebar').classList.remove('active');
-            document.getElementById('checkoutModal').classList.add('active');
-            updateDeliveryCost();
-        }
-
-        function closeCheckout() {
-            document.getElementById('checkoutModal').classList.remove('active');
-        }
-
-        function selectPaymentMethod(method, element) {
-            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            document.getElementById('paymentMethod').value = method;
-        }
-
-        function updateDeliveryCost() {
-            const county = document.getElementById('deliveryCounty');
-            const cost = parseInt(county.value) || 0;
-            document.getElementById('displayDeliveryCost').value = `Ksh ${cost}`;
-            document.getElementById('mpesaAmount').textContent = cart.total + cost;
-        }
-
-        async function processOrder(event) {
-            event.preventDefault();
-            
-            const mpesaCode = document.getElementById('mpesaCode').value;
-            if (!mpesaCode) {
-                alert("Please enter your M-Pesa confirmation code");
-                return;
-            }
-            
-            const order = {
-                id: 'STA' + Date.now(),
-                customer_name: document.getElementById('customerName').value,
-                customer_phone: document.getElementById('customerPhone').value,
-                customer_email: document.getElementById('customerEmail').value,
-                county: document.getElementById('deliveryCounty').selectedOptions[0]?.text || 'Nairobi',
-                delivery_cost: parseInt(document.getElementById('deliveryCounty').value || 0),
-                address: document.getElementById('deliveryAddress').value,
-                payment_method: document.getElementById('paymentMethod').value,
-                mpesa_code: mpesaCode,
-                items: cart.items,
-                subtotal: cart.total,
-                total: cart.total + parseInt(document.getElementById('deliveryCounty').value || 0),
-                status: 'pending',
-                date: new Date().toISOString()
-            };
-
-            const orderItemsList = order.items.map(item => 
-                `• ${item.quantity}x ${item.name} (${item.size}) - Ksh ${item.price * item.quantity}`
-            ).join('\n');
-
-            // Send WhatsApp to business
-            const whatsappMessage = `🔔 *NEW ORDER!* 🔔
-
-*Order #:* ${order.id}
-*Customer:* ${order.customer_name}
-*Phone:* ${order.customer_phone}
-*Email:* ${order.customer_email}
-*Total:* Ksh ${order.total}
-*M-Pesa Code:* ${order.mpesa_code}
-
-*ITEMS:*
-${orderItemsList}
-
-*DELIVERY:*
-${order.address}
-${order.county} - Ksh ${order.delivery_cost}`;
-            
-            window.open(`https://wa.me/254727394165?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
-
-            // Send email confirmation
-            emailjs.send(window.EMAILJS_SERVICE_ID, window.ORDER_TEMPLATE, {
-                to_email: order.customer_email,
-                to_name: order.customer_name,
-                customerName: order.customer_name,
-                orderId: order.id,
-                orderDate: order.date,
-                orderItems: orderItemsList.replace(/\n/g, '<br>'),
-                orderTotal: order.total,
-                deliveryAddress: `${order.address}, ${order.county}`,
-                trackingUrl: window.location.origin + "/?track=" + order.id,
-                from_name: "Stawear Kenya"
-            }).then(function() {
-                showNotification("✅ Order confirmation email sent!");
-            });
-
-            // Save to Supabase
-            try {
-                const { error } = await supabase
-                    .from('orders')
-                    .insert([order]);
-                
-                if (error) throw error;
-                
-            } catch (error) {
-                console.error('Error saving order to Supabase:', error);
-                // Save to localStorage as backup
-                const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
-                orders.push(order);
-                localStorage.setItem('stawearOrders', JSON.stringify(orders));
-            }
-            
-            cart.clearCart();
-            closeCheckout();
-            showNotification('✅ Order placed! Check your email for confirmation');
-        }
-
-        // ===== TRACK ORDER FUNCTIONS =====
-        function showTrackOrder() {
-            document.getElementById('trackModal').classList.add('active');
-        }
-
-        function closeTrackModal() {
-            document.getElementById('trackModal').classList.remove('active');
-            document.getElementById('trackResult').style.display = 'none';
-        }
-
-        async function trackOrder() {
-            const orderId = document.getElementById('trackOrderId').value;
-            if (!orderId) {
-                alert('Please enter an order ID');
-                return;
-            }
-            
-            try {
-                // Try Supabase first
-                const { data, error } = await supabase
-                    .from('orders')
-                    .select('*')
-                    .eq('id', orderId)
-                    .single();
-                
-                if (error) throw error;
-                
-                if (data) {
-                    displayTrackResult(data);
-                } else {
-                    // Try localStorage
-                    const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
-                    const order = orders.find(o => o.id === orderId);
-                    if (order) {
-                        displayTrackResult(order);
-                    } else {
-                        alert('Order not found');
-                    }
-                }
-            } catch (error) {
-                console.error('Error tracking order:', error);
-                // Try localStorage
-                const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
-                const order = orders.find(o => o.id === orderId);
-                if (order) {
-                    displayTrackResult(order);
-                } else {
-                    alert('Order not found');
-                }
+                console.error('Error saving request:', error);
+                showNotification('Error sending request', 'error');
             }
         }
 
-        function displayTrackResult(order) {
-            const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
-            const currentStep = statusSteps.indexOf(order.status);
-            
-            let statusHtml = '<div style="display: flex; justify-content: space-between; margin: 20px 0;">';
-            statusSteps.forEach((step, index) => {
-                statusHtml += `
-                    <div style="text-align: center; flex:1;">
-                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index <= currentStep ? '#C62828' : '#ddd'}; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white;">
-                            ${index <= currentStep ? '✓' : (index + 1)}
-                        </div>
-                        <div style="font-size: 0.8rem; margin-top: 5px;">${step.charAt(0).toUpperCase() + step.slice(1)}</div>
-                    </div>
-                `;
-            });
-            statusHtml += '</div>';
-            
-            document.getElementById('trackStatus').innerHTML = statusHtml;
-            document.getElementById('trackDetails').innerHTML = `
-                <p><strong>Order Date:</strong> ${new Date(order.date).toLocaleString()}</p>
-                <p><strong>Total:</strong> Ksh ${order.total}</p>
-                <p><strong>Items:</strong> ${order.items?.length || 0}</p>
-                <p><strong>Delivery:</strong> ${order.address}, ${order.county}</p>
-            `;
-            document.getElementById('trackResult').style.display = 'block';
-        }
-
-        // ===== NOTIFICATION =====
-        function showNotification(message) {
-            const container = document.getElementById('toastContainer');
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function showNotification(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<i class="fas fa-check-circle"></i><div>${message}</div>`;
-            container.appendChild(toast);
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><div>${message}</div>`;
+            document.getElementById('toastContainer').appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // ===== SCROLL FUNCTION =====
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        function scrollToSection(id) {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
