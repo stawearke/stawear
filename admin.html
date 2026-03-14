@@ -1,1750 +1,1068 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stawear Admin - Complete Integrated System</title>
+<!-- Add Supabase library in head -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Replace the existing JavaScript with this -->
+<script>
+    // ===== SUPABASE CONFIGURATION =====
+    const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
     
-    <!-- EmailJS Library -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f4f7fc;
-            display: flex;
-            overflow-x: hidden;
-        }
-
-        /* ===== SIDEBAR ===== */
-        .admin-sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #1a237e 0%, #0d1b3e 100%);
-            color: white;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            overflow-y: auto;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.8rem;
-        }
-
-        .sidebar-header h2 span {
-            color: #ff9800;
-        }
-
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-
-        .menu-item {
-            padding: 12px 25px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: rgba(255,255,255,0.8);
-            cursor: pointer;
-            transition: all 0.3s;
-            border-left: 4px solid transparent;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-left-color: #ff9800;
-        }
-
-        .menu-item i {
-            width: 24px;
-        }
-
-        .menu-item .badge {
-            background: #c62828;
-            color: white;
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 20px;
-            margin-left: auto;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .admin-main {
-            flex: 1;
-            margin-left: 280px;
-            width: calc(100% - 280px);
-            min-height: 100vh;
-            background: #f4f7fc;
-        }
-
-        /* ===== TOP BAR ===== */
-        .top-bar {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #f5f5f5;
-            border-radius: 30px;
-            padding: 8px 20px;
-            width: 300px;
-        }
-
-        .search-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-        }
-
-        .notification-icon {
-            position: relative;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: #555;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #c62828;
-            color: white;
-            font-size: 0.7rem;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .admin-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #c62828, #8b0000);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* ===== CONTENT AREA ===== */
-        .content-area {
-            padding: 30px;
-        }
-
-        /* ===== STATS CARDS ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-info h3 {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .stat-info .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a237e;
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #c62828, #8b0000);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.8rem;
-        }
-
-        /* ===== TABLES ===== */
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .table-header h3 {
-            font-size: 1.2rem;
-            color: #333;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #c62828, #8b0000);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(198,40,40,0.3);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 15px 10px;
-            color: #666;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-bottom: 2px solid #eee;
-        }
-
-        td {
-            padding: 15px 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .product-thumb {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .product-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-processing {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 5px;
-        }
-
-        .action-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .edit-btn {
-            background: #2196f3;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-        }
-
-        .view-btn {
-            background: #28a745;
-            color: white;
-        }
-
-        /* ===== MODALS ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 30px;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .close-modal {
-            font-size: 2rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        /* ===== FORM STYLES ===== */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #c62828;
-            outline: none;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        /* ===== IMAGE UPLOAD ===== */
-        .image-upload-area {
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .image-upload-area:hover {
-            border-color: #c62828;
-            background: #fff5f5;
-        }
-
-        .image-upload-area i {
-            font-size: 3rem;
-            color: #c62828;
-            margin-bottom: 15px;
-        }
-
-        .image-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .preview-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-        }
-
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .preview-item .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 25px;
-            height: 25px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            background: white;
-            border-radius: 10px;
-            padding: 15px 25px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: slideIn 0.3s ease;
-            border-left: 5px solid #28a745;
-        }
-
-        .toast.error {
-            border-left-color: #dc3545;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* ===== LOGIN PAGE ===== */
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1a237e, #c62828);
-        }
-
-        .login-box {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header h2 {
-            color: #1a237e;
-            font-size: 2rem;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #c62828, #8b0000);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1200px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 992px) {
-            .admin-sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .admin-sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .admin-main {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Login Page -->
-    <div id="loginPage" class="login-container">
-        <div class="login-box">
-            <div class="login-header">
-                <h2>STA<span style="color: #c62828;">WEAR</span></h2>
-                <p>Admin Panel - Full Control</p>
-            </div>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <input type="text" id="username" placeholder="Username" required value="admin">
-                </div>
-                <div class="form-group">
-                    <input type="password" id="password" placeholder="Password" required value="Stawear@2024">
-                </div>
-                <button type="submit" class="login-btn">Access System</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="dashboard" style="display: none;">
-        <!-- Sidebar -->
-        <div class="admin-sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>STA<span>WEAR</span></h2>
-                <p>Complete Control Panel</p>
-            </div>
-            
-            <div class="sidebar-menu">
-                <div class="menu-item active" onclick="showSection('dashboard')">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="menu-item" onclick="showSection('products')">
-                    <i class="fas fa-tshirt"></i>
-                    <span>Products</span>
-                    <span class="badge" id="productCount">0</span>
-                </div>
-                <div class="menu-item" onclick="showSection('orders')">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span>Orders</span>
-                    <span class="badge" id="orderCount">0</span>
-                </div>
-                <div class="menu-item" onclick="showSection('customers')">
-                    <i class="fas fa-users"></i>
-                    <span>Customers</span>
-                    <span class="badge" id="customerCount">0</span>
-                </div>
-                <div class="menu-item" onclick="showSection('branding')">
-                    <i class="fas fa-palette"></i>
-                    <span>Branding Requests</span>
-                    <span class="badge" id="brandingCount">0</span>
-                </div>
-                <div class="menu-item" onclick="showSection('analytics')">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Analytics</span>
-                </div>
-                <div class="menu-item" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="admin-main">
-            <!-- Top Bar -->
-            <div class="top-bar">
-                <div class="menu-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
-                </div>
-                
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search..." id="globalSearch" onkeyup="globalSearch()">
-                </div>
-                
-                <div class="notification-icon" onclick="checkNewData()">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge" id="notificationBadge">0</span>
-                </div>
-            </div>
-
-            <!-- Content Area -->
-            <div class="content-area" id="contentArea"></div>
-        </div>
-    </div>
-
-    <!-- Product Modal -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Add/Edit Product</h2>
-                <span class="close-modal" onclick="closeProductModal()">&times;</span>
-            </div>
-            
-            <form id="productForm" onsubmit="saveProduct(event)">
-                <input type="hidden" id="productId">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Product Name *</label>
-                        <input type="text" id="productName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select id="productCategory" required>
-                            <option value="Hoodies">Hoodies</option>
-                            <option value="T-Shirts">T-Shirts</option>
-                            <option value="Jackets">Jackets</option>
-                            <option value="Tracksuits">Tracksuits</option>
-                            <option value="Pants">Pants</option>
-                            <option value="Accessories">Accessories</option>
-                            <option value="Uniforms">Uniforms</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Price (Ksh) *</label>
-                        <input type="number" id="productPrice" required min="0">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Original Price</label>
-                        <input type="number" id="productOriginalPrice" min="0">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Description *</label>
-                    <textarea id="productDescription" required rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Badge</label>
-                    <select id="productBadge">
-                        <option value="">None</option>
-                        <option value="BEST SELLER">Best Seller</option>
-                        <option value="NEW">New</option>
-                        <option value="SALE">Sale</option>
-                        <option value="LIMITED">Limited</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Image URL</label>
-                    <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
-                    <small style="color: #999;">Leave empty to use placeholder</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>Sizes & Stock</label>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>S</label>
-                            <input type="number" id="sizeS" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>M</label>
-                            <input type="number" id="sizeM" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>L</label>
-                            <input type="number" id="sizeL" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>XL</label>
-                            <input type="number" id="sizeXL" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>XXL</label>
-                            <input type="number" id="sizeXXL" value="0" min="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Product</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Order Details Modal -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Order Details</h2>
-                <span class="close-modal" onclick="closeOrderModal()">&times;</span>
-            </div>
-            <div id="orderDetails"></div>
-        </div>
-    </div>
-
-    <!-- Branding Request Modal -->
-    <div class="modal" id="brandingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Branding Request Details</h2>
-                <span class="close-modal" onclick="closeBrandingModal()">&times;</span>
-            </div>
-            <div id="brandingDetails"></div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-
-    <script>
-        // ===== INITIALIZATION =====
-        (function() {
-            emailjs.init("rOBcEHt9BFgYEOL1Z");
-            window.EMAILJS_SERVICE_ID = "service_ym1oijj";
-            window.ORDER_TEMPLATE = "template_jra9me1";
-        })();
-
-        // ===== DATA STORES =====
-        let products = [];
-        let orders = [];
-        let brandingRequests = [];
-        let customers = [];
-        let notifications = [];
-
-        // ===== LOGIN SYSTEM =====
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // CHANGE THIS PASSWORD AFTER DEPLOYMENT!
-            if (username === 'admin' && password === 'Stawear@2024') {
-                localStorage.setItem('adminLoggedIn', 'true');
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-                loadAllData();
-                
-                // Set up storage listener for real-time updates
-                window.addEventListener('storage', function(e) {
-                    if (e.key === 'stawearOrders' || e.key === 'stawearBrandingRequests') {
-                        loadAllData();
-                        showToast('New data received!', 'info');
-                        updateNotificationBadge();
-                    }
-                });
-                
-                showSection('dashboard');
-                showToast('Welcome to Admin Panel!', 'success');
-            } else {
-                showToast('Invalid credentials!', 'error');
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'flex';
-        }
-
-        // ===== LOAD ALL DATA =====
-        function loadAllData() {
-            // Load products
-            const savedProducts = localStorage.getItem('stawearProducts');
-            if (savedProducts) {
-                products = JSON.parse(savedProducts);
-            } else {
-                // Default products
-                products = [
-                    {
-                        id: 1,
-                        name: "Black Belt Master Hoodie",
-                        category: "Hoodies",
-                        price: 2499,
-                        originalPrice: 3200,
-                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
-                        description: "Premium hoodie with embroidered black belt design",
-                        badge: "BEST SELLER",
-                        sizes: ["S", "M", "L", "XL"],
-                        stock: { S: 10, M: 15, L: 15, XL: 10, XXL: 5 }
-                    },
-                    {
-                        id: 2,
-                        name: "Kenyan Taekwondo Tee",
-                        category: "T-Shirts",
-                        price: 1899,
-                        originalPrice: 2400,
-                        image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
-                        description: "Cotton t-shirt with Kenyan flag colors",
-                        badge: "NEW",
-                        sizes: ["S", "M", "L", "XL"],
-                        stock: { S: 20, M: 25, L: 25, XL: 20, XXL: 10 }
-                    }
-                ];
-                localStorage.setItem('stawearProducts', JSON.stringify(products));
-            }
-
-            // Load orders
-            const savedOrders = localStorage.getItem('stawearOrders');
-            if (savedOrders) {
-                orders = JSON.parse(savedOrders);
-            } else {
-                orders = [];
-                localStorage.setItem('stawearOrders', JSON.stringify(orders));
-            }
-
-            // Load branding requests
-            const savedBranding = localStorage.getItem('stawearBrandingRequests');
-            if (savedBranding) {
-                brandingRequests = JSON.parse(savedBranding);
-            } else {
-                brandingRequests = [];
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(brandingRequests));
-            }
-
-            // Extract customers from orders
-            const customerMap = new Map();
-            orders.forEach(order => {
-                if (!customerMap.has(order.customerEmail)) {
-                    customerMap.set(order.customerEmail, {
-                        name: order.customerName,
-                        email: order.customerEmail,
-                        phone: order.customerPhone,
-                        orders: 1,
-                        totalSpent: order.total,
-                        lastOrder: order.date
-                    });
-                } else {
-                    const customer = customerMap.get(order.customerEmail);
-                    customer.orders++;
-                    customer.totalSpent += order.total;
-                }
-            });
-            customers = Array.from(customerMap.values());
-
-            // Update counts
-            document.getElementById('productCount').textContent = products.length;
-            document.getElementById('orderCount').textContent = orders.length;
-            document.getElementById('customerCount').textContent = customers.length;
-            document.getElementById('brandingCount').textContent = brandingRequests.length;
-            
-            updateNotificationBadge();
-        }
-
-        // ===== NOTIFICATION SYSTEM =====
-        function updateNotificationBadge() {
-            const pendingOrders = orders.filter(o => o.status === 'pending').length;
-            const pendingBranding = brandingRequests.filter(r => r.status === 'pending').length;
-            const total = pendingOrders + pendingBranding;
-            document.getElementById('notificationBadge').textContent = total;
-        }
-
-        function checkNewData() {
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ===== EMAILJS INITIALIZATION =====
+    (function() {
+        emailjs.init("rOBcEHt9BFgYEOL1Z");
+        window.EMAILJS_SERVICE_ID = "service_ym1oijj";
+        window.ORDER_TEMPLATE = "template_jra9me1";
+    })();
+
+    // ===== DATA STORES =====
+    let products = [];
+    let orders = [];
+    let brandingRequests = [];
+    let customers = [];
+    let notifications = [];
+
+    // ===== LOGIN SYSTEM =====
+    function handleLogin(event) {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        // CHANGE THIS PASSWORD AFTER DEPLOYMENT!
+        if (username === 'admin' && password === 'Stawear@2024') {
+            localStorage.setItem('adminLoggedIn', 'true');
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
             loadAllData();
-            showToast('Data refreshed!', 'success');
-        }
-
-        // ===== SECTION RENDERING =====
-        function showSection(section) {
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.menu-item').classList.add('active');
             
-            switch(section) {
-                case 'dashboard': renderDashboard(); break;
-                case 'products': renderProducts(); break;
-                case 'orders': renderOrders(); break;
-                case 'customers': renderCustomers(); break;
-                case 'branding': renderBrandingRequests(); break;
-                case 'analytics': renderAnalytics(); break;
+            // Set up real-time subscriptions
+            setupRealtimeSubscriptions();
+            
+            showSection('dashboard');
+            showToast('Welcome to Admin Panel!', 'success');
+        } else {
+            showToast('Invalid credentials!', 'error');
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('adminLoggedIn');
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'flex';
+    }
+
+    // ===== REAL-TIME SUBSCRIPTIONS =====
+    function setupRealtimeSubscriptions() {
+        // Subscribe to orders changes
+        supabase
+            .channel('orders-changes')
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'orders' }, 
+                payload => {
+                    console.log('Orders changed:', payload);
+                    loadAllData();
+                    showToast('Orders updated!', 'info');
+                }
+            )
+            .subscribe();
+
+        // Subscribe to branding requests changes
+        supabase
+            .channel('branding-changes')
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'branding_requests' }, 
+                payload => {
+                    console.log('Branding requests changed:', payload);
+                    loadAllData();
+                    showToast('Branding requests updated!', 'info');
+                }
+            )
+            .subscribe();
+
+        // Subscribe to products changes
+        supabase
+            .channel('products-changes')
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'products' }, 
+                payload => {
+                    console.log('Products changed:', payload);
+                    loadAllData();
+                }
+            )
+            .subscribe();
+    }
+
+    // ===== LOAD ALL DATA =====
+    async function loadAllData() {
+        await loadProducts();
+        await loadOrders();
+        await loadBrandingRequests();
+        extractCustomers();
+        updateNotificationBadge();
+    }
+
+    async function loadProducts() {
+        try {
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .order('id');
+            
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                products = data;
+            } else {
+                // Insert default products
+                products = getDefaultProducts();
+                await insertDefaultProducts();
             }
+        } catch (error) {
+            console.error('Error loading products:', error);
+            // Fallback to localStorage
+            const saved = localStorage.getItem('stawearProducts');
+            products = saved ? JSON.parse(saved) : getDefaultProducts();
         }
+        
+        document.getElementById('productCount').textContent = products.length;
+    }
 
-        // ===== DASHBOARD =====
-        function renderDashboard() {
-            const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
-            const pendingOrders = orders.filter(o => o.status === 'pending').length;
+    async function loadOrders() {
+        try {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('date', { ascending: false });
             
-            const html = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total Sales</h3>
-                            <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-money-bill"></i></div>
+            if (error) throw error;
+            
+            orders = data || [];
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            // Fallback to localStorage
+            const saved = localStorage.getItem('stawearOrders');
+            orders = saved ? JSON.parse(saved) : [];
+        }
+        
+        document.getElementById('orderCount').textContent = orders.length;
+    }
+
+    async function loadBrandingRequests() {
+        try {
+            const { data, error } = await supabase
+                .from('branding_requests')
+                .select('*')
+                .order('date', { ascending: false });
+            
+            if (error) throw error;
+            
+            brandingRequests = data || [];
+        } catch (error) {
+            console.error('Error loading branding requests:', error);
+            // Fallback to localStorage
+            const saved = localStorage.getItem('stawearBrandingRequests');
+            brandingRequests = saved ? JSON.parse(saved) : [];
+        }
+        
+        document.getElementById('brandingCount').textContent = brandingRequests.length;
+    }
+
+    function extractCustomers() {
+        const customerMap = new Map();
+        orders.forEach(order => {
+            if (!customerMap.has(order.customer_email)) {
+                customerMap.set(order.customer_email, {
+                    name: order.customer_name,
+                    email: order.customer_email,
+                    phone: order.customer_phone,
+                    orders: 1,
+                    totalSpent: order.total,
+                    lastOrder: order.date
+                });
+            } else {
+                const customer = customerMap.get(order.customer_email);
+                customer.orders++;
+                customer.totalSpent += order.total;
+            }
+        });
+        customers = Array.from(customerMap.values());
+        document.getElementById('customerCount').textContent = customers.length;
+    }
+
+    function getDefaultProducts() {
+        return [
+            {
+                id: 1,
+                name: "Black Belt Master Hoodie",
+                category: "Hoodies",
+                price: 2499,
+                original_price: 3200,
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
+                description: "Premium hoodie with embroidered black belt design",
+                badge: "BEST SELLER",
+                sizes: ["S", "M", "L", "XL"],
+                stock: { S: 10, M: 15, L: 15, XL: 10, XXL: 5 }
+            },
+            {
+                id: 2,
+                name: "Kenyan Taekwondo Tee",
+                category: "T-Shirts",
+                price: 1899,
+                original_price: 2400,
+                image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
+                description: "Cotton t-shirt with Kenyan flag colors",
+                badge: "NEW",
+                sizes: ["S", "M", "L", "XL"],
+                stock: { S: 20, M: 25, L: 25, XL: 20, XXL: 10 }
+            }
+        ];
+    }
+
+    async function insertDefaultProducts() {
+        const defaultProducts = getDefaultProducts();
+        try {
+            const { error } = await supabase
+                .from('products')
+                .insert(defaultProducts);
+            
+            if (error) throw error;
+            
+            products = defaultProducts;
+        } catch (error) {
+            console.error('Error inserting default products:', error);
+        }
+    }
+
+    // ===== NOTIFICATION SYSTEM =====
+    function updateNotificationBadge() {
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+        const pendingBranding = brandingRequests.filter(r => r.status === 'pending').length;
+        const total = pendingOrders + pendingBranding;
+        document.getElementById('notificationBadge').textContent = total;
+    }
+
+    function checkNewData() {
+        loadAllData();
+        showToast('Data refreshed!', 'success');
+    }
+
+    // ===== SECTION RENDERING =====
+    function showSection(section) {
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+        event.target.closest('.menu-item').classList.add('active');
+        
+        switch(section) {
+            case 'dashboard': renderDashboard(); break;
+            case 'products': renderProducts(); break;
+            case 'orders': renderOrders(); break;
+            case 'customers': renderCustomers(); break;
+            case 'branding': renderBrandingRequests(); break;
+            case 'analytics': renderAnalytics(); break;
+        }
+    }
+
+    // ===== DASHBOARD =====
+    function renderDashboard() {
+        const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+        
+        const html = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Sales</h3>
+                        <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total Orders</h3>
-                            <div class="stat-number">${orders.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="stat-icon"><i class="fas fa-money-bill"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Orders</h3>
+                        <div class="stat-number">${orders.length}</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Pending Orders</h3>
-                            <div class="stat-number">${pendingOrders}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Pending Orders</h3>
+                        <div class="stat-number">${pendingOrders}</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Customers</h3>
-                            <div class="stat-number">${customers.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Customers</h3>
+                        <div class="stat-number">${customers.length}</div>
                     </div>
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Recent Orders</h3>
+                    <button class="btn btn-primary" onclick="showSection('orders')">View All</button>
                 </div>
                 
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Recent Orders</h3>
-                        <button class="btn btn-primary" onclick="showSection('orders')">View All</button>
-                    </div>
-                    
-                    <table>
-                        <thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.slice(0, 5).map(order => `
                             <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <td>${order.id}</td>
+                                <td>${order.customer_name}</td>
+                                <td>Ksh ${order.total}</td>
+                                <td><span class="status-badge status-${order.status}">${order.status}</span></td>
+                                <td>${new Date(order.date).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${orders.slice(0, 5).map(order => `
-                                <tr>
-                                    <td>${order.id}</td>
-                                    <td>${order.customerName}</td>
-                                    <td>Ksh ${order.total}</td>
-                                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
-                                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Recent Branding Requests</h3>
+                    <button class="btn btn-primary" onclick="showSection('branding')">View All</button>
                 </div>
                 
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Recent Branding Requests</h3>
-                        <button class="btn btn-primary" onclick="showSection('branding')">View All</button>
-                    </div>
-                    
-                    <table>
-                        <thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Dojang</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${brandingRequests.slice(0, 5).map(request => `
                             <tr>
-                                <th>Customer</th>
-                                <th>Dojang</th>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <td>${request.name}</td>
+                                <td>${request.dojang || 'N/A'}</td>
+                                <td>${request.item_type}</td>
+                                <td>${request.quantity}</td>
+                                <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
+                                <td>
+                                    <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${brandingRequests.slice(0, 5).map(request => `
-                                <tr>
-                                    <td>${request.name}</td>
-                                    <td>${request.dojang || 'N/A'}</td>
-                                    <td>${request.itemType}</td>
-                                    <td>${request.quantity}</td>
-                                    <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
-                                            <i class="fas fa-eye"></i>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
+
+    // ===== PRODUCTS SECTION =====
+    function renderProducts() {
+        const html = `
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Product Management</h3>
+                    <button class="btn btn-primary" onclick="openProductModal()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(product => `
+                            <tr>
+                                <td>
+                                    <div class="product-thumb">
+                                        <img src="${product.image || 'https://via.placeholder.com/50'}" alt="${product.name}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>${product.name}</strong>
+                                    ${product.badge ? `<br><small style="color:#c62828;">${product.badge}</small>` : ''}
+                                </td>
+                                <td>${product.category}</td>
+                                <td>
+                                    Ksh ${product.price}
+                                    ${product.original_price ? `<br><small style="text-decoration:line-through;">Ksh ${product.original_price}</small>` : ''}
+                                </td>
+                                <td>
+                                    ${product.stock ? Object.entries(product.stock).map(([size, qty]) => 
+                                        qty > 0 ? `${size}:${qty} ` : ''
+                                    ).join('') : 'N/A'}
+                                </td>
+                                <td>
+                                    <span class="status-badge ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'status-completed' : 'status-pending'}">
+                                        ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'In Stock' : 'Out of Stock'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn edit-btn" onclick="editProduct(${product.id})">
+                                            <i class="fas fa-edit"></i>
                                         </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        // ===== PRODUCTS SECTION =====
-        function renderProducts() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Product Management</h3>
-                        <button class="btn btn-primary" onclick="openProductModal()">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                        <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${products.map(product => `
-                                <tr>
-                                    <td>
-                                        <div class="product-thumb">
-                                            <img src="${product.image || 'https://via.placeholder.com/50'}" alt="${product.name}">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong>${product.name}</strong>
-                                        ${product.badge ? `<br><small style="color:#c62828;">${product.badge}</small>` : ''}
-                                    </td>
-                                    <td>${product.category}</td>
-                                    <td>
-                                        Ksh ${product.price}
-                                        ${product.originalPrice ? `<br><small style="text-decoration:line-through;">Ksh ${product.originalPrice}</small>` : ''}
-                                    </td>
-                                    <td>
-                                        ${product.stock ? Object.entries(product.stock).map(([size, qty]) => 
-                                            qty > 0 ? `${size}:${qty} ` : ''
-                                        ).join('') : 'N/A'}
-                                    </td>
-                                    <td>
-                                        <span class="status-badge ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'status-completed' : 'status-pending'}">
-                                            ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'In Stock' : 'Out of Stock'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit-btn" onclick="editProduct(${product.id})">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
 
-        // ===== PRODUCT CRUD =====
-        function openProductModal(productId = null) {
-            document.getElementById('productModal').classList.add('active');
-            
-            if (productId) {
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    document.getElementById('productId').value = product.id;
-                    document.getElementById('productName').value = product.name;
-                    document.getElementById('productCategory').value = product.category;
-                    document.getElementById('productPrice').value = product.price;
-                    document.getElementById('productOriginalPrice').value = product.originalPrice || '';
-                    document.getElementById('productDescription').value = product.description;
-                    document.getElementById('productBadge').value = product.badge || '';
-                    document.getElementById('productImage').value = product.image || '';
-                    
-                    // Set stock values
-                    document.getElementById('sizeS').value = product.stock?.S || 0;
-                    document.getElementById('sizeM').value = product.stock?.M || 0;
-                    document.getElementById('sizeL').value = product.stock?.L || 0;
-                    document.getElementById('sizeXL').value = product.stock?.XL || 0;
-                    document.getElementById('sizeXXL').value = product.stock?.XXL || 0;
-                }
-            } else {
-                document.getElementById('productForm').reset();
-                document.getElementById('productId').value = '';
+    // ===== PRODUCT CRUD =====
+    function openProductModal(productId = null) {
+        document.getElementById('productModal').classList.add('active');
+        
+        if (productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productOriginalPrice').value = product.original_price || '';
+                document.getElementById('productDescription').value = product.description;
+                document.getElementById('productBadge').value = product.badge || '';
+                document.getElementById('productImage').value = product.image || '';
+                
+                // Set stock values
+                document.getElementById('sizeS').value = product.stock?.S || 0;
+                document.getElementById('sizeM').value = product.stock?.M || 0;
+                document.getElementById('sizeL').value = product.stock?.L || 0;
+                document.getElementById('sizeXL').value = product.stock?.XL || 0;
+                document.getElementById('sizeXXL').value = product.stock?.XXL || 0;
             }
+        } else {
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
         }
+    }
 
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-        }
+    function closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+    }
 
-        function saveProduct(event) {
-            event.preventDefault();
-            
-            const productId = document.getElementById('productId').value;
-            
-            // Get stock values FIRST
-            const stock = {
-                S: parseInt(document.getElementById('sizeS').value) || 0,
-                M: parseInt(document.getElementById('sizeM').value) || 0,
-                L: parseInt(document.getElementById('sizeL').value) || 0,
-                XL: parseInt(document.getElementById('sizeXL').value) || 0,
-                XXL: parseInt(document.getElementById('sizeXXL').value) || 0
-            };
-            
-            // Create productData object
-            const productData = {
-                id: productId ? parseInt(productId) : Date.now(),
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                price: parseInt(document.getElementById('productPrice').value),
-                originalPrice: parseInt(document.getElementById('productOriginalPrice').value) || null,
-                description: document.getElementById('productDescription').value,
-                badge: document.getElementById('productBadge').value || null,
-                image: document.getElementById('productImage').value || 'https://via.placeholder.com/500',
-                stock: stock,
-                sizes: Object.keys(stock).filter(size => stock[size] > 0)
-            };
-            
+    async function saveProduct(event) {
+        event.preventDefault();
+        
+        const productId = document.getElementById('productId').value;
+        
+        // Get stock values
+        const stock = {
+            S: parseInt(document.getElementById('sizeS').value) || 0,
+            M: parseInt(document.getElementById('sizeM').value) || 0,
+            L: parseInt(document.getElementById('sizeL').value) || 0,
+            XL: parseInt(document.getElementById('sizeXL').value) || 0,
+            XXL: parseInt(document.getElementById('sizeXXL').value) || 0
+        };
+        
+        const productData = {
+            id: productId ? parseInt(productId) : Date.now(),
+            name: document.getElementById('productName').value,
+            category: document.getElementById('productCategory').value,
+            price: parseInt(document.getElementById('productPrice').value),
+            original_price: parseInt(document.getElementById('productOriginalPrice').value) || null,
+            description: document.getElementById('productDescription').value,
+            badge: document.getElementById('productBadge').value || null,
+            image: document.getElementById('productImage').value || 'https://via.placeholder.com/500',
+            stock: stock,
+            sizes: Object.keys(stock).filter(size => stock[size] > 0)
+        };
+        
+        try {
             if (productId) {
-                const index = products.findIndex(p => p.id === parseInt(productId));
-                if (index !== -1) {
-                    products[index] = productData;
-                }
+                // Update existing product
+                const { error } = await supabase
+                    .from('products')
+                    .update(productData)
+                    .eq('id', parseInt(productId));
+                
+                if (error) throw error;
             } else {
-                products.push(productData);
+                // Insert new product
+                const { error } = await supabase
+                    .from('products')
+                    .insert([productData]);
+                
+                if (error) throw error;
             }
             
-            localStorage.setItem('stawearProducts', JSON.stringify(products));
-            document.getElementById('productCount').textContent = products.length;
+            await loadProducts();
             closeProductModal();
             renderProducts();
             showToast('Product saved successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Error saving product:', error);
+            showToast('Error saving product', 'error');
         }
+    }
 
-        function deleteProduct(productId) {
-            if (confirm('Delete this product?')) {
-                products = products.filter(p => p.id !== productId);
-                localStorage.setItem('stawearProducts', JSON.stringify(products));
-                document.getElementById('productCount').textContent = products.length;
+    async function deleteProduct(productId) {
+        if (confirm('Delete this product?')) {
+            try {
+                const { error } = await supabase
+                    .from('products')
+                    .delete()
+                    .eq('id', productId);
+                
+                if (error) throw error;
+                
+                await loadProducts();
                 renderProducts();
                 showToast('Product deleted', 'warning');
-            }
-        }
-
-        function editProduct(productId) {
-            openProductModal(productId);
-        }
-
-        // ===== ORDERS SECTION =====
-        function renderOrders() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Order Management</h3>
-                        <select onchange="filterOrders(this.value)" style="padding: 8px; border-radius: 5px;">
-                            <option value="all">All Orders</option>
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTable">
-                            ${renderOrdersTable(orders)}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        function renderOrdersTable(ordersToRender) {
-            return ordersToRender.map(order => `
-                <tr>
-                    <td>${order.id}</td>
-                    <td>
-                        ${order.customerName}<br>
-                        <small>${order.customerPhone}</small>
-                    </td>
-                    <td>${order.items?.length || 0} items</td>
-                    <td>Ksh ${order.total}</td>
-                    <td>${order.paymentMethod || 'M-Pesa'}</td>
-                    <td>
-                        <select class="status-badge" onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; border-radius: 20px;">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    </td>
-                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                    <td>
-                        <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filterOrders(status) {
-            if (status === 'all') {
-                document.getElementById('ordersTable').innerHTML = renderOrdersTable(orders);
-            } else {
-                const filtered = orders.filter(o => o.status === status);
-                document.getElementById('ordersTable').innerHTML = renderOrdersTable(filtered);
-            }
-        }
-
-        function updateOrderStatus(orderId, newStatus) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                order.status = newStatus;
-                localStorage.setItem('stawearOrders', JSON.stringify(orders));
                 
-                // Send email notification to customer
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showToast('Error deleting product', 'error');
+            }
+        }
+    }
+
+    function editProduct(productId) {
+        openProductModal(productId);
+    }
+
+    // ===== ORDERS SECTION =====
+    function renderOrders() {
+        const html = `
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Order Management</h3>
+                    <select onchange="filterOrders(this.value)" style="padding: 8px; border-radius: 5px;">
+                        <option value="all">All Orders</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                        ${renderOrdersTable(orders)}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
+
+    function renderOrdersTable(ordersToRender) {
+        return ordersToRender.map(order => `
+            <tr>
+                <td>${order.id}</td>
+                <td>
+                    ${order.customer_name}<br>
+                    <small>${order.customer_phone}</small>
+                </td>
+                <td>${order.items?.length || 0} items</td>
+                <td>Ksh ${order.total}</td>
+                <td>${order.payment_method || 'M-Pesa'}</td>
+                <td>
+                    <select class="status-badge" onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; border-radius: 20px;">
+                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                        <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
+                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    </select>
+                </td>
+                <td>${new Date(order.date).toLocaleDateString()}</td>
+                <td>
+                    <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function filterOrders(status) {
+        if (status === 'all') {
+            document.getElementById('ordersTable').innerHTML = renderOrdersTable(orders);
+        } else {
+            const filtered = orders.filter(o => o.status === status);
+            document.getElementById('ordersTable').innerHTML = renderOrdersTable(filtered);
+        }
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .update({ status: newStatus })
+                    .eq('id', orderId);
+                
+                if (error) throw error;
+                
+                order.status = newStatus;
+                
+                // Send email notification
                 emailjs.send(window.EMAILJS_SERVICE_ID, window.ORDER_TEMPLATE, {
-                    to_email: order.customerEmail,
-                    to_name: order.customerName,
-                    customerName: order.customerName,
+                    to_email: order.customer_email,
+                    to_name: order.customer_name,
+                    customerName: order.customer_name,
                     orderId: order.id,
                     orderDate: new Date(order.date).toLocaleString(),
                     orderStatus: newStatus,
-                    trackingUrl: window.location.origin.replace('admin', '') + "/?track=" + order.id,
+                    trackingUrl: window.location.origin + "/?track=" + order.id,
                     from_name: "Stawear Kenya"
                 }).catch(error => console.log('Email error:', error));
                 
                 updateNotificationBadge();
                 showToast('Order status updated', 'success');
+                
+            } catch (error) {
+                console.error('Error updating order:', error);
+                showToast('Error updating order', 'error');
             }
         }
+    }
 
-        function viewOrder(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                const details = document.getElementById('orderDetails');
-                details.innerHTML = `
-                    <div style="margin-bottom: 20px;">
-                        <h4>Order #${order.id}</h4>
-                        <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
-                        <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Customer Details</h4>
-                        <p><strong>Name:</strong> ${order.customerName}</p>
-                        <p><strong>Phone:</strong> ${order.customerPhone}</p>
-                        <p><strong>Email:</strong> ${order.customerEmail}</p>
-                        <p><strong>Address:</strong> ${order.address || 'N/A'}</p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Items</h4>
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${order.items?.map(item => `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>Ksh ${item.price}</td>
-                                        <td>Ksh ${item.price * item.quantity}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div style="text-align: right; font-size: 1.2rem;">
-                        <strong>Total: Ksh ${order.total}</strong>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn-success" onclick="contactCustomer('${order.customerPhone}')">
-                            <i class="fab fa-whatsapp"></i> Contact Customer
-                        </button>
-                    </div>
-                `;
-                document.getElementById('orderModal').classList.add('active');
-            }
-        }
-
-        function closeOrderModal() {
-            document.getElementById('orderModal').classList.remove('active');
-        }
-
-        // ===== CUSTOMERS SECTION =====
-        function renderCustomers() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Customer Management</h3>
-                        <input type="text" placeholder="Search customers..." style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;" onkeyup="searchCustomers(this.value)">
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact</th>
-                                <th>Orders</th>
-                                <th>Total Spent</th>
-                                <th>Last Order</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customersTable">
-                            ${customers.map(customer => `
-                                <tr>
-                                    <td>${customer.name}</td>
-                                    <td>
-                                        ${customer.email}<br>
-                                        <small>${customer.phone}</small>
-                                    </td>
-                                    <td>${customer.orders}</td>
-                                    <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
-                                    <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
+    function viewOrder(orderId) {
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+            const details = document.getElementById('orderDetails');
+            details.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Order #${order.id}</h4>
+                    <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+                    <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
                 </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        function searchCustomers(term) {
-            const filtered = customers.filter(c => 
-                c.name.toLowerCase().includes(term.toLowerCase()) ||
-                c.email.toLowerCase().includes(term.toLowerCase()) ||
-                (c.phone && c.phone.includes(term))
-            );
-            
-            document.getElementById('customersTable').innerHTML = filtered.map(customer => `
-                <tr>
-                    <td>${customer.name}</td>
-                    <td>${customer.email}<br><small>${customer.phone}</small></td>
-                    <td>${customer.orders}</td>
-                    <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
-                    <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
-                    <td><button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">View</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function viewCustomer(email) {
-            const customerOrders = orders.filter(o => o.customerEmail === email);
-            const totalSpent = customerOrders.reduce((sum, o) => sum + o.total, 0);
-            showToast(`${customerOrders.length} orders, Total: Ksh ${totalSpent}`, 'info');
-        }
-
-        // ===== BRANDING REQUESTS =====
-        function renderBrandingRequests() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Custom Branding Requests</h3>
-                    </div>
-                    
-                    <table>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>Customer Details</h4>
+                    <p><strong>Name:</strong> ${order.customer_name}</p>
+                    <p><strong>Phone:</strong> ${order.customer_phone}</p>
+                    <p><strong>Email:</strong> ${order.customer_email}</p>
+                    <p><strong>Address:</strong> ${order.address || 'N/A'}</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>Items</h4>
+                    <table style="width: 100%;">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Dojang/Team</th>
-                                <th>Item</th>
+                                <th>Product</th>
                                 <th>Quantity</th>
-                                <th>Branding</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Price</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${brandingRequests.map(request => `
+                            ${order.items?.map(item => `
                                 <tr>
-                                    <td>${new Date(request.date).toLocaleDateString()}</td>
-                                    <td>${request.name}<br><small>${request.phone}</small></td>
-                                    <td>${request.dojang || 'N/A'}</td>
-                                    <td>${request.itemType}</td>
-                                    <td>${request.quantity}</td>
-                                    <td>${request.brandingType || 'N/A'}</td>
-                                    <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
+                                    <td>${item.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>Ksh ${item.price}</td>
+                                    <td>Ksh ${item.price * item.quantity}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
+                
+                <div style="text-align: right; font-size: 1.2rem;">
+                    <strong>Total: Ksh ${order.total}</strong>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="contactCustomer('${order.customer_phone}')">
+                        <i class="fab fa-whatsapp"></i> Contact Customer
+                    </button>
+                </div>
             `;
-            
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('orderModal').classList.add('active');
         }
+    }
 
-        function viewBrandingRequest(id) {
-            const request = brandingRequests.find(r => r.id === id);
-            if (request) {
-                const details = document.getElementById('brandingDetails');
-                details.innerHTML = `
-                    <div style="margin-bottom: 20px;">
-                        <h4>Customer Details</h4>
-                        <p><strong>Name:</strong> ${request.name}</p>
-                        <p><strong>Email:</strong> ${request.email}</p>
-                        <p><strong>Phone:</strong> ${request.phone}</p>
-                        <p><strong>Dojang/Team:</strong> ${request.dojang || 'N/A'}</p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Request Details</h4>
-                        <p><strong>Item:</strong> ${request.itemType}</p>
-                        <p><strong>Quantity:</strong> ${request.quantity}</p>
-                        <p><strong>Branding Type:</strong> ${request.brandingType || 'N/A'}</p>
-                        <p><strong>Description:</strong> ${request.description}</p>
-                        <p><strong>Date:</strong> ${new Date(request.date).toLocaleString()}</p>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-success" onclick="markBrandingComplete(${request.id})">Mark Complete</button>
-                        <button class="btn btn-warning" onclick="contactCustomer('${request.phone}')">Contact Customer</button>
-                    </div>
-                `;
-                document.getElementById('brandingModal').classList.add('active');
-            }
+    function closeOrderModal() {
+        document.getElementById('orderModal').classList.remove('active');
+    }
+
+    // ===== CUSTOMERS SECTION =====
+    function renderCustomers() {
+        const html = `
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Customer Management</h3>
+                    <input type="text" placeholder="Search customers..." style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;" onkeyup="searchCustomers(this.value)">
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Orders</th>
+                            <th>Total Spent</th>
+                            <th>Last Order</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTable">
+                        ${customers.map(customer => `
+                            <tr>
+                                <td>${customer.name}</td>
+                                <td>
+                                    ${customer.email}<br>
+                                    <small>${customer.phone}</small>
+                                </td>
+                                <td>${customer.orders}</td>
+                                <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
+                                <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
+
+    function searchCustomers(term) {
+        const filtered = customers.filter(c => 
+            c.name.toLowerCase().includes(term.toLowerCase()) ||
+            c.email.toLowerCase().includes(term.toLowerCase()) ||
+            (c.phone && c.phone.includes(term))
+        );
+        
+        document.getElementById('customersTable').innerHTML = filtered.map(customer => `
+            <tr>
+                <td>${customer.name}</td>
+                <td>${customer.email}<br><small>${customer.phone}</small></td>
+                <td>${customer.orders}</td>
+                <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
+                <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
+                <td><button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">View</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function viewCustomer(email) {
+        const customerOrders = orders.filter(o => o.customer_email === email);
+        const totalSpent = customerOrders.reduce((sum, o) => sum + o.total, 0);
+        showToast(`${customerOrders.length} orders, Total: Ksh ${totalSpent}`, 'info');
+    }
+
+    // ===== BRANDING REQUESTS =====
+    function renderBrandingRequests() {
+        const html = `
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Custom Branding Requests</h3>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Dojang/Team</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Branding</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${brandingRequests.map(request => `
+                            <tr>
+                                <td>${new Date(request.date).toLocaleDateString()}</td>
+                                <td>${request.name}<br><small>${request.phone}</small></td>
+                                <td>${request.dojang || 'N/A'}</td>
+                                <td>${request.item_type}</td>
+                                <td>${request.quantity}</td>
+                                <td>${request.branding_type || 'N/A'}</td>
+                                <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
+                                <td>
+                                    <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
+
+    function viewBrandingRequest(id) {
+        const request = brandingRequests.find(r => r.id === id);
+        if (request) {
+            const details = document.getElementById('brandingDetails');
+            details.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Customer Details</h4>
+                    <p><strong>Name:</strong> ${request.name}</p>
+                    <p><strong>Email:</strong> ${request.email}</p>
+                    <p><strong>Phone:</strong> ${request.phone}</p>
+                    <p><strong>Dojang/Team:</strong> ${request.dojang || 'N/A'}</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4>Request Details</h4>
+                    <p><strong>Item:</strong> ${request.item_type}</p>
+                    <p><strong>Quantity:</strong> ${request.quantity}</p>
+                    <p><strong>Branding Type:</strong> ${request.branding_type || 'N/A'}</p>
+                    <p><strong>Description:</strong> ${request.description}</p>
+                    <p><strong>Date:</strong> ${new Date(request.date).toLocaleString()}</p>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" onclick="markBrandingComplete(${request.id})">Mark Complete</button>
+                    <button class="btn btn-warning" onclick="contactCustomer('${request.phone}')">Contact Customer</button>
+                </div>
+            `;
+            document.getElementById('brandingModal').classList.add('active');
         }
+    }
 
-        function closeBrandingModal() {
-            document.getElementById('brandingModal').classList.remove('active');
-        }
+    function closeBrandingModal() {
+        document.getElementById('brandingModal').classList.remove('active');
+    }
 
-        function markBrandingComplete(id) {
-            const request = brandingRequests.find(r => r.id === id);
-            if (request) {
+    async function markBrandingComplete(id) {
+        const request = brandingRequests.find(r => r.id === id);
+        if (request) {
+            try {
+                const { error } = await supabase
+                    .from('branding_requests')
+                    .update({ status: 'completed' })
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
                 request.status = 'completed';
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(brandingRequests));
-                document.getElementById('brandingCount').textContent = brandingRequests.length;
+                await loadBrandingRequests();
                 closeBrandingModal();
                 renderBrandingRequests();
                 updateNotificationBadge();
                 showToast('Request marked complete', 'success');
+                
+            } catch (error) {
+                console.error('Error updating branding request:', error);
+                showToast('Error updating request', 'error');
             }
         }
+    }
 
-        function contactCustomer(phone) {
-            // Remove leading 0 and add 254
-            const cleanPhone = phone.replace(/^0/, '254');
-            window.open(`https://wa.me/${cleanPhone}`, '_blank');
-        }
+    function contactCustomer(phone) {
+        const cleanPhone = phone.replace(/^0/, '254');
+        window.open(`https://wa.me/${cleanPhone}`, '_blank');
+    }
 
-        // ===== ANALYTICS =====
-        function renderAnalytics() {
-            const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
-            const totalItems = orders.reduce((sum, o) => sum + (o.items?.length || 0), 0);
-            
-            // Category sales
-            const categorySales = {};
-            products.forEach(p => {
-                categorySales[p.category] = 0;
+    // ===== ANALYTICS =====
+    function renderAnalytics() {
+        const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
+        const totalItems = orders.reduce((sum, o) => sum + (o.items?.length || 0), 0);
+        
+        // Category sales
+        const categorySales = {};
+        products.forEach(p => {
+            categorySales[p.category] = 0;
+        });
+        
+        orders.forEach(order => {
+            order.items?.forEach(item => {
+                const product = products.find(p => p.name === item.name);
+                if (product) {
+                    categorySales[product.category] = (categorySales[product.category] || 0) + item.quantity;
+                }
             });
+        });
+        
+        const html = `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Revenue</h3>
+                        <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Products Sold</h3>
+                        <div class="stat-number">${totalItems}</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Avg Order Value</h3>
+                        <div class="stat-number">Ksh ${orders.length ? Math.round(totalSales / orders.length) : 0}</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-calculator"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Branding Requests</h3>
+                        <div class="stat-number">${brandingRequests.length}</div>
+                    </div>
+                    <div class="stat-icon"><i class="fas fa-palette"></i></div>
+                </div>
+            </div>
             
-            orders.forEach(order => {
-                order.items?.forEach(item => {
-                    const product = products.find(p => p.name === item.name);
-                    if (product) {
-                        categorySales[product.category] = (categorySales[product.category] || 0) + item.quantity;
-                    }
-                });
-            });
-            
-            const html = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Revenue</h3>
-                            <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Products Sold</h3>
-                            <div class="stat-number">${totalItems}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-box"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Avg Order Value</h3>
-                            <div class="stat-number">Ksh ${orders.length ? Math.round(totalSales / orders.length) : 0}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-calculator"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Branding Requests</h3>
-                            <div class="stat-number">${brandingRequests.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-palette"></i></div>
-                    </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Sales by Category</h3>
                 </div>
                 
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Sales by Category</h3>
-                    </div>
-                    
-                    <table>
-                        <thead>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Units Sold</th>
+                            <th>% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Object.entries(categorySales).map(([category, sold]) => `
                             <tr>
-                                <th>Category</th>
-                                <th>Units Sold</th>
-                                <th>% of Total</th>
+                                <td>${category}</td>
+                                <td>${sold}</td>
+                                <td>${totalItems ? Math.round(sold / totalItems * 100) : 0}%</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${Object.entries(categorySales).map(([category, sold]) => `
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Top Selling Products</h3>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Units Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(product => {
+                            const sold = orders.reduce((total, order) => {
+                                const item = order.items?.find(i => i.name === product.name);
+                                return total + (item?.quantity || 0);
+                            }, 0);
+                            return `
                                 <tr>
-                                    <td>${category}</td>
+                                    <td>${product.name}</td>
+                                    <td>${product.category}</td>
                                     <td>${sold}</td>
-                                    <td>${totalItems ? Math.round(sold / totalItems * 100) : 0}%</td>
+                                    <td>Ksh ${(sold * product.price).toLocaleString()}</td>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Top Selling Products</h3>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Category</th>
-                                <th>Units Sold</th>
-                                <th>Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${products.map(product => {
-                                const sold = orders.reduce((total, order) => {
-                                    const item = order.items?.find(i => i.name === product.name);
-                                    return total + (item?.quantity || 0);
-                                }, 0);
-                                return `
-                                    <tr>
-                                        <td>${product.name}</td>
-                                        <td>${product.category}</td>
-                                        <td>${sold}</td>
-                                        <td>Ksh ${(sold * product.price).toLocaleString()}</td>
-                                    </tr>
-                                `;
-                            }).sort((a, b) => b.sold - a.sold).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
+                            `;
+                        }).sort((a, b) => b.sold - a.sold).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        document.getElementById('contentArea').innerHTML = html;
+    }
 
-        // ===== UTILITY FUNCTIONS =====
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
+    // ===== UTILITY FUNCTIONS =====
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+    }
 
-        function showToast(message, type) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
-                <div>${message}</div>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
+    function showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+            <div>${message}</div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
 
-        function globalSearch() {
-            const term = document.getElementById('globalSearch').value.toLowerCase();
-            if (term.length < 2) return;
-            
-            const productResults = products.filter(p => p.name.toLowerCase().includes(term));
-            const orderResults = orders.filter(o => o.id.toLowerCase().includes(term) || o.customerName.toLowerCase().includes(term));
-            
-            if (productResults.length > 0 || orderResults.length > 0) {
-                showToast(`Found ${productResults.length} products, ${orderResults.length} orders`, 'info');
-            }
+    function globalSearch() {
+        const term = document.getElementById('globalSearch').value.toLowerCase();
+        if (term.length < 2) return;
+        
+        const productResults = products.filter(p => p.name.toLowerCase().includes(term));
+        const orderResults = orders.filter(o => o.id.toLowerCase().includes(term) || o.customer_name.toLowerCase().includes(term));
+        
+        if (productResults.length > 0 || orderResults.length > 0) {
+            showToast(`Found ${productResults.length} products, ${orderResults.length} orders`, 'info');
         }
+    }
 
-        // Check login status on load
-        (function() {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-                loadAllData();
-                
-                window.addEventListener('storage', function(e) {
-                    if (e.key === 'stawearOrders' || e.key === 'stawearBrandingRequests') {
-                        loadAllData();
-                        showToast('New data received!', 'info');
-                    }
-                });
-            }
-        })();
-    </script>
-</body>
-</html>
+    // Check login status on load
+    (function() {
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'flex';
+            loadAllData();
+            setupRealtimeSubscriptions();
+        }
+    })();
+</script>

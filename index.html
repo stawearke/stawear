@@ -8,6 +8,9 @@
     <!-- EmailJS Library -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -15,7 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* ===== ROOT VARIABLES ===== */
+        /* Same CSS as before - keep your existing styles */
         :root {
             --primary: #C62828;
             --primary-dark: #8B0000;
@@ -1047,6 +1050,23 @@
         .track-order-link:hover {
             text-decoration: underline;
         }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -1155,8 +1175,8 @@
                 
                 <div id="mpesaDetails">
                     <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                        <p><strong>M-Pesa Pochi la Biashara:</strong> 0727394165</p>
-                        <p><strong>Account:</strong> Stacy Dock</p>
+                        <p><strong>M-Pesa Paybill:</strong> 522522</p>
+                        <p><strong>Account:</strong> STAWEAR</p>
                         <p><strong>Amount:</strong> Ksh <span id="mpesaAmount">0</span></p>
                     </div>
                     <input type="text" id="mpesaCode" placeholder="Enter M-Pesa confirmation code" required style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px;">
@@ -1236,7 +1256,7 @@
                         <label>Item Type *</label>
                         <select id="itemType" required onchange="updateCustomSummary()">
                             <option value="">Select Item</option>
-                            <option value="Uniforms & Clothing ">Uniforms & Clothing </option>
+                            <option value="Hoodies">Hoodies</option>
                             <option value="T-Shirts">T-Shirts</option>
                             <option value="Jackets">Jackets</option>
                             <option value="Tracksuits">Tracksuits</option>
@@ -1448,7 +1468,7 @@ onchange="updateCustomSummary()"></textarea>
                     </button>
                 </div>
                 <p style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--gray);">
-                    <i class="fas fa-info-circle"></i> Your request will be sent via WhatsApp and email confirmation
+                    <i class="fas fa-info-circle"></i> Your request will be sent via WhatsApp and saved to our system
                 </p>
             </form>
         </div>
@@ -1537,7 +1557,11 @@ onchange="updateCustomSummary()"></textarea>
     <section class="products" id="products">
         <div class="container">
             <h2 class="section-title">OUR PRODUCTS</h2>
-            <div class="products-grid" id="productsGrid">
+            <div id="productsLoading" style="text-align: center;">
+                <div class="loading-spinner"></div>
+                <p>Loading products...</p>
+            </div>
+            <div class="products-grid" id="productsGrid" style="display: none;">
                 <!-- Products loaded by JavaScript -->
             </div>
         </div>
@@ -1570,7 +1594,7 @@ onchange="updateCustomSummary()"></textarea>
                             <div class="form-group">
                                 <label>Item Type</label>
                                 <select id="quickItem">
-                                    <option>Uniforms & Clothing </option>
+                                    <option>Hoodies</option>
                                     <option>T-Shirts</option>
                                     <option>Jackets</option>
                                     <option>Tracksuits</option>
@@ -1626,7 +1650,7 @@ onchange="updateCustomSummary()"></textarea>
                     <div class="testimonial-role">Mombasa Martial Arts Academy</div>
                 </div>
                 <div class="testimonial-card">
-                    <p class="testimonial-text">As a national competitor, I need gear that can handle intense training. Stawear's Uniforms & Clothing  and t-shirts have been durable and comfortable.</p>
+                    <p class="testimonial-text">As a national competitor, I need gear that can handle intense training. Stawear's hoodies and t-shirts have been durable and comfortable.</p>
                     <div class="testimonial-author">David Omondi</div>
                     <div class="testimonial-role">National Taekwondo Team</div>
                 </div>
@@ -1659,7 +1683,7 @@ onchange="updateCustomSummary()"></textarea>
                     <ul>
                         <li><a href="tel:0727394165"><i class="fas fa-phone"></i> 0727 394 165</a></li>
                         <li><a href="https://wa.me/254727394165" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
-                        <li><a href="mailto:stawearke@gmail.com"><i class="fas fa-envelope"></i> stawearke@gmail.com</a></li>
+                        <li><a href="mailto:info@stawear.co.ke"><i class="fas fa-envelope"></i> info@stawear.co.ke</a></li>
                         <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
                     </ul>
                 </div>
@@ -1673,6 +1697,12 @@ onchange="updateCustomSummary()"></textarea>
 
     <!-- JavaScript -->
     <script>
+        // ===== SUPABASE CONFIGURATION =====
+        const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         // ===== EMAILJS INITIALIZATION =====
         (function() {
             emailjs.init("rOBcEHt9BFgYEOL1Z");
@@ -1690,16 +1720,13 @@ onchange="updateCustomSummary()"></textarea>
             count: 0,
             
             addItem: function(product, size = "M", quantity = 1) {
-                // Check if item already exists with same size
                 const existingItemIndex = this.items.findIndex(
                     item => item.id === product.id && item.size === size
                 );
                 
                 if (existingItemIndex !== -1) {
-                    // Update quantity of existing item
                     this.items[existingItemIndex].quantity += quantity;
                 } else {
-                    // Add new item
                     this.items.push({...product, size, quantity});
                 }
                 
@@ -1762,116 +1789,135 @@ onchange="updateCustomSummary()"></textarea>
             }
         };
 
-        // ===== LOAD PRODUCTS =====
+        // ===== LOAD PRODUCTS FROM SUPABASE =====
         document.addEventListener('DOMContentLoaded', function() {
-            loadProducts();
+            loadProductsFromSupabase();
             cart.loadFromLocalStorage();
             
-            // Add storage event listener for real-time updates
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'stawearProducts') {
-                    loadProducts();
-                    showNotification('Products updated!', 'info');
-                }
-                if (e.key === 'stawearOrders' && e.newValue) {
-                    // Just for notification
-                }
-            });
+            // Check for tracking parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackId = urlParams.get('track');
+            if (trackId) {
+                document.getElementById('trackOrderId').value = trackId;
+                showTrackOrder();
+                setTimeout(() => trackOrder(), 500);
+            }
         });
 
-        function loadProducts() {
-            // Try to load from localStorage first
-            const savedProducts = localStorage.getItem('stawearProducts');
-            if (savedProducts) {
-                products = JSON.parse(savedProducts);
-            } else {
-                // Default products
-                products = [
-                    {
-                        id: 1,
-                        name: "Black Belt Master Hoodie",
-                        category: "Uniforms & Clothing ",
-                        price: 2499,
-                        originalPrice: 3200,
-                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
-                        description: "Premium hoodie with embroidered black belt design",
-                        badge: "BEST SELLER",
-                        sizes: ["S", "M", "L", "XL"]
-                    },
-                    {
-                        id: 2,
-                        name: "Kenyan Taekwondo Tee",
-                        category: "T-Shirts",
-                        price: 1899,
-                        originalPrice: 2400,
-                        image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
-                        description: "Cotton t-shirt with Kenyan flag colors",
-                        badge: "NEW",
-                        sizes: ["S", "M", "L", "XL"]
-                    },
-                    {
-                        id: 3,
-                        name: "Dojang Training Jacket",
-                        category: "Jackets",
-                        price: 3299,
-                        image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=500&q=80",
-                        description: "Lightweight training jacket",
-                        badge: "LIMITED",
-                        sizes: ["M", "L", "XL"]
-                    },
-                    {
-                        id: 4,
-                        name: "Taekwondo Champion Tracksuit",
-                        category: "Tracksuits",
-                        price: 4999,
-                        originalPrice: 6500,
-                        image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=500&q=80",
-                        description: "Complete tracksuit set",
-                        badge: "SALE",
-                        sizes: ["S", "M", "L", "XL"]
-                    },
-                    {
-                        id: 5,
-                        name: "Stawear Signature Cap",
-                        category: "Accessories",
-                        price: 1299,
-                        originalPrice: 1600,
-                        image: "https://images.unsplash.com/photo-1576872381143-784fbd58d7f9?auto=format&fit=crop&w=500&q=80",
-                        description: "Adjustable cap with embroidered logo",
-                        sizes: ["One Size"]
-                    },
-                    {
-                        id: 6,
-                        name: "Tournament Gear Bag",
-                        category: "Accessories",
-                        price: 2899,
-                        image: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=500&q=80",
-                        description: "Large capacity gear bag",
-                        sizes: ["One Size"]
-                    },
-                    {
-                        id: 7,
-                        name: "Korean Calligraphy Tee",
-                        category: "T-Shirts",
-                        price: 1999,
-                        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=500&q=80",
-                        description: "Traditional Korean characters design",
-                        sizes: ["S", "M", "L", "XL"]
-                    },
-                    {
-                        id: 8,
-                        name: "Master Track Pants",
-                        category: "Pants",
-                        price: 2199,
-                        image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=500&q=80",
-                        description: "Comfortable training pants",
-                        sizes: ["S", "M", "L", "XL"]
-                    }
-                ];
-                localStorage.setItem('stawearProducts', JSON.stringify(products));
+        async function loadProductsFromSupabase() {
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('id');
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    products = data.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        category: p.category,
+                        price: p.price,
+                        originalPrice: p.original_price,
+                        image: p.image,
+                        description: p.description,
+                        badge: p.badge,
+                        sizes: p.sizes || ['S', 'M', 'L', 'XL']
+                    }));
+                } else {
+                    // No products in Supabase, use defaults and insert them
+                    await insertDefaultProducts();
+                }
+                
+                renderProducts();
+                
+                // Hide loading, show grid
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsGrid').style.display = 'grid';
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showNotification('Error loading products. Using local data.', 'error');
+                
+                // Fallback to localStorage
+                const savedProducts = localStorage.getItem('stawearProducts');
+                if (savedProducts) {
+                    products = JSON.parse(savedProducts);
+                } else {
+                    products = getDefaultProducts();
+                    localStorage.setItem('stawearProducts', JSON.stringify(products));
+                }
+                
+                renderProducts();
+                document.getElementById('productsLoading').style.display = 'none';
+                document.getElementById('productsGrid').style.display = 'grid';
             }
-            
-            renderProducts();
+        }
+
+        function getDefaultProducts() {
+            return [
+                {
+                    id: 1,
+                    name: "Black Belt Master Hoodie",
+                    category: "Hoodies",
+                    price: 2499,
+                    originalPrice: 3200,
+                    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
+                    description: "Premium hoodie with embroidered black belt design",
+                    badge: "BEST SELLER",
+                    sizes: ["S", "M", "L", "XL"]
+                },
+                {
+                    id: 2,
+                    name: "Kenyan Taekwondo Tee",
+                    category: "T-Shirts",
+                    price: 1899,
+                    originalPrice: 2400,
+                    image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
+                    description: "Cotton t-shirt with Kenyan flag colors",
+                    badge: "NEW",
+                    sizes: ["S", "M", "L", "XL"]
+                },
+                {
+                    id: 3,
+                    name: "Dojang Training Jacket",
+                    category: "Jackets",
+                    price: 3299,
+                    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=500&q=80",
+                    description: "Lightweight training jacket",
+                    badge: "LIMITED",
+                    sizes: ["M", "L", "XL"]
+                },
+                {
+                    id: 4,
+                    name: "Taekwondo Champion Tracksuit",
+                    category: "Tracksuits",
+                    price: 4999,
+                    originalPrice: 6500,
+                    image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=500&q=80",
+                    description: "Complete tracksuit set",
+                    badge: "SALE",
+                    sizes: ["S", "M", "L", "XL"]
+                }
+            ];
+        }
+
+        async function insertDefaultProducts() {
+            const defaultProducts = getDefaultProducts();
+            try {
+                const { error } = await supabase
+                    .from('products')
+                    .insert(defaultProducts);
+                
+                if (error) throw error;
+                
+                products = defaultProducts;
+                showNotification('Default products loaded to database');
+            } catch (error) {
+                console.error('Error inserting default products:', error);
+                products = defaultProducts;
+            }
         }
 
         function renderProducts() {
@@ -2073,9 +2119,9 @@ onchange="updateCustomSummary()"></textarea>
             }
             
             // Calculate estimated price
-            let basePrice = 0;
+            let basePrice = 2000;
             switch(currentCustomOrder.itemType) {
-                case 'Uniforms & Clothing ': basePrice = 2500; break;
+                case 'Hoodies': basePrice = 2500; break;
                 case 'T-Shirts': basePrice = 1500; break;
                 case 'Jackets': basePrice = 3000; break;
                 case 'Tracksuits': basePrice = 4500; break;
@@ -2139,7 +2185,7 @@ onchange="updateCustomSummary()"></textarea>
             }
         }
 
-        function submitCustomOrder(event) {
+        async function submitCustomOrder(event) {
             event.preventDefault();
             
             // Validate required fields
@@ -2150,13 +2196,13 @@ onchange="updateCustomSummary()"></textarea>
                 return;
             }
 
-            // Format order details for display
+            // Format order details
             const sizeBreakdown = `S:${currentCustomOrder.sizes.S}, M:${currentCustomOrder.sizes.M}, L:${currentCustomOrder.sizes.L}, XL:${currentCustomOrder.sizes.XL}, XXL:${currentCustomOrder.sizes.XXL}`;
             
-            // Calculate price for summary
+            // Calculate price
             let basePrice = 2000;
             switch(currentCustomOrder.itemType) {
-                case 'Uniforms & Clothing ': basePrice = 2500; break;
+                case 'Hoodies': basePrice = 2500; break;
                 case 'T-Shirts': basePrice = 1500; break;
                 case 'Jackets': basePrice = 3000; break;
                 case 'Tracksuits': basePrice = 4500; break;
@@ -2180,24 +2226,52 @@ onchange="updateCustomSummary()"></textarea>
             
             const estimatedPrice = (basePrice * currentCustomOrder.quantity * brandingMultiplier * urgencyMultiplier) + extras;
 
-            // SAVE BRANDING REQUEST TO LOCALSTORAGE (FIXED)
+            // SAVE TO SUPABASE
             const brandingRequest = {
                 id: Date.now(),
                 name: currentCustomOrder.name,
                 email: currentCustomOrder.email,
                 phone: currentCustomOrder.phone,
                 dojang: currentCustomOrder.dojang,
-                itemType: currentCustomOrder.itemType,
+                item_type: currentCustomOrder.itemType,
                 quantity: currentCustomOrder.quantity,
-                brandingType: currentCustomOrder.brandingType,
+                branding_type: currentCustomOrder.brandingType,
                 description: currentCustomOrder.description,
+                status: 'pending',
                 date: new Date().toISOString(),
-                status: 'pending'
+                details: {
+                    print_location: currentCustomOrder.printLocation,
+                    color: currentCustomOrder.color,
+                    sizes: currentCustomOrder.sizes,
+                    urgency: currentCustomOrder.urgency,
+                    include_logo: currentCustomOrder.includeLogo,
+                    need_design: currentCustomOrder.needDesign,
+                    sample_needed: currentCustomOrder.sampleNeeded,
+                    deadline: currentCustomOrder.deadline,
+                    budget: currentCustomOrder.budget,
+                    estimated_price: estimatedPrice
+                }
             };
             
-            const existingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
-            existingRequests.push(brandingRequest);
-            localStorage.setItem('stawearBrandingRequests', JSON.stringify(existingRequests));
+            try {
+                const { error } = await supabase
+                    .from('branding_requests')
+                    .insert([brandingRequest]);
+                
+                if (error) throw error;
+                
+                // Also save to localStorage as backup
+                const existingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
+                existingRequests.push(brandingRequest);
+                localStorage.setItem('stawearBrandingRequests', JSON.stringify(existingRequests));
+                
+            } catch (error) {
+                console.error('Error saving to Supabase:', error);
+                // Still save to localStorage
+                const existingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
+                existingRequests.push(brandingRequest);
+                localStorage.setItem('stawearBrandingRequests', JSON.stringify(existingRequests));
+            }
 
             // Create WhatsApp message
             const whatsappMessage = `🔔 *NEW CUSTOM BRANDING REQUEST!* 🔔
@@ -2244,7 +2318,7 @@ Please contact this customer ASAP!`;
                 orderItems: `Custom ${currentCustomOrder.itemType} x${currentCustomOrder.quantity} (${currentCustomOrder.brandingType})`,
                 orderTotal: estimatedPrice,
                 deliveryAddress: "Custom order - to be confirmed",
-                trackingUrl: window.location.origin + "/track.html?order=" + Date.now(),
+                trackingUrl: window.location.origin + "/?track=" + Date.now(),
                 customDetails: currentCustomOrder.description,
                 dojangName: currentCustomOrder.dojang,
                 from_name: "Stawear Kenya"
@@ -2254,7 +2328,7 @@ Please contact this customer ASAP!`;
                 console.log("Email error:", error);
             });
 
-            showNotification("✅ Custom request sent and saved!");
+            showNotification("✅ Custom request sent and saved to database!");
             closeCustomizeModal();
         }
 
@@ -2286,7 +2360,7 @@ Please contact this customer ASAP!`;
             document.getElementById('mpesaAmount').textContent = cart.total + cost;
         }
 
-        function processOrder(event) {
+        async function processOrder(event) {
             event.preventDefault();
             
             const mpesaCode = document.getElementById('mpesaCode').value;
@@ -2297,19 +2371,19 @@ Please contact this customer ASAP!`;
             
             const order = {
                 id: 'STA' + Date.now(),
-                customerName: document.getElementById('customerName').value,
-                customerPhone: document.getElementById('customerPhone').value,
-                customerEmail: document.getElementById('customerEmail').value,
+                customer_name: document.getElementById('customerName').value,
+                customer_phone: document.getElementById('customerPhone').value,
+                customer_email: document.getElementById('customerEmail').value,
                 county: document.getElementById('deliveryCounty').selectedOptions[0]?.text || 'Nairobi',
-                deliveryCost: parseInt(document.getElementById('deliveryCounty').value || 0),
+                delivery_cost: parseInt(document.getElementById('deliveryCounty').value || 0),
                 address: document.getElementById('deliveryAddress').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                mpesaCode: mpesaCode,
+                payment_method: document.getElementById('paymentMethod').value,
+                mpesa_code: mpesaCode,
                 items: cart.items,
                 subtotal: cart.total,
                 total: cart.total + parseInt(document.getElementById('deliveryCounty').value || 0),
-                date: new Date().toISOString(),
-                status: 'pending'
+                status: 'pending',
+                date: new Date().toISOString()
             };
 
             const orderItemsList = order.items.map(item => 
@@ -2320,41 +2394,52 @@ Please contact this customer ASAP!`;
             const whatsappMessage = `🔔 *NEW ORDER!* 🔔
 
 *Order #:* ${order.id}
-*Customer:* ${order.customerName}
-*Phone:* ${order.customerPhone}
-*Email:* ${order.customerEmail}
+*Customer:* ${order.customer_name}
+*Phone:* ${order.customer_phone}
+*Email:* ${order.customer_email}
 *Total:* Ksh ${order.total}
-*M-Pesa Code:* ${order.mpesaCode}
+*M-Pesa Code:* ${order.mpesa_code}
 
 *ITEMS:*
 ${orderItemsList}
 
 *DELIVERY:*
 ${order.address}
-${order.county} - Ksh ${order.deliveryCost}`;
+${order.county} - Ksh ${order.delivery_cost}`;
             
             window.open(`https://wa.me/254727394165?text=${encodeURIComponent(whatsappMessage)}`, '_blank');
 
             // Send email confirmation
             emailjs.send(window.EMAILJS_SERVICE_ID, window.ORDER_TEMPLATE, {
-                to_email: order.customerEmail,
-                to_name: order.customerName,
-                customerName: order.customerName,
+                to_email: order.customer_email,
+                to_name: order.customer_name,
+                customerName: order.customer_name,
                 orderId: order.id,
                 orderDate: order.date,
                 orderItems: orderItemsList.replace(/\n/g, '<br>'),
                 orderTotal: order.total,
                 deliveryAddress: `${order.address}, ${order.county}`,
-                trackingUrl: window.location.origin + "/track.html?order=" + order.id,
+                trackingUrl: window.location.origin + "/?track=" + order.id,
                 from_name: "Stawear Kenya"
             }).then(function() {
                 showNotification("✅ Order confirmation email sent!");
             });
 
-            // Save order
-            const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
-            orders.push(order);
-            localStorage.setItem('stawearOrders', JSON.stringify(orders));
+            // Save to Supabase
+            try {
+                const { error } = await supabase
+                    .from('orders')
+                    .insert([order]);
+                
+                if (error) throw error;
+                
+            } catch (error) {
+                console.error('Error saving order to Supabase:', error);
+                // Save to localStorage as backup
+                const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
+                orders.push(order);
+                localStorage.setItem('stawearOrders', JSON.stringify(orders));
+            }
             
             cart.clearCart();
             closeCheckout();
@@ -2371,44 +2456,73 @@ ${order.county} - Ksh ${order.deliveryCost}`;
             document.getElementById('trackResult').style.display = 'none';
         }
 
-        function trackOrder() {
+        async function trackOrder() {
             const orderId = document.getElementById('trackOrderId').value;
             if (!orderId) {
                 alert('Please enter an order ID');
                 return;
             }
             
-            const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
-            const order = orders.find(o => o.id === orderId);
-            
-            if (order) {
-                const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
-                const currentStep = statusSteps.indexOf(order.status);
+            try {
+                // Try Supabase first
+                const { data, error } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('id', orderId)
+                    .single();
                 
-                let statusHtml = '<div style="display: flex; justify-content: space-between; margin: 20px 0;">';
-                statusSteps.forEach((step, index) => {
-                    statusHtml += `
-                        <div style="text-align: center; flex:1;">
-                            <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index <= currentStep ? '#C62828' : '#ddd'}; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white;">
-                                ${index <= currentStep ? '✓' : (index + 1)}
-                            </div>
-                            <div style="font-size: 0.8rem; margin-top: 5px;">${step.charAt(0).toUpperCase() + step.slice(1)}</div>
-                        </div>
-                    `;
-                });
-                statusHtml += '</div>';
+                if (error) throw error;
                 
-                document.getElementById('trackStatus').innerHTML = statusHtml;
-                document.getElementById('trackDetails').innerHTML = `
-                    <p><strong>Order Date:</strong> ${new Date(order.date).toLocaleString()}</p>
-                    <p><strong>Total:</strong> Ksh ${order.total}</p>
-                    <p><strong>Items:</strong> ${order.items.length}</p>
-                    <p><strong>Delivery:</strong> ${order.address}, ${order.county}</p>
-                `;
-                document.getElementById('trackResult').style.display = 'block';
-            } else {
-                alert('Order not found');
+                if (data) {
+                    displayTrackResult(data);
+                } else {
+                    // Try localStorage
+                    const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
+                    const order = orders.find(o => o.id === orderId);
+                    if (order) {
+                        displayTrackResult(order);
+                    } else {
+                        alert('Order not found');
+                    }
+                }
+            } catch (error) {
+                console.error('Error tracking order:', error);
+                // Try localStorage
+                const orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
+                const order = orders.find(o => o.id === orderId);
+                if (order) {
+                    displayTrackResult(order);
+                } else {
+                    alert('Order not found');
+                }
             }
+        }
+
+        function displayTrackResult(order) {
+            const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
+            const currentStep = statusSteps.indexOf(order.status);
+            
+            let statusHtml = '<div style="display: flex; justify-content: space-between; margin: 20px 0;">';
+            statusSteps.forEach((step, index) => {
+                statusHtml += `
+                    <div style="text-align: center; flex:1;">
+                        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${index <= currentStep ? '#C62828' : '#ddd'}; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: white;">
+                            ${index <= currentStep ? '✓' : (index + 1)}
+                        </div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">${step.charAt(0).toUpperCase() + step.slice(1)}</div>
+                    </div>
+                `;
+            });
+            statusHtml += '</div>';
+            
+            document.getElementById('trackStatus').innerHTML = statusHtml;
+            document.getElementById('trackDetails').innerHTML = `
+                <p><strong>Order Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+                <p><strong>Total:</strong> Ksh ${order.total}</p>
+                <p><strong>Items:</strong> ${order.items?.length || 0}</p>
+                <p><strong>Delivery:</strong> ${order.address}, ${order.county}</p>
+            `;
+            document.getElementById('trackResult').style.display = 'block';
         }
 
         // ===== NOTIFICATION =====
