@@ -1048,7 +1048,7 @@
                                     <td>${r.dojang || 'N/A'}</td>
                                     <td>${r.item_type}</td>
                                     <td>${r.quantity}</td>
-                                    <td><span class="status-badge status-pending">${r.status}</span></td>
+                                    <td><span class="status-badge status-${r.status}">${r.status}</span></td>
                                     <td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})"><i class="fas fa-eye"></i></button></td>
                                 </tr>
                             `).join('')}
@@ -1377,7 +1377,14 @@
                 c.email.toLowerCase().includes(term.toLowerCase())
             );
             document.getElementById('customersTable').innerHTML = filtered.map(c => `
-                <tr><td>${c.name}</td><td>${c.email}<br><small>${c.phone}</small></td><td>${c.orders</td><td>Ksh ${c.totalSpent.toLocaleString()}</td><td>${new Date(c.lastOrder).toLocaleDateString()}</td><td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')">View</button></td></tr>
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.email}<br><small>${c.phone}</small></td>
+                    <td>${c.orders}</td>
+                    <td>Ksh ${c.totalSpent.toLocaleString()}</td>
+                    <td>${new Date(c.lastOrder).toLocaleDateString()}</td>
+                    <td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')">View</button></td>
+                </tr>
             `).join('');
         }
 
@@ -1512,8 +1519,8 @@
                     <table><thead><tr><th>Product</th><th>Category</th><th>Units</th><th>Revenue</th></tr></thead>
                     <tbody>${products.map(p => {
                         const sold = orders.reduce((t,o) => t + (o.items?.find(i => i.name === p.name)?.quantity || 0), 0);
-                        return `<tr><td>${p.name}</td><td>${p.category}</td><td>${sold}</td><td>Ksh ${(sold*p.price).toLocaleString()}</td></tr>`;
-                    }).sort((a,b) => b.sold - a.sold).join('')}</tbody>
+                        return `<tr><td>${p.name}</td><td>${p.category}</td><td>${sold}</td><td>Ksh ${(sold * p.price).toLocaleString()}</td></tr>`;
+                    }).join('')}</tbody>
                     </table>
                 </div>
             `;
