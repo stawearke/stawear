@@ -21,6 +21,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* ... (keep all existing styles unchanged) ... */
         * {
             margin: 0;
             padding: 0;
@@ -780,17 +781,23 @@
 
     <script>
         // ============================================
-        // SUPABASE CONFIGURATION
+        // SUPABASE CONFIGURATION - Check if already defined
         // ============================================
-        const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
+        if (typeof window.supabaseClient === 'undefined') {
+            const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
+            
+            window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabase = window.supabaseClient;
 
         // ============================================
         // EMAILJS INITIALIZATION
         // ============================================
-        emailjs.init("rOBcEHt9BFgYEOL1Z");
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init("rOBcEHt9BFgYEOL1Z");
+        }
         const EMAILJS_SERVICE_ID = "service_ym1oijj";
         const ORDER_TEMPLATE = "template_jra9me1";
 
@@ -834,6 +841,8 @@
         // REAL-TIME SUBSCRIPTIONS
         // ============================================
         function setupRealtimeSubscriptions() {
+            if (!supabase) return;
+            
             supabase
                 .channel('orders-changes')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, 
@@ -867,6 +876,13 @@
         }
 
         async function loadProducts() {
+            if (!supabase) {
+                console.error('Supabase not initialized');
+                products = [];
+                document.getElementById('productCount').textContent = products.length;
+                return;
+            }
+            
             try {
                 const { data, error } = await supabase
                     .from('products')
@@ -886,6 +902,12 @@
         }
 
         async function loadOrders() {
+            if (!supabase) {
+                orders = [];
+                document.getElementById('orderCount').textContent = orders.length;
+                return;
+            }
+            
             try {
                 const { data, error } = await supabase
                     .from('orders')
@@ -903,6 +925,12 @@
         }
 
         async function loadBrandingRequests() {
+            if (!supabase) {
+                brandingRequests = [];
+                document.getElementById('brandingCount').textContent = brandingRequests.length;
+                return;
+            }
+            
             try {
                 const { data, error } = await supabase
                     .from('branding_requests')
@@ -956,8 +984,12 @@
         // SECTION RENDERING
         // ============================================
         function showSection(section) {
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.menu-item').classList.add('active');
+            const items = document.querySelectorAll('.menu-item');
+            items.forEach(item => item.classList.remove('active'));
+            if (event && event.target) {
+                const clickedItem = event.target.closest('.menu-item');
+                if (clickedItem) clickedItem.classList.add('active');
+            }
             
             switch(section) {
                 case 'dashboard': renderDashboard(); break;
@@ -973,7 +1005,7 @@
         // DASHBOARD
         // ============================================
         function renderDashboard() {
-            const totalSales = orders.reduce((s, o) => s + o.total, 0);
+            const totalSales = orders.reduce((s, o) => s + (o.total || 0), 0);
             const pendingOrders = orders.filter(o => o.status === 'pending').length;
             
             const html = `
@@ -1020,11 +1052,11 @@
                         <tbody>
                             ${orders.slice(0,5).map(o => `
                                 <tr>
-                                    <td>${o.id}</td>
-                                    <td>${o.customer_name}</td>
-                                    <td>Ksh ${o.total}</td>
-                                    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
-                                    <td>${new Date(o.date).toLocaleDateString()}</td>
+                                    <td>${o.id || 'N/A'}</td>
+                                    <td>${o.customer_name || 'N/A'}</td>
+                                    <td>Ksh ${o.total || 0}</td>
+                                    <td><span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></td>
+                                    <td>${o.date ? new Date(o.date).toLocaleDateString() : 'N/A'}</td>
                                     <td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i></button></td>
                                 </tr>
                             `).join('')}
@@ -1044,11 +1076,11 @@
                         <tbody>
                             ${brandingRequests.slice(0,5).map(r => `
                                 <tr>
-                                    <td>${r.name}</td>
+                                    <td>${r.name || 'N/A'}</td>
                                     <td>${r.dojang || 'N/A'}</td>
-                                    <td>${r.item_type}</td>
-                                    <td>${r.quantity}</td>
-                                    <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+                                    <td>${r.item_type || 'N/A'}</td>
+                                    <td>${r.quantity || 0}</td>
+                                    <td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td>
                                     <td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})"><i class="fas fa-eye"></i></button></td>
                                 </tr>
                             `).join('')}
@@ -1079,10 +1111,10 @@
                         <tbody>
                             ${products.map(p => `
                                 <tr>
-                                    <td><div class="product-thumb"><img src="${p.image || 'https://via.placeholder.com/50'}" alt=""></div></td>
-                                    <td><strong>${p.name}</strong>${p.badge ? `<br><small style="color:#c62828;">${p.badge}</small>` : ''}</td>
-                                    <td>${p.category}</td>
-                                    <td>Ksh ${p.price}${p.original_price ? `<br><small style="text-decoration:line-through;">Ksh ${p.original_price}</small>` : ''}</td>
+                                    <td><div class="product-thumb"><img src="${p.image || 'https://via.placeholder.com/50'}" alt="" onerror="this.src='https://via.placeholder.com/50'"></div></td>
+                                    <td><strong>${p.name || 'N/A'}</strong>${p.badge ? `<br><small style="color:#c62828;">${p.badge}</small>` : ''}</td>
+                                    <td>${p.category || 'N/A'}</td>
+                                    <td>Ksh ${p.price || 0}${p.original_price ? `<br><small style="text-decoration:line-through;">Ksh ${p.original_price}</small>` : ''}</td>
                                     <td>${p.stock ? Object.entries(p.stock).map(([s,q]) => q>0 ? `${s}:${q} ` : '').join('') : 'N/A'}</td>
                                     <td><span class="status-badge ${p.stock && Object.values(p.stock).some(q=>q>0) ? 'status-completed' : 'status-pending'}">${p.stock && Object.values(p.stock).some(q=>q>0) ? 'In Stock' : 'Out of Stock'}</span></td>
                                     <td>
@@ -1111,24 +1143,30 @@
                 const p = products.find(p => p.id === id);
                 if (p) {
                     document.getElementById('productId').value = p.id;
-                    document.getElementById('productName').value = p.name;
-                    document.getElementById('productCategory').value = p.category;
-                    document.getElementById('productPrice').value = p.price;
+                    document.getElementById('productName').value = p.name || '';
+                    document.getElementById('productCategory').value = p.category || '';
+                    document.getElementById('productPrice').value = p.price || 0;
                     document.getElementById('productOriginalPrice').value = p.original_price || '';
-                    document.getElementById('productDescription').value = p.description;
+                    document.getElementById('productDescription').value = p.description || '';
                     document.getElementById('productBadge').value = p.badge || '';
                     document.getElementById('productImage').value = p.image || '';
                     document.getElementById('isFeatured').checked = p.is_featured || false;
                     
-                    document.getElementById('sizeS').value = p.stock?.S || 0;
-                    document.getElementById('sizeM').value = p.stock?.M || 0;
-                    document.getElementById('sizeL').value = p.stock?.L || 0;
-                    document.getElementById('sizeXL').value = p.stock?.XL || 0;
-                    document.getElementById('sizeXXL').value = p.stock?.XXL || 0;
+                    const stock = p.stock || {};
+                    document.getElementById('sizeS').value = stock.S || 0;
+                    document.getElementById('sizeM').value = stock.M || 0;
+                    document.getElementById('sizeL').value = stock.L || 0;
+                    document.getElementById('sizeXL').value = stock.XL || 0;
+                    document.getElementById('sizeXXL').value = stock.XXL || 0;
                 }
             } else {
                 document.getElementById('productForm').reset();
                 document.getElementById('productId').value = '';
+                document.getElementById('sizeS').value = 0;
+                document.getElementById('sizeM').value = 0;
+                document.getElementById('sizeL').value = 0;
+                document.getElementById('sizeXL').value = 0;
+                document.getElementById('sizeXXL').value = 0;
             }
         }
 
@@ -1162,6 +1200,11 @@
                 is_active: true
             };
 
+            if (!supabase) {
+                showToast('Supabase not initialized', 'error');
+                return;
+            }
+
             try {
                 if (document.getElementById('productId').value) {
                     const { error } = await supabase
@@ -1189,6 +1232,8 @@
 
         async function deleteProduct(id) {
             if (confirm('Delete this product?')) {
+                if (!supabase) return;
+                
                 try {
                     const { error } = await supabase
                         .from('products')
@@ -1244,10 +1289,10 @@
         function renderOrdersTable(ordersToRender) {
             return ordersToRender.map(o => `
                 <tr>
-                    <td>${o.id}</td>
-                    <td>${o.customer_name}<br><small>${o.customer_phone}</small></td>
+                    <td>${o.id || 'N/A'}</td>
+                    <td>${o.customer_name || 'N/A'}<br><small>${o.customer_phone || ''}</small></td>
                     <td>${o.items?.length || 0} items</td>
-                    <td>Ksh ${o.total}</td>
+                    <td>Ksh ${o.total || 0}</td>
                     <td>${o.payment_method || 'M-Pesa'}</td>
                     <td>
                         <select class="status-badge" onchange="updateOrderStatus('${o.id}', this.value)" style="padding:5px; border-radius:20px;">
@@ -1257,7 +1302,7 @@
                             <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
                         </select>
                     </td>
-                    <td>${new Date(o.date).toLocaleDateString()}</td>
+                    <td>${o.date ? new Date(o.date).toLocaleDateString() : 'N/A'}</td>
                     <td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i></button></td>
                 </tr>
             `).join('');
@@ -1272,6 +1317,11 @@
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
             
+            if (!supabase) {
+                showToast('Supabase not initialized', 'error');
+                return;
+            }
+            
             try {
                 const { error } = await supabase
                     .from('orders')
@@ -1282,13 +1332,15 @@
                 
                 order.status = newStatus;
                 
-                emailjs.send(EMAILJS_SERVICE_ID, ORDER_TEMPLATE, {
-                    to_email: order.customer_email,
-                    to_name: order.customer_name,
-                    orderId: order.id,
-                    orderStatus: newStatus,
-                    from_name: 'Stawear Kenya'
-                }).catch(console.log);
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.send(EMAILJS_SERVICE_ID, ORDER_TEMPLATE, {
+                        to_email: order.customer_email,
+                        to_name: order.customer_name,
+                        orderId: order.id,
+                        orderStatus: newStatus,
+                        from_name: 'Stawear Kenya'
+                    }).catch(console.log);
+                }
                 
                 updateNotificationBadge();
                 showToast('Order status updated', 'success');
@@ -1306,15 +1358,15 @@
             document.getElementById('orderDetails').innerHTML = `
                 <div style="margin-bottom:20px;">
                     <h4>Order #${order.id}</h4>
-                    <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+                    <p><strong>Date:</strong> ${order.date ? new Date(order.date).toLocaleString() : 'N/A'}</p>
                     <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
                 </div>
                 <div style="margin-bottom:20px;">
                     <h4>Customer Details</h4>
-                    <p><strong>Name:</strong> ${order.customer_name}</p>
-                    <p><strong>Phone:</strong> ${order.customer_phone}</p>
-                    <p><strong>Email:</strong> ${order.customer_email}</p>
-                    <p><strong>Address:</strong> ${order.address}</p>
+                    <p><strong>Name:</strong> ${order.customer_name || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${order.customer_phone || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${order.customer_email || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${order.address || 'N/A'}</p>
                 </div>
                 <div style="margin-bottom:20px;">
                     <h4>Items</h4>
@@ -1322,12 +1374,17 @@
                         <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
                         <tbody>
                             ${order.items?.map(i => `
-                                <tr><td>${i.name}</td><td>${i.quantity}</td><td>Ksh ${i.price}</td><td>Ksh ${i.price*i.quantity}</td></tr>
-                            `).join('')}
+                                <tr>
+                                    <td>${i.name || 'N/A'}</td>
+                                    <td>${i.quantity || 0}</td>
+                                    <td>Ksh ${i.price || 0}</td>
+                                    <td>Ksh ${(i.price || 0) * (i.quantity || 0)}</td>
+                                </tr>
+                            `).join('') || '<tr><td colspan="4">No items</td></tr>'}
                         </tbody>
                     </table>
                 </div>
-                <div style="text-align:right; font-size:1.2rem;"><strong>Total: Ksh ${order.total}</strong></div>
+                <div style="text-align:right; font-size:1.2rem;"><strong>Total: Ksh ${order.total || 0}</strong></div>
                 <div style="margin-top:20px;">
                     <button class="btn btn-success" onclick="contactCustomer('${order.customer_phone}')"><i class="fab fa-whatsapp"></i> Contact</button>
                 </div>
@@ -1356,11 +1413,11 @@
                         <tbody id="customersTable">
                             ${customers.map(c => `
                                 <tr>
-                                    <td>${c.name}</td>
-                                    <td>${c.email}<br><small>${c.phone}</small></td>
-                                    <td>${c.orders}</td>
-                                    <td>Ksh ${c.totalSpent.toLocaleString()}</td>
-                                    <td>${new Date(c.lastOrder).toLocaleDateString()}</td>
+                                    <td>${c.name || 'N/A'}</td>
+                                    <td>${c.email || 'N/A'}<br><small>${c.phone || 'N/A'}</small></td>
+                                    <td>${c.orders || 0}</td>
+                                    <td>Ksh ${(c.totalSpent || 0).toLocaleString()}</td>
+                                    <td>${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString() : 'N/A'}</td>
                                     <td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')"><i class="fas fa-eye"></i></button></td>
                                 </tr>
                             `).join('')}
@@ -1373,16 +1430,16 @@
 
         function searchCustomers(term) {
             const filtered = customers.filter(c => 
-                c.name.toLowerCase().includes(term.toLowerCase()) ||
-                c.email.toLowerCase().includes(term.toLowerCase())
+                (c.name && c.name.toLowerCase().includes(term.toLowerCase())) ||
+                (c.email && c.email.toLowerCase().includes(term.toLowerCase()))
             );
             document.getElementById('customersTable').innerHTML = filtered.map(c => `
                 <tr>
-                    <td>${c.name}</td>
-                    <td>${c.email}<br><small>${c.phone}</small></td>
-                    <td>${c.orders}</td>
-                    <td>Ksh ${c.totalSpent.toLocaleString()}</td>
-                    <td>${new Date(c.lastOrder).toLocaleDateString()}</td>
+                    <td>${c.name || 'N/A'}</td>
+                    <td>${c.email || 'N/A'}<br><small>${c.phone || 'N/A'}</small></td>
+                    <td>${c.orders || 0}</td>
+                    <td>Ksh ${(c.totalSpent || 0).toLocaleString()}</td>
+                    <td>${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString() : 'N/A'}</td>
                     <td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')">View</button></td>
                 </tr>
             `).join('');
@@ -1390,7 +1447,7 @@
 
         function viewCustomer(email) {
             const customerOrders = orders.filter(o => o.customer_email === email);
-            const total = customerOrders.reduce((s,o) => s + o.total, 0);
+            const total = customerOrders.reduce((s,o) => s + (o.total || 0), 0);
             showToast(`${customerOrders.length} orders, Total: Ksh ${total}`, 'info');
         }
 
@@ -1410,13 +1467,13 @@
                         <tbody>
                             ${brandingRequests.map(r => `
                                 <tr>
-                                    <td>${new Date(r.date).toLocaleDateString()}</td>
-                                    <td>${r.name}<br><small>${r.phone}</small></td>
+                                    <td>${r.date ? new Date(r.date).toLocaleDateString() : 'N/A'}</td>
+                                    <td>${r.name || 'N/A'}<br><small>${r.phone || ''}</small></td>
                                     <td>${r.dojang || 'N/A'}</td>
-                                    <td>${r.item_type}</td>
-                                    <td>${r.quantity}</td>
+                                    <td>${r.item_type || 'N/A'}</td>
+                                    <td>${r.quantity || 0}</td>
                                     <td>${r.branding_type || 'N/A'}</td>
-                                    <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+                                    <td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td>
                                     <td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})"><i class="fas fa-eye"></i></button></td>
                                 </tr>
                             `).join('')}
@@ -1434,18 +1491,18 @@
             document.getElementById('brandingDetails').innerHTML = `
                 <div style="margin-bottom:20px;">
                     <h4>Customer Details</h4>
-                    <p><strong>Name:</strong> ${r.name}</p>
-                    <p><strong>Email:</strong> ${r.email}</p>
-                    <p><strong>Phone:</strong> ${r.phone}</p>
+                    <p><strong>Name:</strong> ${r.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${r.email || 'N/A'}</p>
+                    <p><strong>Phone:</strong> ${r.phone || 'N/A'}</p>
                     <p><strong>Dojang:</strong> ${r.dojang || 'N/A'}</p>
                 </div>
                 <div style="margin-bottom:20px;">
                     <h4>Request Details</h4>
-                    <p><strong>Item:</strong> ${r.item_type}</p>
-                    <p><strong>Quantity:</strong> ${r.quantity}</p>
+                    <p><strong>Item:</strong> ${r.item_type || 'N/A'}</p>
+                    <p><strong>Quantity:</strong> ${r.quantity || 0}</p>
                     <p><strong>Branding:</strong> ${r.branding_type || 'N/A'}</p>
-                    <p><strong>Description:</strong> ${r.description}</p>
-                    <p><strong>Date:</strong> ${new Date(r.date).toLocaleString()}</p>
+                    <p><strong>Description:</strong> ${r.description || 'N/A'}</p>
+                    <p><strong>Date:</strong> ${r.date ? new Date(r.date).toLocaleString() : 'N/A'}</p>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-success" onclick="markBrandingComplete(${r.id})">Mark Complete</button>
@@ -1460,6 +1517,11 @@
         }
 
         async function markBrandingComplete(id) {
+            if (!supabase) {
+                showToast('Supabase not initialized', 'error');
+                return;
+            }
+            
             try {
                 const { error } = await supabase
                     .from('branding_requests')
@@ -1481,14 +1543,16 @@
         }
 
         function contactCustomer(phone) {
-            window.open(`https://wa.me/${phone.replace(/^0/, '254')}`, '_blank');
+            if (phone) {
+                window.open(`https://wa.me/${phone.replace(/^0/, '254')}`, '_blank');
+            }
         }
 
         // ============================================
         // ANALYTICS
         // ============================================
         function renderAnalytics() {
-            const totalSales = orders.reduce((s,o) => s + o.total, 0);
+            const totalSales = orders.reduce((s,o) => s + (o.total || 0), 0);
             const totalItems = orders.reduce((s,o) => s + (o.items?.length || 0), 0);
             
             const categorySales = {};
@@ -1511,15 +1575,15 @@
                 <div class="table-container">
                     <div class="table-header"><h3>Sales by Category</h3></div>
                     <table><thead><tr><th>Category</th><th>Units Sold</th><th>%</th></tr></thead>
-                    <tbody>${Object.entries(categorySales).map(([c,s]) => `<tr><td>${c}</td><td>${s}</td><td>${totalItems ? Math.round(s/totalItems*100) : 0}%</td></tr>`).join('')}</tbody>
+                    <tbody>${Object.entries(categorySales).map(([c,s]) => `<tr><td>${c || 'N/A'}</td><td>${s}</td><td>${totalItems ? Math.round(s/totalItems*100) : 0}%</td>`).join('')}</tbody>
                     </table>
                 </div>
                 <div class="table-container">
                     <div class="table-header"><h3>Top Products</h3></div>
-                    <table><thead><tr><th>Product</th><th>Category</th><th>Units</th><th>Revenue</th></tr></thead>
+                    <tr><thead><tr><th>Product</th><th>Category</th><th>Units</th><th>Revenue</th></tr></thead>
                     <tbody>${products.map(p => {
                         const sold = orders.reduce((t,o) => t + (o.items?.find(i => i.name === p.name)?.quantity || 0), 0);
-                        return `<tr><td>${p.name}</td><td>${p.category}</td><td>${sold}</td><td>Ksh ${(sold * p.price).toLocaleString()}</td></tr>`;
+                        return `<tr><td>${p.name || 'N/A'}</td><td>${p.category || 'N/A'}</td><td>${sold}</td><td>Ksh ${((sold || 0) * (p.price || 0)).toLocaleString()}</td></tr>`;
                     }).join('')}</tbody>
                     </table>
                 </div>
@@ -1545,8 +1609,8 @@
         function globalSearch() {
             const term = document.getElementById('globalSearch').value.toLowerCase();
             if (term.length < 2) return;
-            const p = products.filter(p => p.name.toLowerCase().includes(term)).length;
-            const o = orders.filter(o => o.id.toLowerCase().includes(term) || o.customer_name.toLowerCase().includes(term)).length;
+            const p = products.filter(p => p.name && p.name.toLowerCase().includes(term)).length;
+            const o = orders.filter(o => (o.id && o.id.toLowerCase().includes(term)) || (o.customer_name && o.customer_name.toLowerCase().includes(term))).length;
             if (p > 0 || o > 0) showToast(`Found ${p} products, ${o} orders`, 'info');
         }
 
