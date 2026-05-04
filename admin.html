@@ -80,6 +80,7 @@
             padding: 2px 7px; border-radius: 20px; margin-left: auto;
         }
         .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
 
         /* ===== MAIN ===== */
         .admin-main { flex: 1; margin-left: 270px; min-height: 100vh; background: #f4f7fc; }
@@ -130,6 +131,171 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             color: white; font-size: 1.5rem; flex-shrink: 0;
         }
+        /* Bulk upload styles */
+.bulk-preview-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+.bulk-preview-item.valid {
+    color: #28a745;
+}
+.bulk-preview-item.invalid {
+    color: #dc3545;
+}
+.upload-progress {
+    margin-top: 15px;
+    display: none;
+}
+.upload-progress-bar {
+    height: 8px;
+    background: #c62828;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s;
+}
+        // ===== BULK UPLOAD FUNCTIONS =====
+
+function openBulkUploadModal() {
+    document.getElementById('bulkUploadModal').classList.add('active');
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('bulkFile').value = '';
+}
+
+function closeBulkUploadModal() {
+    document.getElementById('bulkUploadModal').classList.remove('active');
+}
+
+function downloadTemplate() {
+    // CSV Template content
+    const headers = ['name', 'category', 'price', 'originalPrice', 'image', 'description', 'stock_S', 'stock_M', 'stock_L', 'stock_XL', 'stock_XXL'];
+    const exampleRow = ['Black Belt Master Hoodie', 'Hoodies', '2499', '3200', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', 'Premium hoodie', '10', '15', '15', '10', '5'];
+    
+    let csvContent = headers.join(',') + '\n';
+    csvContent += exampleRow.join(',') + '\n';
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'stawear_products_template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Template downloaded!', 'success');
+}
+
+function previewBulkUpload() {
+    const file = document.getElementById('bulkFile').files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        const lines = content.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        
+        const requiredHeaders = ['name', 'category', 'price'];
+        const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+        
+        if (missingHeaders.length > 0) {
+            showToast('Missing required columns: ' + missingHeaders.join(', '), 'error');
+            return;
+        }
+        
+        const products = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const values = lines[i].split(',');
+            if (values.length < 3) continue;
+            
+            const product = {
+                name: values[headers.indexOf('name')]?.trim(),
+                category: values[headers.indexOf('category')]?.trim() || 'Hoodies',
+                price: parseInt(values[headers.indexOf('price')]?.trim()) || 0,
+                originalPrice: headers.includes('originalprice') ? parseInt(values[headers.indexOf('originalprice')]?.trim()) || null : null,
+                image: headers.includes('image') ? values[headers.indexOf('image')]?.trim() : 'https://via.placeholder.com/500',
+                description: headers.includes('description') ? values[headers.indexOf('description')]?.trim() : '',
+                stock: {
+                    S: parseInt(values[headers.indexOf('stock_s')]?.trim()) || 0,
+                    M: parseInt(values[headers.indexOf('stock_m')]?.trim()) || 0,
+                    L: parseInt(values[headers.indexOf('stock_l')]?.trim()) || 0,
+                    XL: parseInt(values[headers.indexOf('stock_xl')]?.trim()) || 0,
+                    XXL: parseInt(values[headers.indexOf('stock_xxl')]?.trim()) || 0
+                }
+            };
+            
+            if (product.name && product.price > 0) {
+                products.push(product);
+            }
+        }
+        
+        document.getElementById('previewCount').textContent = products.length;
+        const previewList = document.getElementById('previewList');
+        previewList.innerHTML = products.map(p => `
+            <div class="bulk-preview-item valid">
+                <span>${p.name}</span>
+                <span>Ksh ${p.price}</span>
+                <span>${p.category}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('uploadPreview').style.display = 'block';
+        window.bulkProducts = products;
+    };
+    reader.readAsText(file);
+}
+
+// Attach preview event
+document.getElementById('bulkFile')?.addEventListener('change', previewBulkUpload);
+
+async function processBulkUpload() {
+    if (!window.bulkProducts || window.bulkProducts.length === 0) {
+        showToast('No valid products to upload', 'error');
+        return;
+    }
+    
+    const btn = document.getElementById('bulkUploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Uploading...';
+    
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const product of window.bulkProducts) {
+        const productData = {
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            originalPrice: product.originalPrice,
+            image: product.image,
+            description: product.description,
+            stock: product.stock,
+            sizes: Object.keys(product.stock).filter(s => product.stock[s] > 0),
+            created_at: new Date().toISOString()
+        };
+        
+        const { error } = await supabaseClient.from('products').insert([productData]);
+        if (error) {
+            errorCount++;
+            console.error('Error uploading:', product.name, error);
+        } else {
+            successCount++;
+        }
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Products';
+    
+    showToast(`Upload complete! ${successCount} added, ${errorCount} failed`, successCount > 0 ? 'success' : 'error');
+    
+    if (successCount > 0) {
+        closeBulkUploadModal();
+        await renderProducts();
+        loadAllData();
+    }
+}
 
         /* ===== TABLES ===== */
         .table-container {
