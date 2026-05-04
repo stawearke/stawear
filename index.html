@@ -1233,7 +1233,8 @@ function updateStepUI() {
 // ===== SEND CUSTOMER ORDER RECEIPT =====
 async function sendCustomerReceipt(orderData, cartItems, cartSubtotal) {
     try {
-        const result = await emailjs.send('service_ym1oijj', 'receipt_customer', {
+        const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_TEMPLATE, {
+            to_email: orderData.customer_email,
             order_id: orderData.id,
             order_date: new Date().toLocaleString('en-KE'),
             customer_name: orderData.customer_name,
