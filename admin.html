@@ -22,8 +22,7 @@
             background: white; border-radius: 20px; padding: 40px; width: 100%;
             max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .login-logo {width: 100px;height: 100px;object-fit: contain;margin-bottom: 20px;background: linear-gradient(135deg, #1a237e, #0d47a1);  /* Blue gradient background */border-radius: 50%;  /* Makes it circular */padding: 15px;       /* Space between logo and blue background */box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3); /* Optional: adds shadow */
-}
+        .login-logo {width: 100px;height: 100px;object-fit: contain;margin-bottom: 20px;background: linear-gradient(135deg, #1a237e, #0d47a1);border-radius: 50%;padding: 15px;box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);}
         .login-header h2 { color: #1a237e; font-size: 2rem; font-weight: 800; }
         .login-header p { color: #888; margin: 5px 0 25px; }
         .login-form .form-group { margin-bottom: 18px; text-align: left; }
@@ -80,7 +79,6 @@
             padding: 2px 7px; border-radius: 20px; margin-left: auto;
         }
         .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 10px 20px; }
-        
 
         /* ===== MAIN ===== */
         .admin-main { flex: 1; margin-left: 270px; min-height: 100vh; background: #f4f7fc; }
@@ -131,171 +129,32 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
             color: white; font-size: 1.5rem; flex-shrink: 0;
         }
+
         /* Bulk upload styles */
-.bulk-preview-item {
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-    font-size: 12px;
-    display: flex;
-    justify-content: space-between;
-}
-.bulk-preview-item.valid {
-    color: #28a745;
-}
-.bulk-preview-item.invalid {
-    color: #dc3545;
-}
-.upload-progress {
-    margin-top: 15px;
-    display: none;
-}
-.upload-progress-bar {
-    height: 8px;
-    background: #c62828;
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.3s;
-}
-        // ===== BULK UPLOAD FUNCTIONS =====
-
-function openBulkUploadModal() {
-    document.getElementById('bulkUploadModal').classList.add('active');
-    document.getElementById('uploadPreview').style.display = 'none';
-    document.getElementById('bulkFile').value = '';
-}
-
-function closeBulkUploadModal() {
-    document.getElementById('bulkUploadModal').classList.remove('active');
-}
-
-function downloadTemplate() {
-    // CSV Template content
-    const headers = ['name', 'category', 'price', 'originalPrice', 'image', 'description', 'stock_S', 'stock_M', 'stock_L', 'stock_XL', 'stock_XXL'];
-    const exampleRow = ['Black Belt Master Hoodie', 'Hoodies', '2499', '3200', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', 'Premium hoodie', '10', '15', '15', '10', '5'];
-    
-    let csvContent = headers.join(',') + '\n';
-    csvContent += exampleRow.join(',') + '\n';
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'stawear_products_template.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Template downloaded!', 'success');
-}
-
-function previewBulkUpload() {
-    const file = document.getElementById('bulkFile').files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = e.target.result;
-        const lines = content.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        
-        const requiredHeaders = ['name', 'category', 'price'];
-        const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
-        
-        if (missingHeaders.length > 0) {
-            showToast('Missing required columns: ' + missingHeaders.join(', '), 'error');
-            return;
+        .bulk-preview-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
         }
-        
-        const products = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            const values = lines[i].split(',');
-            if (values.length < 3) continue;
-            
-            const product = {
-                name: values[headers.indexOf('name')]?.trim(),
-                category: values[headers.indexOf('category')]?.trim() || 'Hoodies',
-                price: parseInt(values[headers.indexOf('price')]?.trim()) || 0,
-                originalPrice: headers.includes('originalprice') ? parseInt(values[headers.indexOf('originalprice')]?.trim()) || null : null,
-                image: headers.includes('image') ? values[headers.indexOf('image')]?.trim() : 'https://via.placeholder.com/500',
-                description: headers.includes('description') ? values[headers.indexOf('description')]?.trim() : '',
-                stock: {
-                    S: parseInt(values[headers.indexOf('stock_s')]?.trim()) || 0,
-                    M: parseInt(values[headers.indexOf('stock_m')]?.trim()) || 0,
-                    L: parseInt(values[headers.indexOf('stock_l')]?.trim()) || 0,
-                    XL: parseInt(values[headers.indexOf('stock_xl')]?.trim()) || 0,
-                    XXL: parseInt(values[headers.indexOf('stock_xxl')]?.trim()) || 0
-                }
-            };
-            
-            if (product.name && product.price > 0) {
-                products.push(product);
-            }
+        .bulk-preview-item.valid {
+            color: #28a745;
         }
-        
-        document.getElementById('previewCount').textContent = products.length;
-        const previewList = document.getElementById('previewList');
-        previewList.innerHTML = products.map(p => `
-            <div class="bulk-preview-item valid">
-                <span>${p.name}</span>
-                <span>Ksh ${p.price}</span>
-                <span>${p.category}</span>
-            </div>
-        `).join('');
-        
-        document.getElementById('uploadPreview').style.display = 'block';
-        window.bulkProducts = products;
-    };
-    reader.readAsText(file);
-}
-
-// Attach preview event
-document.getElementById('bulkFile')?.addEventListener('change', previewBulkUpload);
-
-async function processBulkUpload() {
-    if (!window.bulkProducts || window.bulkProducts.length === 0) {
-        showToast('No valid products to upload', 'error');
-        return;
-    }
-    
-    const btn = document.getElementById('bulkUploadBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Uploading...';
-    
-    let successCount = 0;
-    let errorCount = 0;
-    
-    for (const product of window.bulkProducts) {
-        const productData = {
-            name: product.name,
-            category: product.category,
-            price: product.price,
-            originalPrice: product.originalPrice,
-            image: product.image,
-            description: product.description,
-            stock: product.stock,
-            sizes: Object.keys(product.stock).filter(s => product.stock[s] > 0),
-            created_at: new Date().toISOString()
-        };
-        
-        const { error } = await supabaseClient.from('products').insert([productData]);
-        if (error) {
-            errorCount++;
-            console.error('Error uploading:', product.name, error);
-        } else {
-            successCount++;
+        .bulk-preview-item.invalid {
+            color: #dc3545;
         }
-    }
-    
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Products';
-    
-    showToast(`Upload complete! ${successCount} added, ${errorCount} failed`, successCount > 0 ? 'success' : 'error');
-    
-    if (successCount > 0) {
-        closeBulkUploadModal();
-        await renderProducts();
-        loadAllData();
-    }
-}
+        .upload-progress {
+            margin-top: 15px;
+            display: none;
+        }
+        .upload-progress-bar {
+            height: 8px;
+            background: #c62828;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s;
+        }
 
         /* ===== TABLES ===== */
         .table-container {
@@ -303,17 +162,6 @@ async function processBulkUpload() {
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; overflow-x: auto;
         }
         .table-header {
-            <div class="table-header">
-    <h3>Products</h3>
-    <div class="table-header-actions">
-        <button class="btn btn-secondary" onclick="openBulkUploadModal()">
-            <i class="fas fa-file-upload"></i> Bulk Upload
-        </button>
-        <button class="btn btn-primary" onclick="openProductModal()">
-            <i class="fas fa-plus"></i> Add Product
-        </button>
-    </div>
-</div>
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
         }
@@ -533,10 +381,8 @@ async function processBulkUpload() {
 <!-- ===== DASHBOARD ===== -->
 <div id="dashboard" style="display:none">
     <div class="admin-wrapper">
-        <!-- Sidebar Overlay (mobile) -->
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-        <!-- Sidebar -->
         <div class="admin-sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
@@ -571,7 +417,6 @@ async function processBulkUpload() {
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="admin-main">
             <div class="top-bar">
                 <div style="display:flex;align-items:center;gap:15px">
@@ -642,7 +487,7 @@ async function processBulkUpload() {
                 <input type="hidden" id="productImage">
                 <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
                     <span style="font-size:0.78rem;color:#aaa">— or paste URL —</span>
-                    <input type="url" id="productImageUrl" placeholder="https://..." style="flex:1;padding:7px 12px;border:2px solid #e5e5e5;border-radius:8px;font-size:0.82rem;font-family:Poppins,sans-serif;outline:none" oninput="handleUrlInput(this.value)" onfocus="this.style.borderColor='#c62828'" onblur="this.style.borderColor='#e5e5e5'">
+                    <input type="url" id="productImageUrl" placeholder="https://..." style="flex:1;padding:7px 12px;border:2px solid #e5e5e5;border-radius:8px;font-size:0.82rem;font-family:Poppins,sans-serif;outline:none" oninput="handleUrlInput(this.value)">
                 </div>
             </div>
             <div class="form-group">
@@ -660,6 +505,41 @@ async function processBulkUpload() {
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Product</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- ===== BULK UPLOAD MODAL ===== -->
+<div class="modal" id="bulkUploadModal">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-file-upload"></i> Bulk Upload Products</h2>
+            <span class="close-modal" onclick="closeBulkUploadModal()">&times;</span>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <div class="form-group">
+                <label>Download Template</label>
+                <button class="btn btn-secondary" onclick="downloadTemplate()">
+                    <i class="fas fa-download"></i> CSV Template
+                </button>
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Download the template, fill in your products, then upload back.
+                </p>
+            </div>
+            <div class="form-group">
+                <label>Upload CSV File</label>
+                <input type="file" id="bulkFile" accept=".csv" style="width:100%; padding:10px; border:2px solid #ddd; border-radius:8px;">
+            </div>
+            <div id="uploadPreview" style="display: none; margin: 15px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                <h4>Preview (<span id="previewCount">0</span> products)</h4>
+                <div id="previewList" style="max-height: 200px; overflow-y: auto; font-size: 12px;"></div>
+            </div>
+        </div>
+        <div class="form-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button class="btn btn-secondary" onclick="closeBulkUploadModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="processBulkUpload()" id="bulkUploadBtn">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Products
+            </button>
+        </div>
     </div>
 </div>
 
@@ -771,7 +651,6 @@ async function doLogin() {
     }
 }
 
-// Allow Enter key on login
 document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
@@ -791,7 +670,6 @@ function showDashboard() {
     loadAllData().then(() => showSection('dashboard'));
 }
 
-// Check session on load
 (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
@@ -799,7 +677,6 @@ function showDashboard() {
     }
 })();
 
-// ===== SIDEBAR =====
 function openSidebar() {
     document.getElementById('sidebar').classList.add('open');
     document.getElementById('sidebarOverlay').classList.add('active');
@@ -809,7 +686,6 @@ function closeSidebar() {
     document.getElementById('sidebarOverlay').classList.remove('active');
 }
 
-// ===== DATA LOADING =====
 async function loadAllData() {
     await Promise.all([loadProducts(), loadOrders(), loadBrandingRequests()]);
     loadCustomersFromOrders();
@@ -855,7 +731,6 @@ function updateBadges() {
     document.getElementById('notificationBadge').textContent = pending;
 }
 
-// ===== SECTIONS =====
 const sectionTitles = { dashboard: 'Dashboard', products: 'Products', orders: 'Orders', customers: 'Customers', branding: 'Branding Requests', analytics: 'Analytics' };
 
 async function showSection(section) {
@@ -864,7 +739,6 @@ async function showSection(section) {
     document.querySelectorAll('.menu-item[data-section]').forEach(el => el.classList.toggle('active', el.dataset.section === section));
     document.getElementById('pageTitle').textContent = sectionTitles[section] || section;
     document.getElementById('contentArea').innerHTML = `<div class="loading"><i class="fas fa-circle-notch"></i>Loading...</div>`;
-    // destroy old charts
     analyticsCharts.forEach(c => c.destroy());
     analyticsCharts = [];
 
@@ -876,7 +750,6 @@ async function showSection(section) {
     else if (section === 'analytics') await renderAnalytics();
 }
 
-// ===== DASHBOARD =====
 async function renderDashboard() {
     await loadAllData();
     const totalSales = orders.reduce((s, o) => s + (o.total || 0), 0);
@@ -886,54 +759,23 @@ async function renderDashboard() {
 
     document.getElementById('contentArea').innerHTML = `
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info"><h3>Total Revenue</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div><div class="stat-sub"><i class="fas fa-arrow-up"></i> All time</div></div>
-                <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
-            </div>
-            <div class="stat-card" onclick="showSection('orders')" style="cursor:pointer">
-                <div class="stat-info"><h3>Total Orders</h3><div class="stat-number">${orders.length}</div><div class="stat-sub">${pending} pending</div></div>
-                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
-            </div>
-            <div class="stat-card" onclick="showSection('customers')" style="cursor:pointer">
-                <div class="stat-info"><h3>Customers</h3><div class="stat-number">${customers.length}</div><div class="stat-sub">Unique buyers</div></div>
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-            </div>
-            <div class="stat-card" onclick="showSection('products')" style="cursor:pointer">
-                <div class="stat-info"><h3>Products</h3><div class="stat-number">${products.length}</div><div class="stat-sub">In catalogue</div></div>
-                <div class="stat-icon"><i class="fas fa-tshirt"></i></div>
-            </div>
+            <div class="stat-card"><div class="stat-info"><h3>Total Revenue</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div><div class="stat-sub"><i class="fas fa-arrow-up"></i> All time</div></div><div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div></div>
+            <div class="stat-card" onclick="showSection('orders')" style="cursor:pointer"><div class="stat-info"><h3>Total Orders</h3><div class="stat-number">${orders.length}</div><div class="stat-sub">${pending} pending</div></div><div class="stat-icon"><i class="fas fa-shopping-cart"></i></div></div>
+            <div class="stat-card" onclick="showSection('customers')" style="cursor:pointer"><div class="stat-info"><h3>Customers</h3><div class="stat-number">${customers.length}</div><div class="stat-sub">Unique buyers</div></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
+            <div class="stat-card" onclick="showSection('products')" style="cursor:pointer"><div class="stat-info"><h3>Products</h3><div class="stat-number">${products.length}</div><div class="stat-sub">In catalogue</div></div><div class="stat-icon"><i class="fas fa-tshirt"></i></div></div>
         </div>
-        <div class="table-container">
-            <div class="table-header"><h3>Recent Orders</h3><button class="btn btn-primary btn-sm" onclick="showSection('orders')">View All</button></div>
-            ${recentOrders.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i>No orders yet</div>' : `
-            <table><thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
-            <tbody>${recentOrders.map(o => `
-                <tr>
-                    <td><strong>#${String(o.id).slice(-6)}</strong></td>
-                    <td>${o.customer_name || 'N/A'}<br><small style="color:#aaa">${o.customer_phone || ''}</small></td>
-                    <td><strong>Ksh ${(o.total || 0).toLocaleString()}</strong></td>
-                    <td><span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></td>
-                    <td>${o.date ? new Date(o.date).toLocaleDateString('en-KE') : 'N/A'}</td>
-                    <td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td>
-                </tr>`).join('')}
-            </tbody></table>`}
+        <div class="table-container"><div class="table-header"><h3>Recent Orders</h3><button class="btn btn-primary btn-sm" onclick="showSection('orders')">View All</button></div>
+        ${recentOrders.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i>No orders yet</div>' : `
+        <table><thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>${recentOrders.map(o => `<tr><td><strong>#${String(o.id).slice(-6)}</strong></td><td>${o.customer_name || 'N/A'}<br><small style="color:#aaa">${o.customer_phone || ''}</small></td><td><strong>Ksh ${(o.total || 0).toLocaleString()}</strong></td><td><span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></td><td>${o.date ? new Date(o.date).toLocaleDateString('en-KE') : 'N/A'}</td><td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join('')}</tbody></table>`}
         </div>
         ${recentBranding.length > 0 ? `
-        <div class="table-container">
-            <div class="table-header"><h3>Recent Branding Requests</h3><button class="btn btn-primary btn-sm" onclick="showSection('branding')">View All</button></div>
-            <table><thead><tr><th>Customer</th><th>Dojang</th><th>Item</th><th>Status</th><th>Action</th></tr></thead>
-            <tbody>${recentBranding.map(r => `
-                <tr>
-                    <td>${r.name || 'N/A'}</td><td>${r.dojang || 'N/A'}</td><td>${r.item_type || 'N/A'}</td>
-                    <td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td>
-                    <td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">View</button></td>
-                </tr>`).join('')}
-            </tbody></table>
-        </div>` : ''}
+        <div class="table-container"><div class="table-header"><h3>Recent Branding Requests</h3><button class="btn btn-primary btn-sm" onclick="showSection('branding')">View All</button></div>
+        <table><thead><tr><th>Customer</th><th>Dojang</th><th>Item</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>${recentBranding.map(r => `<tr><td>${r.name || 'N/A'}</td><td>${r.dojang || 'N/A'}</td><td>${r.item_type || 'N/A'}</td><td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td><td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">View</button></td></tr>`).join('')}</tbody></table></div>` : ''}
     `;
 }
 
-// ===== PRODUCTS =====
 async function renderProducts(filterTerm = '') {
     await loadProducts();
     const filtered = filterTerm ? products.filter(p => p.name?.toLowerCase().includes(filterTerm.toLowerCase()) || p.category?.toLowerCase().includes(filterTerm.toLowerCase())) : products;
@@ -943,24 +785,13 @@ async function renderProducts(filterTerm = '') {
                 <h3>Products (${filtered.length})</h3>
                 <div class="table-header-actions">
                     <input class="table-search" type="text" placeholder="Search products..." value="${filterTerm}" oninput="renderProducts(this.value)">
+                    <button class="btn btn-secondary" onclick="openBulkUploadModal()"><i class="fas fa-file-upload"></i> Bulk Upload</button>
                     <button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add Product</button>
                 </div>
             </div>
             ${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-tshirt"></i>No products found</div>' : `
             <table><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
-            <tbody>${filtered.map(p => `
-                <tr>
-                    <td><div class="product-thumb"><img src="${p.image || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
-                    <td><strong>${p.name}</strong>${p.originalPrice ? `<br><small style="color:#aaa;text-decoration:line-through">Ksh ${p.originalPrice}</small>` : ''}</td>
-                    <td><span class="status-badge status-processing">${p.category || 'N/A'}</span></td>
-                    <td><strong style="color:#c62828">Ksh ${(p.price || 0).toLocaleString()}</strong></td>
-                    <td style="font-size:0.8rem">${p.stock ? Object.entries(p.stock).filter(([,q]) => q > 0).map(([s,q]) => `<span style="background:#f0f0f0;padding:2px 6px;border-radius:4px;margin:1px;display:inline-block">${s}:${q}</span>`).join('') || '<span style="color:#aaa">Out</span>' : 'N/A'}</td>
-                    <td><div class="action-btns">
-                        <button class="action-btn edit-btn" onclick="editProduct(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete-btn" onclick="confirmDeleteProduct(${p.id}, '${p.name?.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
-                    </div></td>
-                </tr>`).join('')}
-            </tbody></table>`}
+            <tbody>${filtered.map(p => `<tr><td><div class="product-thumb"><img src="${p.image || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td><td><strong>${p.name}</strong>${p.originalPrice ? `<br><small style="color:#aaa;text-decoration:line-through">Ksh ${p.originalPrice}</small>` : ''}</td><td><span class="status-badge status-processing">${p.category || 'N/A'}</span></td><td><strong style="color:#c62828">Ksh ${(p.price || 0).toLocaleString()}</strong></td><td style="font-size:0.8rem">${p.stock ? Object.entries(p.stock).filter(([,q]) => q > 0).map(([s,q]) => `<span style="background:#f0f0f0;padding:2px 6px;border-radius:4px;margin:1px;display:inline-block">${s}:${q}</span>`).join('') || '<span style="color:#aaa">Out</span>' : 'N/A'}</td><td><div class="action-btns"><button class="action-btn edit-btn" onclick="editProduct(${p.id})" title="Edit"><i class="fas fa-edit"></i></button><button class="action-btn delete-btn" onclick="confirmDeleteProduct(${p.id}, '${p.name?.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button></div></td></tr>`).join('')}</tbody></table>`}
         </div>`;
 }
 
@@ -996,13 +827,7 @@ function closeProductModal() { document.getElementById('productModal').classList
 async function saveProduct(e) {
     e.preventDefault();
     const id = document.getElementById('productId').value;
-    const stock = {
-        S: +document.getElementById('sizeS').value,
-        M: +document.getElementById('sizeM').value,
-        L: +document.getElementById('sizeL').value,
-        XL: +document.getElementById('sizeXL').value,
-        XXL: +document.getElementById('sizeXXL').value
-    };
+    const stock = { S: +document.getElementById('sizeS').value, M: +document.getElementById('sizeM').value, L: +document.getElementById('sizeL').value, XL: +document.getElementById('sizeXL').value, XXL: +document.getElementById('sizeXXL').value };
     const productData = {
         name: document.getElementById('productName').value,
         category: document.getElementById('productCategory').value,
@@ -1010,25 +835,15 @@ async function saveProduct(e) {
         originalPrice: +document.getElementById('productOriginalPrice').value || null,
         description: document.getElementById('productDescription').value,
         image: document.getElementById('productImage').value || 'https://via.placeholder.com/500',
-        stock: stock,
-        sizes: Object.keys(stock).filter(s => stock[s] > 0),
-        updated_at: new Date().toISOString()
+        stock: stock, sizes: Object.keys(stock).filter(s => stock[s] > 0), updated_at: new Date().toISOString()
     };
     let result;
-    if (id) {
-        result = await sb.from('products').update(productData).eq('id', parseInt(id));
-    } else {
-        productData.created_at = new Date().toISOString();
-        result = await sb.from('products').insert([productData]);
-    }
+    if (id) { result = await sb.from('products').update(productData).eq('id', parseInt(id)); }
+    else { productData.created_at = new Date().toISOString(); result = await sb.from('products').insert([productData]); }
     if (!result.error) {
-        closeProductModal();
-        showToast(id ? 'Product updated!' : 'Product added!', 'success');
-        await renderProducts();
-        updateBadges();
-    } else {
-        showToast('Error: ' + result.error.message, 'error');
-    }
+        closeProductModal(); showToast(id ? 'Product updated!' : 'Product added!', 'success');
+        await renderProducts(); updateBadges();
+    } else { showToast('Error: ' + result.error.message, 'error'); }
 }
 
 function editProduct(id) { openProductModal(id); }
@@ -1041,6 +856,93 @@ function confirmDeleteProduct(id, name) {
     });
 }
 
+// ===== BULK UPLOAD FUNCTIONS =====
+function openBulkUploadModal() {
+    document.getElementById('bulkUploadModal').classList.add('active');
+    document.getElementById('uploadPreview').style.display = 'none';
+    document.getElementById('bulkFile').value = '';
+}
+function closeBulkUploadModal() { document.getElementById('bulkUploadModal').classList.remove('active'); }
+
+function downloadTemplate() {
+    const headers = ['name', 'category', 'price', 'originalPrice', 'image', 'description', 'stock_S', 'stock_M', 'stock_L', 'stock_XL', 'stock_XXL'];
+    const exampleRow = ['Black Belt Master Hoodie', 'Hoodies', '2499', '3200', 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500', 'Premium hoodie', '10', '15', '15', '10', '5'];
+    let csvContent = headers.join(',') + '\n';
+    csvContent += exampleRow.join(',') + '\n';
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'stawear_products_template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Template downloaded!', 'success');
+}
+
+function previewBulkUpload() {
+    const file = document.getElementById('bulkFile').files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        const lines = content.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        const requiredHeaders = ['name', 'category', 'price'];
+        const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+        if (missingHeaders.length > 0) {
+            showToast('Missing required columns: ' + missingHeaders.join(', '), 'error');
+            return;
+        }
+        const products = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const values = lines[i].split(',');
+            if (values.length < 3) continue;
+            const product = {
+                name: values[headers.indexOf('name')]?.trim(),
+                category: values[headers.indexOf('category')]?.trim() || 'Hoodies',
+                price: parseInt(values[headers.indexOf('price')]?.trim()) || 0,
+                originalPrice: headers.includes('originalprice') ? parseInt(values[headers.indexOf('originalprice')]?.trim()) || null : null,
+                image: headers.includes('image') ? values[headers.indexOf('image')]?.trim() : 'https://via.placeholder.com/500',
+                description: headers.includes('description') ? values[headers.indexOf('description')]?.trim() : '',
+                stock: { S: parseInt(values[headers.indexOf('stock_s')]?.trim()) || 0, M: parseInt(values[headers.indexOf('stock_m')]?.trim()) || 0, L: parseInt(values[headers.indexOf('stock_l')]?.trim()) || 0, XL: parseInt(values[headers.indexOf('stock_xl')]?.trim()) || 0, XXL: parseInt(values[headers.indexOf('stock_xxl')]?.trim()) || 0 }
+            };
+            if (product.name && product.price > 0) { products.push(product); }
+        }
+        document.getElementById('previewCount').textContent = products.length;
+        const previewList = document.getElementById('previewList');
+        previewList.innerHTML = products.map(p => `<div class="bulk-preview-item valid"><span>${p.name}</span><span>Ksh ${p.price}</span><span>${p.category}</span></div>`).join('');
+        document.getElementById('uploadPreview').style.display = 'block';
+        window.bulkProducts = products;
+    };
+    reader.readAsText(file);
+}
+document.getElementById('bulkFile')?.addEventListener('change', previewBulkUpload);
+
+async function processBulkUpload() {
+    if (!window.bulkProducts || window.bulkProducts.length === 0) {
+        showToast('No valid products to upload', 'error');
+        return;
+    }
+    const btn = document.getElementById('bulkUploadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Uploading...';
+    let successCount = 0, errorCount = 0;
+    for (const product of window.bulkProducts) {
+        const productData = { name: product.name, category: product.category, price: product.price, originalPrice: product.originalPrice, image: product.image, description: product.description, stock: product.stock, sizes: Object.keys(product.stock).filter(s => product.stock[s] > 0), created_at: new Date().toISOString() };
+        const { error } = await sb.from('products').insert([productData]);
+        if (error) { errorCount++; console.error('Error uploading:', product.name, error); } else { successCount++; }
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Products';
+    showToast(`Upload complete! ${successCount} added, ${errorCount} failed`, successCount > 0 ? 'success' : 'error');
+    if (successCount > 0) {
+        closeBulkUploadModal();
+        await renderProducts();
+        loadAllData();
+    }
+}
+
 // ===== ORDERS =====
 let ordersFilter = 'all';
 async function renderOrders(filter = ordersFilter) {
@@ -1049,35 +951,8 @@ async function renderOrders(filter = ordersFilter) {
     const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
     document.getElementById('contentArea').innerHTML = `
         <div class="table-container">
-            <div class="table-header">
-                <h3>Orders (${filtered.length})</h3>
-                <div class="table-header-actions">
-                    <div class="filter-tabs">
-                        ${['all','pending','processing','completed','cancelled'].map(f =>
-                            `<button class="filter-tab ${filter === f ? 'active' : ''}" onclick="renderOrders('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`
-                        ).join('')}
-                    </div>
-                </div>
-            </div>
-            ${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-shopping-cart"></i>No orders found</div>' : `
-            <table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
-            <tbody>${filtered.map(o => `
-                <tr>
-                    <td><strong>#${String(o.id).slice(-6)}</strong></td>
-                    <td>${o.customer_name || 'N/A'}<br><small style="color:#aaa">${o.customer_phone || ''}</small></td>
-                    <td><strong>Ksh ${(o.total || 0).toLocaleString()}</strong></td>
-                    <td>
-                        <select onchange="updateOrderStatus('${o.id}', this.value)" style="font-size:0.8rem;padding:4px 8px">
-                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
-                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    </td>
-                    <td>${o.date ? new Date(o.date).toLocaleDateString('en-KE') : 'N/A'}</td>
-                    <td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td>
-                </tr>`).join('')}
-            </tbody></table>`}
+            <div class="table-header"><h3>Orders (${filtered.length})</h3><div class="filter-tabs">${['all','pending','processing','completed','cancelled'].map(f => `<button class="filter-tab ${filter === f ? 'active' : ''}" onclick="renderOrders('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div></div>
+            ${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-shopping-cart"></i>No orders found</div>' : `<table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${filtered.map(o => `<tr><td><strong>#${String(o.id).slice(-6)}</strong></td><td>${o.customer_name || 'N/A'}<br><small style="color:#aaa">${o.customer_phone || ''}</small></td><td><strong>Ksh ${(o.total || 0).toLocaleString()}</strong></td><td><select onchange="updateOrderStatus('${o.id}', this.value)" style="font-size:0.8rem;padding:4px 8px"><option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option><option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option><option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option><option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option></select></td><td>${o.date ? new Date(o.date).toLocaleDateString('en-KE') : 'N/A'}</td><td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join('')}</tbody></table>`}
         </div>`;
 }
 
@@ -1090,24 +965,7 @@ async function updateOrderStatus(id, status) {
 function viewOrder(id) {
     const o = orders.find(x => String(x.id) === String(id));
     if (!o) return;
-    document.getElementById('orderDetails').innerHTML = `
-        <div class="detail-row"><strong>Order ID:</strong> #${String(o.id).slice(-6)}</div>
-        <div class="detail-row"><strong>Customer:</strong> ${o.customer_name || 'N/A'}</div>
-        <div class="detail-row"><strong>Phone:</strong> ${o.customer_phone || 'N/A'}</div>
-        <div class="detail-row"><strong>Email:</strong> ${o.customer_email || 'N/A'}</div>
-        <div class="detail-row"><strong>Address:</strong> ${o.delivery_address || 'N/A'}</div>
-        <div class="detail-row"><strong>Total:</strong> <span style="color:#c62828;font-weight:700">Ksh ${(o.total || 0).toLocaleString()}</span></div>
-        <div class="detail-row"><strong>Status:</strong> <span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div>
-        <div class="detail-row"><strong>Date:</strong> ${o.date ? new Date(o.date).toLocaleString('en-KE') : 'N/A'}</div>
-        ${o.items && o.items.length ? `
-        <div style="margin-top:15px"><strong style="color:#555">Items:</strong>
-            <table style="margin-top:8px;min-width:auto"><thead><tr><th>Item</th><th>Size</th><th>Qty</th><th>Price</th></tr></thead>
-            <tbody>${o.items.map(i => `<tr><td>${i.name || 'N/A'}</td><td>${i.size || '-'}</td><td>${i.quantity || 1}</td><td>Ksh ${(i.price || 0).toLocaleString()}</td></tr>`).join('')}</tbody></table>
-        </div>` : ''}
-        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-            ${o.customer_phone ? `<button class="btn btn-success" onclick="contactViaWhatsApp('${o.customer_phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}
-            <button class="btn btn-secondary" onclick="closeOrderModal()">Close</button>
-        </div>`;
+    document.getElementById('orderDetails').innerHTML = `<div class="detail-row"><strong>Order ID:</strong> #${String(o.id).slice(-6)}</div><div class="detail-row"><strong>Customer:</strong> ${o.customer_name || 'N/A'}</div><div class="detail-row"><strong>Phone:</strong> ${o.customer_phone || 'N/A'}</div><div class="detail-row"><strong>Email:</strong> ${o.customer_email || 'N/A'}</div><div class="detail-row"><strong>Address:</strong> ${o.delivery_address || 'N/A'}</div><div class="detail-row"><strong>Total:</strong> <span style="color:#c62828;font-weight:700">Ksh ${(o.total || 0).toLocaleString()}</span></div><div class="detail-row"><strong>Status:</strong> <span class="status-badge status-${o.status || 'pending'}">${o.status || 'pending'}</span></div><div class="detail-row"><strong>Date:</strong> ${o.date ? new Date(o.date).toLocaleString('en-KE') : 'N/A'}</div>${o.items && o.items.length ? `<div style="margin-top:15px"><strong style="color:#555">Items:</strong><table style="margin-top:8px;min-width:auto"><thead><tr><th>Item</th><th>Size</th><th>Qty</th><th>Price</th></tr></thead><tbody>${o.items.map(i => `<tr><td>${i.name || 'N/A'}</td><td>${i.size || '-'}</td><td>${i.quantity || 1}</td><td>Ksh ${(i.price || 0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>` : ''}<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">${o.customer_phone ? `<button class="btn btn-success" onclick="contactViaWhatsApp('${o.customer_phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}<button class="btn btn-secondary" onclick="closeOrderModal()">Close</button></div>`;
     document.getElementById('orderModal').classList.add('active');
 }
 function closeOrderModal() { document.getElementById('orderModal').classList.remove('active'); }
@@ -1116,57 +974,15 @@ function closeOrderModal() { document.getElementById('orderModal').classList.rem
 async function renderCustomers(searchTerm = '') {
     await loadOrders();
     loadCustomersFromOrders();
-    const filtered = searchTerm ? customers.filter(c =>
-        c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.phone?.includes(searchTerm)
-    ) : customers;
-
-    document.getElementById('contentArea').innerHTML = `
-        <div class="table-container">
-            <div class="table-header">
-                <h3>Customers (${filtered.length})</h3>
-                <input class="table-search" type="text" placeholder="Search customers..." value="${searchTerm}" oninput="renderCustomers(this.value)">
-            </div>
-            ${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-users"></i>No customers found</div>' : `
-            <table><thead><tr><th>Name</th><th>Contact</th><th>Orders</th><th>Total Spent</th><th>Last Order</th><th>Action</th></tr></thead>
-            <tbody>${filtered.map(c => `
-                <tr>
-                    <td><strong>${c.name || 'N/A'}</strong></td>
-                    <td>${c.email || ''}<br><small style="color:#aaa">${c.phone || ''}</small></td>
-                    <td><span class="status-badge status-processing">${c.orders}</span></td>
-                    <td><strong style="color:#c62828">Ksh ${(c.totalSpent || 0).toLocaleString()}</strong></td>
-                    <td>${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-KE') : 'N/A'}</td>
-                    <td><div class="action-btns">
-                        <button class="action-btn view-btn" onclick="viewCustomer('${c.email || c.phone}')">View</button>
-                        ${c.phone ? `<button class="action-btn" style="background:#25d366;color:white" onclick="contactViaWhatsApp('${c.phone}')"><i class="fab fa-whatsapp"></i></button>` : ''}
-                    </div></td>
-                </tr>`).join('')}
-            </tbody></table>`}
-        </div>`;
+    const filtered = searchTerm ? customers.filter(c => c.name?.toLowerCase().includes(searchTerm.toLowerCase()) || c.email?.toLowerCase().includes(searchTerm.toLowerCase()) || c.phone?.includes(searchTerm)) : customers;
+    document.getElementById('contentArea').innerHTML = `<div class="table-container"><div class="table-header"><h3>Customers (${filtered.length})</h3><input class="table-search" type="text" placeholder="Search customers..." value="${searchTerm}" oninput="renderCustomers(this.value)"></div>${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-users"></i>No customers found</div>' : `<table><thead></td><th>Name</th><th>Contact</th><th>Orders</th><th>Total Spent</th><th>Last Order</th><th>Action</th></tr></thead><tbody>${filtered.map(c => `<tr><td><strong>${c.name || 'N/A'}</strong></td><td>${c.email || ''}<br><small style="color:#aaa">${c.phone || ''}</small></td><td><span class="status-badge status-processing">${c.orders}</span></td><td><strong style="color:#c62828">Ksh ${(c.totalSpent || 0).toLocaleString()}</strong></td><td>${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-KE') : 'N/A'}</td><td><div class="action-btns"><button class="action-btn view-btn" onclick="viewCustomer('${c.email || c.phone}')">View</button>${c.phone ? `<button class="action-btn" style="background:#25d366;color:white" onclick="contactViaWhatsApp('${c.phone}')"><i class="fab fa-whatsapp"></i></button>` : ''}</div></td></tr>`).join('')}</tbody></td>`}</div>`;
 }
 
 function viewCustomer(key) {
     const c = customers.find(x => x.email === key || x.phone === key);
     if (!c) return;
     const custOrders = orders.filter(o => o.customer_email === c.email || o.customer_phone === c.phone);
-    document.getElementById('customerDetails').innerHTML = `
-        <div class="detail-row"><strong>Name:</strong> ${c.name || 'N/A'}</div>
-        <div class="detail-row"><strong>Email:</strong> ${c.email || 'N/A'}</div>
-        <div class="detail-row"><strong>Phone:</strong> ${c.phone || 'N/A'}</div>
-        <div class="detail-row"><strong>Orders:</strong> ${c.orders}</div>
-        <div class="detail-row"><strong>Total Spent:</strong> <span style="color:#c62828;font-weight:700">Ksh ${(c.totalSpent || 0).toLocaleString()}</span></div>
-        <div class="detail-row"><strong>Last Order:</strong> ${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-KE') : 'N/A'}</div>
-        <div style="margin-top:15px"><strong style="color:#555">Order History:</strong>
-            ${custOrders.length > 0 ? `
-            <table style="margin-top:8px;min-width:auto"><thead><tr><th>ID</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody>${custOrders.map(o => `<tr><td>#${String(o.id).slice(-6)}</td><td>Ksh ${(o.total||0).toLocaleString()}</td><td><span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span></td><td>${o.date?new Date(o.date).toLocaleDateString('en-KE'):'N/A'}</td></tr>`).join('')}</tbody></table>
-            ` : '<p style="color:#aaa;margin-top:8px;font-size:0.88rem">No orders found</p>'}
-        </div>
-        <div style="margin-top:20px;display:flex;gap:10px">
-            ${c.phone ? `<button class="btn btn-success" onclick="contactViaWhatsApp('${c.phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}
-            <button class="btn btn-secondary" onclick="closeCustomerModal()">Close</button>
-        </div>`;
+    document.getElementById('customerDetails').innerHTML = `<div class="detail-row"><strong>Name:</strong> ${c.name || 'N/A'}</div><div class="detail-row"><strong>Email:</strong> ${c.email || 'N/A'}</div><div class="detail-row"><strong>Phone:</strong> ${c.phone || 'N/A'}</div><div class="detail-row"><strong>Orders:</strong> ${c.orders}</div><div class="detail-row"><strong>Total Spent:</strong> <span style="color:#c62828;font-weight:700">Ksh ${(c.totalSpent || 0).toLocaleString()}</span></div><div class="detail-row"><strong>Last Order:</strong> ${c.lastOrder ? new Date(c.lastOrder).toLocaleDateString('en-KE') : 'N/A'}</div><div style="margin-top:15px"><strong style="color:#555">Order History:</strong>${custOrders.length > 0 ? `<table style="margin-top:8px;min-width:auto"><thead><tr><th>ID</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>${custOrders.map(o => `<tr><td>#${String(o.id).slice(-6)}</td><td>Ksh ${(o.total||0).toLocaleString()}</td><td><span class="status-badge status-${o.status||'pending'}">${o.status||'pending'}</span><td>${o.date?new Date(o.date).toLocaleDateString('en-KE'):'N/A'}</td></tr>`).join('')}</tbody></table>` : '<p style="color:#aaa;margin-top:8px;font-size:0.88rem">No orders found</p>'}</div><div style="margin-top:20px;display:flex;gap:10px">${c.phone ? `<button class="btn btn-success" onclick="contactViaWhatsApp('${c.phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}<button class="btn btn-secondary" onclick="closeCustomerModal()">Close</button></div>`;
     document.getElementById('customerModal').classList.add('active');
 }
 function closeCustomerModal() { document.getElementById('customerModal').classList.remove('active'); }
@@ -1175,60 +991,21 @@ function closeCustomerModal() { document.getElementById('customerModal').classLi
 async function renderBranding(filter = 'all') {
     await loadBrandingRequests();
     const filtered = filter === 'all' ? brandingRequests : brandingRequests.filter(r => r.status === filter);
-    document.getElementById('contentArea').innerHTML = `
-        <div class="table-container">
-            <div class="table-header">
-                <h3>Branding Requests (${filtered.length})</h3>
-                <div class="filter-tabs">
-                    ${['all','pending','completed'].map(f =>
-                        `<button class="filter-tab ${filter === f ? 'active' : ''}" onclick="renderBranding('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`
-                    ).join('')}
-                </div>
-            </div>
-            ${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-palette"></i>No branding requests</div>' : `
-            <table><thead><tr><th>Name</th><th>Dojang</th><th>Item</th><th>Qty</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
-            <tbody>${filtered.map(r => `
-                <tr>
-                    <td><strong>${r.name || 'N/A'}</strong></td>
-                    <td>${r.dojang || 'N/A'}</td>
-                    <td>${r.item_type || 'N/A'}</td>
-                    <td><span class="status-badge status-processing">${r.quantity || 0}</span></td>
-                    <td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td>
-                    <td>${r.date ? new Date(r.date).toLocaleDateString('en-KE') : 'N/A'}</td>
-                    <td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">Details</button></td>
-                </tr>`).join('')}
-            </tbody></table>`}
-        </div>`;
+    document.getElementById('contentArea').innerHTML = `<div class="table-container"><div class="table-header"><h3>Branding Requests (${filtered.length})</h3><div class="filter-tabs">${['all','pending','completed'].map(f => `<button class="filter-tab ${filter === f ? 'active' : ''}" onclick="renderBranding('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div></div>${filtered.length === 0 ? '<div class="empty-state"><i class="fas fa-palette"></i>No branding requests</div>' : `<table><thead><tr><th>Name</th><th>Dojang</th><th>Item</th><th>Qty</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${filtered.map(r => `<tr><td><strong>${r.name || 'N/A'}</strong></td><td>${r.dojang || 'N/A'}</td><td>${r.item_type || 'N/A'}</td><td><span class="status-badge status-processing">${r.quantity || 0}</span></td><td><span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></td><td>${r.date ? new Date(r.date).toLocaleDateString('en-KE') : 'N/A'}</td><td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">Details</button></td></tr>`).join('')}</tbody></table>`}</div>`;
 }
 
 function viewBrandingRequest(id) {
     const r = brandingRequests.find(x => x.id === id);
     if (!r) return;
-    document.getElementById('brandingDetails').innerHTML = `
-        <div class="detail-row"><strong>Name:</strong> ${r.name || 'N/A'}</div>
-        <div class="detail-row"><strong>Phone:</strong> ${r.phone || 'N/A'}</div>
-        <div class="detail-row"><strong>Email:</strong> ${r.email || 'N/A'}</div>
-        <div class="detail-row"><strong>Dojang:</strong> ${r.dojang || 'N/A'}</div>
-        <div class="detail-row"><strong>Item Type:</strong> ${r.item_type || 'N/A'}</div>
-        <div class="detail-row"><strong>Quantity:</strong> ${r.quantity || 0}</div>
-        <div class="detail-row"><strong>Description:</strong> ${r.description || 'No description'}</div>
-        <div class="detail-row"><strong>Status:</strong> <span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></div>
-        <div class="detail-row"><strong>Date:</strong> ${r.date ? new Date(r.date).toLocaleString('en-KE') : 'N/A'}</div>
-        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-            ${r.status !== 'completed' ? `<button class="btn btn-success" onclick="markBrandingComplete(${r.id})"><i class="fas fa-check"></i> Mark Complete</button>` : ''}
-            ${r.phone ? `<button class="btn btn-warning" onclick="contactViaWhatsApp('${r.phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}
-            <button class="btn btn-secondary" onclick="closeBrandingModal()">Close</button>
-        </div>`;
+    document.getElementById('brandingDetails').innerHTML = `<div class="detail-row"><strong>Name:</strong> ${r.name || 'N/A'}</div><div class="detail-row"><strong>Phone:</strong> ${r.phone || 'N/A'}</div><div class="detail-row"><strong>Email:</strong> ${r.email || 'N/A'}</div><div class="detail-row"><strong>Dojang:</strong> ${r.dojang || 'N/A'}</div><div class="detail-row"><strong>Item Type:</strong> ${r.item_type || 'N/A'}</div><div class="detail-row"><strong>Quantity:</strong> ${r.quantity || 0}</div><div class="detail-row"><strong>Description:</strong> ${r.description || 'No description'}</div><div class="detail-row"><strong>Status:</strong> <span class="status-badge status-${r.status || 'pending'}">${r.status || 'pending'}</span></div><div class="detail-row"><strong>Date:</strong> ${r.date ? new Date(r.date).toLocaleString('en-KE') : 'N/A'}</div><div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">${r.status !== 'completed' ? `<button class="btn btn-success" onclick="markBrandingComplete(${r.id})"><i class="fas fa-check"></i> Mark Complete</button>` : ''}${r.phone ? `<button class="btn btn-warning" onclick="contactViaWhatsApp('${r.phone}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>` : ''}<button class="btn btn-secondary" onclick="closeBrandingModal()">Close</button></div>`;
     document.getElementById('brandingModal').classList.add('active');
 }
 function closeBrandingModal() { document.getElementById('brandingModal').classList.remove('active'); }
 
 async function markBrandingComplete(id) {
     const { error } = await sb.from('branding_requests').update({ status: 'completed' }).eq('id', id);
-    if (!error) {
-        await loadBrandingRequests(); closeBrandingModal(); showToast('Marked as complete!', 'success');
-        await renderBranding(); updateBadges();
-    } else showToast('Error updating request', 'error');
+    if (!error) { await loadBrandingRequests(); closeBrandingModal(); showToast('Marked as complete!', 'success'); await renderBranding(); updateBadges(); }
+    else showToast('Error updating request', 'error');
 }
 
 // ===== ANALYTICS =====
@@ -1238,71 +1015,26 @@ async function renderAnalytics() {
     const avgOrder = orders.length ? Math.round(totalSales / orders.length) : 0;
     const completedOrders = orders.filter(o => o.status === 'completed').length;
     const convRate = orders.length ? Math.round((completedOrders / orders.length) * 100) : 0;
-
-    document.getElementById('contentArea').innerHTML = `
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-info"><h3>Total Revenue</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div>
-            <div class="stat-card"><div class="stat-info"><h3>Avg Order Value</h3><div class="stat-number">Ksh ${avgOrder.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-calculator"></i></div></div>
-            <div class="stat-card"><div class="stat-info"><h3>Completion Rate</h3><div class="stat-number">${convRate}%</div></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
-            <div class="stat-card"><div class="stat-info"><h3>Branding Requests</h3><div class="stat-number">${brandingRequests.length}</div></div><div class="stat-icon"><i class="fas fa-palette"></i></div></div>
-        </div>
-        <div class="analytics-grid">
-            <div class="chart-card"><h3>Orders by Status</h3><canvas id="chartOrderStatus" height="220"></canvas></div>
-            <div class="chart-card"><h3>Revenue by Month</h3><canvas id="chartRevenue" height="220"></canvas></div>
-            <div class="chart-card"><h3>Products by Category</h3><canvas id="chartCategories" height="220"></canvas></div>
-            <div class="chart-card"><h3>Top Customers (by Spend)</h3><canvas id="chartCustomers" height="220"></canvas></div>
-        </div>`;
-
+    document.getElementById('contentArea').innerHTML = `<div class="stats-grid"><div class="stat-card"><div class="stat-info"><h3>Total Revenue</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-card"><div class="stat-info"><h3>Avg Order Value</h3><div class="stat-number">Ksh ${avgOrder.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-calculator"></i></div></div><div class="stat-card"><div class="stat-info"><h3>Completion Rate</h3><div class="stat-number">${convRate}%</div></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div><div class="stat-card"><div class="stat-info"><h3>Branding Requests</h3><div class="stat-number">${brandingRequests.length}</div></div><div class="stat-icon"><i class="fas fa-palette"></i></div></div></div><div class="analytics-grid"><div class="chart-card"><h3>Orders by Status</h3><canvas id="chartOrderStatus" height="220"></canvas></div><div class="chart-card"><h3>Revenue by Month</h3><canvas id="chartRevenue" height="220"></canvas></div><div class="chart-card"><h3>Products by Category</h3><canvas id="chartCategories" height="220"></canvas></div><div class="chart-card"><h3>Top Customers (by Spend)</h3><canvas id="chartCustomers" height="220"></canvas></div></div>`;
     setTimeout(() => {
-        // Orders by status
         const statuses = ['pending','processing','completed','cancelled'];
         const statusCounts = statuses.map(s => orders.filter(o => o.status === s).length);
-        analyticsCharts.push(new Chart(document.getElementById('chartOrderStatus'), {
-            type: 'doughnut',
-            data: { labels: statuses.map(s => s.charAt(0).toUpperCase()+s.slice(1)), datasets: [{ data: statusCounts, backgroundColor: ['#ff9800','#2196f3','#28a745','#dc3545'] }] },
-            options: { plugins: { legend: { position: 'bottom' } } }
-        }));
-
-        // Revenue by month
+        analyticsCharts.push(new Chart(document.getElementById('chartOrderStatus'), { type: 'doughnut', data: { labels: statuses.map(s => s.charAt(0).toUpperCase()+s.slice(1)), datasets: [{ data: statusCounts, backgroundColor: ['#ff9800','#2196f3','#28a745','#dc3545'] }] }, options: { plugins: { legend: { position: 'bottom' } } } }));
         const monthData = {};
-        orders.forEach(o => {
-            if (!o.date) return;
-            const m = new Date(o.date).toLocaleString('en-KE', { month: 'short', year: '2-digit' });
-            monthData[m] = (monthData[m] || 0) + (o.total || 0);
-        });
+        orders.forEach(o => { if (!o.date) return; const m = new Date(o.date).toLocaleString('en-KE', { month: 'short', year: '2-digit' }); monthData[m] = (monthData[m] || 0) + (o.total || 0); });
         const mLabels = Object.keys(monthData).slice(-6);
         const mVals = mLabels.map(l => monthData[l]);
-        analyticsCharts.push(new Chart(document.getElementById('chartRevenue'), {
-            type: 'bar',
-            data: { labels: mLabels, datasets: [{ label: 'Revenue (Ksh)', data: mVals, backgroundColor: '#c62828', borderRadius: 6 }] },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        }));
-
-        // Products by category
+        analyticsCharts.push(new Chart(document.getElementById('chartRevenue'), { type: 'bar', data: { labels: mLabels, datasets: [{ label: 'Revenue (Ksh)', data: mVals, backgroundColor: '#c62828', borderRadius: 6 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } }));
         const catData = {};
         products.forEach(p => { catData[p.category || 'Other'] = (catData[p.category || 'Other'] || 0) + 1; });
-        analyticsCharts.push(new Chart(document.getElementById('chartCategories'), {
-            type: 'pie',
-            data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#1a237e','#c62828','#ff9800','#28a745','#2196f3','#9c27b0'] }] },
-            options: { plugins: { legend: { position: 'bottom' } } }
-        }));
-
-        // Top customers
+        analyticsCharts.push(new Chart(document.getElementById('chartCategories'), { type: 'pie', data: { labels: Object.keys(catData), datasets: [{ data: Object.values(catData), backgroundColor: ['#1a237e','#c62828','#ff9800','#28a745','#2196f3','#9c27b0'] }] }, options: { plugins: { legend: { position: 'bottom' } } } }));
         const topCusts = [...customers].sort((a,b) => b.totalSpent - a.totalSpent).slice(0,6);
-        analyticsCharts.push(new Chart(document.getElementById('chartCustomers'), {
-            type: 'bar',
-            data: {
-                labels: topCusts.map(c => c.name?.split(' ')[0] || 'N/A'),
-                datasets: [{ label: 'Total Spent (Ksh)', data: topCusts.map(c => c.totalSpent), backgroundColor: '#1a237e', borderRadius: 6 }]
-            },
-            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-        }));
+        analyticsCharts.push(new Chart(document.getElementById('chartCustomers'), { type: 'bar', data: { labels: topCusts.map(c => c.name?.split(' ')[0] || 'N/A'), datasets: [{ label: 'Total Spent (Ksh)', data: topCusts.map(c => c.totalSpent), backgroundColor: '#1a237e', borderRadius: 6 }] }, options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } } }));
     }, 100);
 }
 
 // ===== IMAGE UPLOAD =====
-const IMAGE_BUCKET = 'product-images'; // Make sure this bucket exists in Supabase Storage
-
+const IMAGE_BUCKET = 'product-images';
 function resetImageUpload() {
     document.getElementById('imageFileInput').value = '';
     document.getElementById('imagePreview').style.display = 'none';
@@ -1316,7 +1048,6 @@ function resetImageUpload() {
     document.getElementById('productImage').value = '';
     document.getElementById('productImageUrl').value = '';
 }
-
 function setImagePreview(url) {
     const preview = document.getElementById('imagePreview');
     preview.src = url;
@@ -1325,152 +1056,50 @@ function setImagePreview(url) {
     document.getElementById('imageUploadOverlay').style.display = 'flex';
     document.getElementById('productImage').value = url;
 }
-
-function handleUrlInput(url) {
-    if (!url) { resetImageUpload(); return; }
-    setImagePreview(url);
-    document.getElementById('imageUploadStatus').textContent = '';
-}
-
+function handleUrlInput(url) { if (!url) { resetImageUpload(); return; } setImagePreview(url); document.getElementById('imageUploadStatus').textContent = ''; }
 function handleImageSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-        document.getElementById('imageUploadStatus').textContent = 'File too large. Max 5MB.';
-        document.getElementById('imageUploadStatus').className = 'upload-status error';
-        return;
-    }
-    // Show local preview immediately
+    if (file.size > 5 * 1024 * 1024) { document.getElementById('imageUploadStatus').textContent = 'File too large. Max 5MB.'; document.getElementById('imageUploadStatus').className = 'upload-status error'; return; }
     const reader = new FileReader();
     reader.onload = e => setImagePreview(e.target.result);
     reader.readAsDataURL(file);
     uploadImageToSupabase(file);
 }
-
 async function uploadImageToSupabase(file) {
     const statusEl = document.getElementById('imageUploadStatus');
     const progressEl = document.getElementById('imageUploadProgress');
     const barEl = document.getElementById('uploadProgressBar');
-
     statusEl.textContent = 'Uploading...';
     statusEl.className = 'upload-status loading';
     progressEl.style.display = 'block';
     barEl.style.width = '30%';
-
     const ext = file.name.split('.').pop();
     const fileName = `product_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-
     barEl.style.width = '60%';
-
-    const { data, error } = await sb.storage.from(IMAGE_BUCKET).upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-        contentType: file.type
-    });
-
-    if (error) {
-        barEl.style.width = '0%';
-        progressEl.style.display = 'none';
-        statusEl.textContent = 'Upload failed: ' + error.message;
-        statusEl.className = 'upload-status error';
-        return;
-    }
-
+    const { data, error } = await sb.storage.from(IMAGE_BUCKET).upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+    if (error) { barEl.style.width = '0%'; progressEl.style.display = 'none'; statusEl.textContent = 'Upload failed: ' + error.message; statusEl.className = 'upload-status error'; return; }
     barEl.style.width = '100%';
     const { data: urlData } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(data.path);
     const publicUrl = urlData.publicUrl;
-
     document.getElementById('productImage').value = publicUrl;
     document.getElementById('productImageUrl').value = publicUrl;
     setImagePreview(publicUrl);
-
     statusEl.textContent = '✓ Image uploaded successfully';
     statusEl.className = 'upload-status success';
     setTimeout(() => { progressEl.style.display = 'none'; }, 800);
 }
-
-// Drag & drop support
 document.addEventListener('DOMContentLoaded', () => {
     const area = document.getElementById('imageUploadArea');
     if (!area) return;
     area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
     area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
-    area.addEventListener('drop', e => {
-        e.preventDefault(); area.classList.remove('drag-over');
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = ev => setImagePreview(ev.target.result);
-            reader.readAsDataURL(file);
-            uploadImageToSupabase(file);
-        }
-    });
+    area.addEventListener('drop', e => { e.preventDefault(); area.classList.remove('drag-over'); const file = e.dataTransfer.files[0]; if (file && file.type.startsWith('image/')) { const reader = new FileReader(); reader.onload = ev => setImagePreview(ev.target.result); reader.readAsDataURL(file); uploadImageToSupabase(file); } });
 });
 
-
-function contactViaWhatsApp(phone) {
-    const formatted = phone.toString().replace(/^0/, '254').replace(/\s+/g,'').replace(/\+/g,'');
-    window.open(`https://wa.me/${formatted}`, '_blank');
-}
-
-async function checkNewData() {
-    await loadAllData();
-    updateBadges();
-    await showSection(currentSection);
-    showToast('Data refreshed!', 'info');
-}
-
-function handleGlobalSearch(e) {
-    if (e.key !== 'Enter') return;
-    const term = document.getElementById('globalSearchInput').value.trim();
-    if (!term) return;
-    if (currentSection === 'products') renderProducts(term);
-    else if (currentSection === 'customers') renderCustomers(term);
-    else if (currentSection === 'orders') {
-        // highlight matching orders
-        const found = orders.filter(o => String(o.id).includes(term) || o.customer_name?.toLowerCase().includes(term.toLowerCase()));
-        showToast(`Found ${found.length} matching order(s)`, 'info');
-    } else {
-        showToast(`Searching "${term}" across all data...`, 'info');
-    }
-}<!-- Bulk Upload Modal -->
-<div class="modal" id="bulkUploadModal">
-    <div class="modal-content" style="max-width: 600px;">
-        <div class="modal-header">
-            <h2><i class="fas fa-file-upload"></i> Bulk Upload Products</h2>
-            <span class="close-modal" onclick="closeBulkUploadModal()">&times;</span>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-            <div class="form-group">
-                <label>Download Template</label>
-                <button class="btn btn-secondary" onclick="downloadTemplate()">
-                    <i class="fas fa-download"></i> CSV Template
-                </button>
-                <p style="font-size: 12px; color: #666; margin-top: 8px;">
-                    Download the template, fill in your products, then upload back.
-                </p>
-            </div>
-            
-            <div class="form-group">
-                <label>Upload CSV File</label>
-                <input type="file" id="bulkFile" accept=".csv" style="width:100%; padding:10px; border:2px solid #ddd; border-radius:8px;">
-            </div>
-            
-            <div id="uploadPreview" style="display: none; margin: 15px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                <h4>Preview (<span id="previewCount">0</span> products)</h4>
-                <div id="previewList" style="max-height: 200px; overflow-y: auto; font-size: 12px;"></div>
-            </div>
-        </div>
-        
-        <div class="form-actions" style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button class="btn btn-secondary" onclick="closeBulkUploadModal()">Cancel</button>
-            <button class="btn btn-primary" onclick="processBulkUpload()" id="bulkUploadBtn">
-                <i class="fas fa-cloud-upload-alt"></i> Upload Products
-            </button>
-        </div>
-    </div>
-</div>
+function contactViaWhatsApp(phone) { const formatted = phone.toString().replace(/^0/, '254').replace(/\s+/g,'').replace(/\+/g,''); window.open(`https://wa.me/${formatted}`, '_blank'); }
+async function checkNewData() { await loadAllData(); updateBadges(); await showSection(currentSection); showToast('Data refreshed!', 'info'); }
+function handleGlobalSearch(e) { if (e.key !== 'Enter') return; const term = document.getElementById('globalSearchInput').value.trim(); if (!term) return; if (currentSection === 'products') renderProducts(term); else if (currentSection === 'customers') renderCustomers(term); else if (currentSection === 'orders') { const found = orders.filter(o => String(o.id).includes(term) || o.customer_name?.toLowerCase().includes(term.toLowerCase())); showToast(`Found ${found.length} matching order(s)`, 'info'); } else { showToast(`Searching "${term}" across all data...`, 'info'); } }
 </script>
 </body>
 </html>
