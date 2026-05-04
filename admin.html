@@ -137,6 +137,17 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; overflow-x: auto;
         }
         .table-header {
+            <div class="table-header">
+    <h3>Products</h3>
+    <div class="table-header-actions">
+        <button class="btn btn-secondary" onclick="openBulkUploadModal()">
+            <i class="fas fa-file-upload"></i> Bulk Upload
+        </button>
+        <button class="btn btn-primary" onclick="openProductModal()">
+            <i class="fas fa-plus"></i> Add Product
+        </button>
+    </div>
+</div>
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
         }
