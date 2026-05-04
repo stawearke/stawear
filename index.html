@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
 
-        /* Header */
         header {
             background: linear-gradient(135deg, #1a237e 0%, #0d1b3e 100%);
             color: white;
@@ -104,6 +103,7 @@
             position: relative;
             font-size: 1.4rem;
             cursor: pointer;
+            color: white;
         }
 
         .cart-count {
@@ -121,7 +121,6 @@
             justify-content: center;
         }
 
-        /* Hero Section */
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(198, 40, 40, 0.8)), url('https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&w=1200&q=80');
             background-size: cover;
@@ -162,7 +161,6 @@
             background: #ff9800;
         }
 
-        /* Products Grid */
         .section-title {
             text-align: center;
             margin: 3rem 0 2rem;
@@ -178,21 +176,13 @@
         }
 
         @media (max-width: 1200px) {
-            .products-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .products-grid { grid-template-columns: repeat(3, 1fr); }
         }
-
         @media (max-width: 900px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
         }
-
         @media (max-width: 600px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
+            .products-grid { grid-template-columns: 1fr; }
         }
 
         .product-card {
@@ -230,7 +220,6 @@
             margin: 10px 0;
         }
 
-        /* Cart Sidebar */
         .cart-sidebar {
             position: fixed;
             top: 0;
@@ -269,7 +258,6 @@
             border-top: 2px solid #eee;
         }
 
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -306,7 +294,6 @@
             cursor: pointer;
         }
 
-        /* Form Styles */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -326,7 +313,6 @@
             border-radius: 8px;
         }
 
-        /* Toast */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -342,11 +328,35 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
             border-left: 5px solid #28a745;
         }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            z-index: 999;
+            text-decoration: none;
+        }
+
+        footer {
+            background: #0d1b3e;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <!-- WhatsApp Float -->
-    <a href="https://wa.me/254727394165" class="whatsapp-float" style="position:fixed; bottom:30px; right:30px; width:65px; height:65px; background:#25D366; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2.5rem; z-index:999; text-decoration:none;" target="_blank">
+    <a href="https://wa.me/254727394165" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -381,7 +391,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeCheckout()">&times;</span>
             <h2 style="color:#c62828;">Complete Order</h2>
-            <form id="checkoutForm" onsubmit="processOrder(event)">
+            <form id="checkoutForm">
                 <div class="form-group">
                     <label>Full Name *</label>
                     <input type="text" id="customerName" required>
@@ -398,6 +408,21 @@
                     <label>Delivery Address *</label>
                     <textarea id="deliveryAddress" required rows="2"></textarea>
                 </div>
+                <div class="form-group">
+                    <label>County</label>
+                    <select id="deliveryCounty">
+                        <option value="200">Nairobi - Ksh 200</option>
+                        <option value="250">Kiambu - Ksh 250</option>
+                        <option value="350">Nakuru - Ksh 350</option>
+                        <option value="500">Mombasa - Ksh 500</option>
+                        <option value="450">Kisumu - Ksh 450</option>
+                        <option value="600">Other - Ksh 600</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>M-Pesa Code (after payment)</label>
+                    <input type="text" id="mpesaCode" placeholder="Enter M-Pesa confirmation code">
+                </div>
                 <button type="submit" class="btn" style="width:100%;">Place Order</button>
             </form>
         </div>
@@ -408,7 +433,7 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeBrandingModal()">&times;</span>
             <h2 style="color:#c62828;">Custom Branding Request</h2>
-            <form id="brandingForm" onsubmit="submitBrandingRequest(event)">
+            <form id="brandingForm">
                 <div class="form-group">
                     <label>Name *</label>
                     <input type="text" id="brandName" required>
@@ -432,6 +457,8 @@
                         <option>T-Shirts</option>
                         <option>Jackets</option>
                         <option>Tracksuits</option>
+                        <option>Pants</option>
+                        <option>Accessories</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -487,7 +514,7 @@
     <section class="products" id="products">
         <div class="container">
             <h2 class="section-title">OUR PRODUCTS</h2>
-            <div class="products-grid" id="productsGrid">Loading...</div>
+            <div class="products-grid" id="productsGrid">Loading products...</div>
         </div>
     </section>
 
@@ -500,8 +527,10 @@
         </div>
     </section>
 
-    <footer style="background:#0d1b3e; color:white; padding:2rem 0; text-align:center;">
-        <p>&copy; 2026 Stawear. All rights reserved. 🇰🇪</p>
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Stawear. All rights reserved. 🇰🇪</p>
+        </div>
     </footer>
 
     <script>
@@ -512,31 +541,26 @@
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // EmailJS
-        (function() {
-            emailjs.init("rOBcEHt9BFgYEOL1Z");
-        })();
+        emailjs.init("rOBcEHt9BFgYEOL1Z");
 
         // Global variables
         let products = [];
         let cart = { items: [], total: 0, count: 0 };
 
-        // ===== LOAD DATA FROM SUPABASE =====
+        // ===== LOAD PRODUCTS FROM SUPABASE =====
         async function loadProducts() {
             const { data, error } = await supabase
                 .from('products')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('id', { ascending: false });
             
             if (error) {
                 console.error('Error loading products:', error);
-                // Fallback products
-                products = [
-                    { id: 1, name: "Premium Hoodie", price: 2499, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500", category: "Hoodies", description: "Premium quality hoodie" },
-                    { id: 2, name: "Training T-Shirt", price: 1899, image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=500", category: "T-Shirts", description: "Comfortable training shirt" }
-                ];
-            } else {
-                products = data;
+                showToast('Error loading products', 'error');
+                return;
             }
+            
+            products = data || [];
             renderProducts();
         }
 
@@ -545,18 +569,18 @@
             if (!grid) return;
             
             if (products.length === 0) {
-                grid.innerHTML = '<p>No products available.</p>';
+                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">No products available. Check back soon!</p>';
                 return;
             }
             
             grid.innerHTML = products.map(product => `
                 <div class="product-card" onclick="viewProduct(${product.id})">
                     <div class="product-img">
-                        <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}">
+                        <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}" loading="lazy">
                     </div>
                     <div class="product-info">
                         <h3>${product.name}</h3>
-                        <p class="product-price">Ksh ${product.price}</p>
+                        <p class="product-price">Ksh ${product.price.toLocaleString()}</p>
                         <button class="btn" style="width:100%; padding:8px;" onclick="event.stopPropagation(); addToCart(${product.id})">Add to Cart</button>
                     </div>
                 </div>
@@ -589,7 +613,7 @@
             cart.total = cart.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
             
             document.getElementById('cartCount').textContent = cart.count;
-            document.getElementById('cartTotal').textContent = cart.total;
+            document.getElementById('cartTotal').textContent = cart.total.toLocaleString();
             
             const cartContainer = document.getElementById('cartItems');
             const cartFooter = document.getElementById('cartFooter');
@@ -603,7 +627,7 @@
                         <img src="${item.image}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
                         <div style="flex:1;">
                             <strong>${item.name}</strong>
-                            <div>Ksh ${item.price} x ${item.quantity}</div>
+                            <div>Ksh ${item.price.toLocaleString()} x ${item.quantity}</div>
                         </div>
                         <button onclick="removeFromCart(${idx})" style="background:none; border:none; color:#c62828; cursor:pointer;">Remove</button>
                     </div>
@@ -611,7 +635,6 @@
                 cartFooter.style.display = 'block';
             }
             
-            // Save cart to localStorage for persistence
             localStorage.setItem('stawearCart', JSON.stringify(cart.items));
         }
 
@@ -627,43 +650,58 @@
         async function processOrder(event) {
             event.preventDefault();
             
+            if (cart.items.length === 0) {
+                showToast('Cart is empty!', 'error');
+                return;
+            }
+            
+            const deliveryCost = parseInt(document.getElementById('deliveryCounty').value) || 200;
+            const totalWithDelivery = cart.total + deliveryCost;
+            
+            const orderId = 'STA' + Date.now() + Math.floor(Math.random() * 1000);
+            
             const orderData = {
-                id: 'ORD' + Date.now(),
+                id: orderId,
                 customer_name: document.getElementById('customerName').value,
                 customer_phone: document.getElementById('customerPhone').value,
                 customer_email: document.getElementById('customerEmail').value,
                 delivery_address: document.getElementById('deliveryAddress').value,
+                delivery_cost: deliveryCost,
                 items: cart.items,
-                total: cart.total,
+                total: totalWithDelivery,
                 status: 'pending',
+                payment_method: 'mpesa',
+                mpesa_code: document.getElementById('mpesaCode').value || 'Pending',
                 date: new Date().toISOString()
             };
             
             // Save to Supabase
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('orders')
                 .insert([orderData]);
             
             if (error) {
-                showToast('Error placing order!', 'error');
-                console.error(error);
+                console.error('Error placing order:', error);
+                showToast('Error placing order! Please try again.', 'error');
                 return;
             }
             
             // Send email notification
-            emailjs.send(
-                "service_ym1oijj",
-                "template_jra9me1",
-                {
+            try {
+                await emailjs.send("service_ym1oijj", "template_jra9me1", {
                     to_email: orderData.customer_email,
                     customer_name: orderData.customer_name,
                     order_id: orderData.id,
                     total: orderData.total,
                     order_items: cart.items.map(i => `${i.name} x${i.quantity}`).join(', ')
-                }
-            ).catch(err => console.log('Email error:', err));
+                });
+            } catch(e) {
+                console.log('Email error:', e);
+            }
             
-            showToast('Order placed successfully!');
+            showToast(`Order placed! Order ID: ${orderId}`);
+            
+            // Clear cart and close modal
             cart.items = [];
             updateCart();
             closeCheckout();
@@ -694,12 +732,11 @@
                 .insert([requestData]);
             
             if (error) {
+                console.error('Error submitting request:', error);
                 showToast('Error submitting request!', 'error');
-                console.error(error);
                 return;
             }
             
-            // Send WhatsApp notification (simulated)
             showToast('Request submitted! We will contact you soon.');
             closeBrandingModal();
             document.getElementById('brandingForm').reset();
@@ -714,7 +751,7 @@
                 <img src="${product.image}" style="width:100%; max-height:300px; object-fit:cover; border-radius:10px;">
                 <h2 style="margin-top:15px;">${product.name}</h2>
                 <p>${product.description || 'Premium quality Taekwondo apparel'}</p>
-                <p class="product-price" style="font-size:1.5rem;">Ksh ${product.price}</p>
+                <p style="font-size:1.5rem; font-weight:800; color:#c62828; margin:15px 0;">Ksh ${product.price.toLocaleString()}</p>
                 <button class="btn" style="width:100%;" onclick="addToCart(${product.id}); closeModal();">Add to Cart</button>
             `;
             document.getElementById('productModal').classList.add('active');
@@ -756,10 +793,15 @@
         function showToast(msg, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+            toast.style.borderLeftColor = type === 'error' ? '#dc3545' : '#28a745';
+            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}" style="color:${type === 'error' ? '#dc3545' : '#28a745'}"></i> ${msg}`;
             document.getElementById('toastContainer').appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
+
+        // Event listeners
+        document.getElementById('checkoutForm')?.addEventListener('submit', processOrder);
+        document.getElementById('brandingForm')?.addEventListener('submit', submitBrandingRequest);
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
