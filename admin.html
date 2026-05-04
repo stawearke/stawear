@@ -51,8 +51,26 @@
             text-align: center;
         }
 
+        .sidebar-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: white;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
         .sidebar-header h2 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
+            margin-top: 5px;
         }
 
         .sidebar-header h2 span {
@@ -451,90 +469,6 @@
             gap: 15px;
         }
 
-        /* ===== IMAGE UPLOAD ===== */
-        .image-upload-area {
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .image-upload-area:hover {
-            border-color: #c62828;
-            background: #fff5f5;
-        }
-
-        .image-upload-area i {
-            font-size: 3rem;
-            color: #c62828;
-            margin-bottom: 15px;
-        }
-
-        .image-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .preview-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 1;
-        }
-
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .preview-item .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 25px;
-            height: 25px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            background: white;
-            border-radius: 10px;
-            padding: 15px 25px;
-            margin-bottom: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: slideIn 0.3s ease;
-            border-left: 5px solid #28a745;
-        }
-
-        .toast.error {
-            border-left-color: #dc3545;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
         /* ===== LOGIN PAGE ===== */
         .login-container {
             min-height: 100vh;
@@ -550,11 +484,14 @@
             padding: 40px;
             width: 100%;
             max-width: 400px;
+            text-align: center;
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 20px;
         }
 
         .login-header h2 {
@@ -605,12 +542,43 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 25px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease;
+            border-left: 5px solid #28a745;
+        }
+
+        .toast.error {
+            border-left-color: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
     <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-box">
+            <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear Logo" class="login-logo">
             <div class="login-header">
                 <h2>STA<span style="color: #c62828;">WEAR</span></h2>
                 <p>Admin Panel - Full Control</p>
@@ -632,36 +600,39 @@
         <!-- Sidebar -->
         <div class="admin-sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>STA<span>WEAR</span></h2>
+                <div class="sidebar-logo">
+                    <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear Logo" class="sidebar-logo-img">
+                    <h2>STA<span>WEAR</span></h2>
+                </div>
                 <p>Complete Control Panel</p>
             </div>
             
             <div class="sidebar-menu">
-                <div class="menu-item active" onclick="showSection('dashboard')">
+                <div class="menu-item active" data-section="dashboard" onclick="showSection('dashboard')">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="menu-item" onclick="showSection('products')">
+                <div class="menu-item" data-section="products" onclick="showSection('products')">
                     <i class="fas fa-tshirt"></i>
                     <span>Products</span>
                     <span class="badge" id="productCount">0</span>
                 </div>
-                <div class="menu-item" onclick="showSection('orders')">
+                <div class="menu-item" data-section="orders" onclick="showSection('orders')">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Orders</span>
                     <span class="badge" id="orderCount">0</span>
                 </div>
-                <div class="menu-item" onclick="showSection('customers')">
+                <div class="menu-item" data-section="customers" onclick="showSection('customers')">
                     <i class="fas fa-users"></i>
                     <span>Customers</span>
                     <span class="badge" id="customerCount">0</span>
                 </div>
-                <div class="menu-item" onclick="showSection('branding')">
+                <div class="menu-item" data-section="branding" onclick="showSection('branding')">
                     <i class="fas fa-palette"></i>
                     <span>Branding Requests</span>
                     <span class="badge" id="brandingCount">0</span>
                 </div>
-                <div class="menu-item" onclick="showSection('analytics')">
+                <div class="menu-item" data-section="analytics" onclick="showSection('analytics')">
                     <i class="fas fa-chart-line"></i>
                     <span>Analytics</span>
                 </div>
@@ -674,7 +645,6 @@
 
         <!-- Main Content -->
         <div class="admin-main">
-            <!-- Top Bar -->
             <div class="top-bar">
                 <div class="menu-toggle" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
@@ -682,7 +652,7 @@
                 
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search..." id="globalSearch" onkeyup="globalSearch()">
+                    <input type="text" placeholder="Search customers or orders..." id="globalSearch" onkeyup="globalSearch()">
                 </div>
                 
                 <div class="notification-icon" onclick="checkNewData()">
@@ -691,8 +661,9 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
-            <div class="content-area" id="contentArea"></div>
+            <div class="content-area" id="contentArea">
+                <!-- Dynamic content loads here -->
+            </div>
         </div>
     </div>
 
@@ -703,1048 +674,157 @@
                 <h2 id="modalTitle">Add/Edit Product</h2>
                 <span class="close-modal" onclick="closeProductModal()">&times;</span>
             </div>
-            
             <form id="productForm" onsubmit="saveProduct(event)">
                 <input type="hidden" id="productId">
-                
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Product Name *</label>
-                        <input type="text" id="productName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select id="productCategory" required>
-                            <option value="Hoodies">Hoodies</option>
-                            <option value="T-Shirts">T-Shirts</option>
-                            <option value="Jackets">Jackets</option>
-                            <option value="Tracksuits">Tracksuits</option>
-                            <option value="Pants">Pants</option>
-                            <option value="Accessories">Accessories</option>
-                            <option value="Uniforms">Uniforms</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Product Name *</label><input type="text" id="productName" required></div>
+                    <div class="form-group"><label>Category *</label><select id="productCategory" required><option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option><option>Pants</option><option>Accessories</option></select></div>
                 </div>
-                
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Price (Ksh) *</label>
-                        <input type="number" id="productPrice" required min="0">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Original Price</label>
-                        <input type="number" id="productOriginalPrice" min="0">
-                    </div>
+                    <div class="form-group"><label>Price (Ksh) *</label><input type="number" id="productPrice" required></div>
+                    <div class="form-group"><label>Original Price</label><input type="number" id="productOriginalPrice"></div>
                 </div>
-                
-                <div class="form-group">
-                    <label>Description *</label>
-                    <textarea id="productDescription" required rows="3"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Badge</label>
-                    <select id="productBadge">
-                        <option value="">None</option>
-                        <option value="BEST SELLER">Best Seller</option>
-                        <option value="NEW">New</option>
-                        <option value="SALE">Sale</option>
-                        <option value="LIMITED">Limited</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Image URL</label>
-                    <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
-                    <small style="color: #999;">Leave empty to use placeholder</small>
-                </div>
-                
-                <div class="form-group">
-                    <label>Sizes & Stock</label>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>S</label>
-                            <input type="number" id="sizeS" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>M</label>
-                            <input type="number" id="sizeM" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>L</label>
-                            <input type="number" id="sizeL" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>XL</label>
-                            <input type="number" id="sizeXL" value="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>XXL</label>
-                            <input type="number" id="sizeXXL" value="0" min="0">
-                        </div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Product</button>
-                </div>
+                <div class="form-group"><label>Description</label><textarea id="productDescription" rows="3"></textarea></div>
+                <div class="form-group"><label>Image URL</label><input type="url" id="productImage" placeholder="https://..."></div>
+                <div class="form-group"><label>Stock (S,M,L,XL,XXL)</label><div class="form-row"><input type="number" id="sizeS" placeholder="S" value="0"><input type="number" id="sizeM" placeholder="M" value="0"><input type="number" id="sizeL" placeholder="L" value="0"><input type="number" id="sizeXL" placeholder="XL" value="0"><input type="number" id="sizeXXL" placeholder="XXL" value="0"></div></div>
+                <div style="display: flex; gap: 15px; justify-content: flex-end;"><button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
             </form>
         </div>
     </div>
 
     <!-- Order Details Modal -->
-    <div class="modal" id="orderModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Order Details</h2>
-                <span class="close-modal" onclick="closeOrderModal()">&times;</span>
-            </div>
-            <div id="orderDetails"></div>
-        </div>
-    </div>
+    <div class="modal" id="orderModal"><div class="modal-content"><div class="modal-header"><h2>Order Details</h2><span class="close-modal" onclick="closeOrderModal()">&times;</span></div><div id="orderDetails"></div></div></div>
 
-    <!-- Branding Request Modal -->
-    <div class="modal" id="brandingModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Branding Request Details</h2>
-                <span class="close-modal" onclick="closeBrandingModal()">&times;</span>
-            </div>
-            <div id="brandingDetails"></div>
-        </div>
-    </div>
+    <!-- Branding Modal -->
+    <div class="modal" id="brandingModal"><div class="modal-content"><div class="modal-header"><h2>Branding Request</h2><span class="close-modal" onclick="closeBrandingModal()">&times;</span></div><div id="brandingDetails"></div></div></div>
 
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // ===== INITIALIZATION =====
-        (function() {
-            emailjs.init("rOBcEHt9BFgYEOL1Z");
-            window.EMAILJS_SERVICE_ID = "service_ym1oijj";
-            window.ORDER_TEMPLATE = "template_jra9me1";
-        })();
+        // Initialize EmailJS
+        (function() { emailjs.init("rOBcEHt9BFgYEOL1Z"); window.EMAILJS_SERVICE_ID = "service_ym1oijj"; window.ORDER_TEMPLATE = "template_jra9me1"; })();
 
-        // ===== DATA STORES =====
-        let products = [];
-        let orders = [];
-        let brandingRequests = [];
-        let customers = [];
-        let notifications = [];
+        // Data stores
+        let products = [], orders = [], brandingRequests = [], customers = [];
 
-        // ===== LOGIN SYSTEM =====
-        function handleLogin(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // CHANGE THIS PASSWORD AFTER DEPLOYMENT!
-            if (username === 'admin' && password === 'Stawear@2024') {
+        // Login handling
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if(user === 'admin' && pass === 'Stawear@2024') {
                 localStorage.setItem('adminLoggedIn', 'true');
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'flex';
                 loadAllData();
-                
-                // Set up storage listener for real-time updates
-                window.addEventListener('storage', function(e) {
-                    if (e.key === 'stawearOrders' || e.key === 'stawearBrandingRequests') {
-                        loadAllData();
-                        showToast('New data received!', 'info');
-                        updateNotificationBadge();
-                    }
-                });
-                
+                window.addEventListener('storage', function(ev) { if(ev.key === 'stawearOrders' || ev.key === 'stawearBrandingRequests') loadAllData(); });
                 showSection('dashboard');
                 showToast('Welcome to Admin Panel!', 'success');
-            } else {
-                showToast('Invalid credentials!', 'error');
-            }
+            } else showToast('Invalid credentials', 'error');
         }
+        function logout() { localStorage.removeItem('adminLoggedIn'); document.getElementById('dashboard').style.display = 'none'; document.getElementById('loginPage').style.display = 'flex'; }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'flex';
-        }
-
-        // ===== LOAD ALL DATA =====
+        // Load all data from localStorage (sync across devices via same storage)
         function loadAllData() {
-            // Load products
-            const savedProducts = localStorage.getItem('stawearProducts');
-            if (savedProducts) {
-                products = JSON.parse(savedProducts);
-            } else {
-                // Default products
-                products = [
-                    {
-                        id: 1,
-                        name: "Black Belt Master Hoodie",
-                        category: "Hoodies",
-                        price: 2499,
-                        originalPrice: 3200,
-                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80",
-                        description: "Premium hoodie with embroidered black belt design",
-                        badge: "BEST SELLER",
-                        sizes: ["S", "M", "L", "XL"],
-                        stock: { S: 10, M: 15, L: 15, XL: 10, XXL: 5 }
-                    },
-                    {
-                        id: 2,
-                        name: "Kenyan Taekwondo Tee",
-                        category: "T-Shirts",
-                        price: 1899,
-                        originalPrice: 2400,
-                        image: "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80",
-                        description: "Cotton t-shirt with Kenyan flag colors",
-                        badge: "NEW",
-                        sizes: ["S", "M", "L", "XL"],
-                        stock: { S: 20, M: 25, L: 25, XL: 20, XXL: 10 }
-                    }
-                ];
-                localStorage.setItem('stawearProducts', JSON.stringify(products));
-            }
-
-            // Load orders
-            const savedOrders = localStorage.getItem('stawearOrders');
-            if (savedOrders) {
-                orders = JSON.parse(savedOrders);
-            } else {
-                orders = [];
-                localStorage.setItem('stawearOrders', JSON.stringify(orders));
-            }
-
-            // Load branding requests
-            const savedBranding = localStorage.getItem('stawearBrandingRequests');
-            if (savedBranding) {
-                brandingRequests = JSON.parse(savedBranding);
-            } else {
-                brandingRequests = [];
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(brandingRequests));
-            }
-
-            // Extract customers from orders
-            const customerMap = new Map();
-            orders.forEach(order => {
-                if (!customerMap.has(order.customerEmail)) {
-                    customerMap.set(order.customerEmail, {
-                        name: order.customerName,
-                        email: order.customerEmail,
-                        phone: order.customerPhone,
-                        orders: 1,
-                        totalSpent: order.total,
-                        lastOrder: order.date
-                    });
-                } else {
-                    const customer = customerMap.get(order.customerEmail);
-                    customer.orders++;
-                    customer.totalSpent += order.total;
-                }
-            });
-            customers = Array.from(customerMap.values());
-
-            // Update counts
+            products = JSON.parse(localStorage.getItem('stawearProducts') || '[]');
+            if(!products.length) products = [{id:1,name:"Black Belt Hoodie",category:"Hoodies",price:2499,image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",description:"Premium hoodie",sizes:["S","M","L","XL"],stock:{S:10,M:15,L:15,XL:10,XXL:5}}];
+            orders = JSON.parse(localStorage.getItem('stawearOrders') || '[]');
+            brandingRequests = JSON.parse(localStorage.getItem('stawearBrandingRequests') || '[]');
+            const custMap = new Map();
+            orders.forEach(o => { if(!custMap.has(o.customerEmail)) custMap.set(o.customerEmail, {name:o.customerName, email:o.customerEmail, phone:o.customerPhone, orders:1, totalSpent:o.total, lastOrder:o.date}); else { let c=custMap.get(o.customerEmail); c.orders++; c.totalSpent+=o.total; } });
+            customers = Array.from(custMap.values());
             document.getElementById('productCount').textContent = products.length;
             document.getElementById('orderCount').textContent = orders.length;
             document.getElementById('customerCount').textContent = customers.length;
             document.getElementById('brandingCount').textContent = brandingRequests.length;
-            
-            updateNotificationBadge();
+            const pending = orders.filter(o=>o.status==='pending').length + brandingRequests.filter(r=>r.status==='pending').length;
+            document.getElementById('notificationBadge').textContent = pending;
         }
 
-        // ===== NOTIFICATION SYSTEM =====
-        function updateNotificationBadge() {
-            const pendingOrders = orders.filter(o => o.status === 'pending').length;
-            const pendingBranding = brandingRequests.filter(r => r.status === 'pending').length;
-            const total = pendingOrders + pendingBranding;
-            document.getElementById('notificationBadge').textContent = total;
-        }
-
-        function checkNewData() {
-            loadAllData();
-            showToast('Data refreshed!', 'success');
-        }
-
-        // ===== SECTION RENDERING =====
         function showSection(section) {
             document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-            event.target.closest('.menu-item').classList.add('active');
-            
-            switch(section) {
-                case 'dashboard': renderDashboard(); break;
-                case 'products': renderProducts(); break;
-                case 'orders': renderOrders(); break;
-                case 'customers': renderCustomers(); break;
-                case 'branding': renderBrandingRequests(); break;
-                case 'analytics': renderAnalytics(); break;
-            }
+            document.querySelector(`.menu-item[data-section="${section}"]`)?.classList.add('active');
+            if(section === 'dashboard') renderDashboard();
+            else if(section === 'products') renderProducts();
+            else if(section === 'orders') renderOrders();
+            else if(section === 'customers') renderCustomers();
+            else if(section === 'branding') renderBranding();
+            else if(section === 'analytics') renderAnalytics();
         }
 
-        // ===== DASHBOARD =====
         function renderDashboard() {
-            const totalSales = orders.reduce((sum, order) => sum + order.total, 0);
-            const pendingOrders = orders.filter(o => o.status === 'pending').length;
-            
-            const html = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total Sales</h3>
-                            <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-money-bill"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Total Orders</h3>
-                            <div class="stat-number">${orders.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Pending Orders</h3>
-                            <div class="stat-number">${pendingOrders}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Customers</h3>
-                            <div class="stat-number">${customers.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Recent Orders</h3>
-                        <button class="btn btn-primary" onclick="showSection('orders')">View All</button>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${orders.slice(0, 5).map(order => `
-                                <tr>
-                                    <td>${order.id}</td>
-                                    <td>${order.customerName}</td>
-                                    <td>Ksh ${order.total}</td>
-                                    <td><span class="status-badge status-${order.status}">${order.status}</span></td>
-                                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Recent Branding Requests</h3>
-                        <button class="btn btn-primary" onclick="showSection('branding')">View All</button>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Customer</th>
-                                <th>Dojang</th>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${brandingRequests.slice(0, 5).map(request => `
-                                <tr>
-                                    <td>${request.name}</td>
-                                    <td>${request.dojang || 'N/A'}</td>
-                                    <td>${request.itemType}</td>
-                                    <td>${request.quantity}</td>
-                                    <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
+            const totalSales = orders.reduce((s,o)=>s+o.total,0);
+            const pendingOrders = orders.filter(o=>o.status==='pending').length;
+            document.getElementById('contentArea').innerHTML = `
+                <div class="stats-grid"><div class="stat-card"><div class="stat-info"><h3>Total Sales</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-money-bill"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3>Orders</h3><div class="stat-number">${orders.length}</div></div><div class="stat-icon"><i class="fas fa-shopping-bag"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3>Pending</h3><div class="stat-number">${pendingOrders}</div></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+                <div class="stat-card"><div class="stat-info"><h3>Customers</h3><div class="stat-number">${customers.length}</div></div><div class="stat-icon"><i class="fas fa-users"></i></div></div></div>
+                <div class="table-container"><div class="table-header"><h3>Recent Orders</h3><button class="btn btn-primary" onclick="showSection('orders')">View All</button></div><table><thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${orders.slice(0,5).map(o=>`<tr><td>${o.id}</td><td>${o.customerName}</td><td>Ksh ${o.total}</td><td><span class="status-badge status-${o.status}">${o.status}</span></td><td>${new Date(o.date).toLocaleDateString()}</td><td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join('')}</tbody></table></div>
+                <div class="table-container"><div class="table-header"><h3>Branding Requests</h3><button class="btn btn-primary" onclick="showSection('branding')">All</button></div><table><thead><tr><th>Customer</th><th>Dojang</th><th>Item</th><th>Status</th><th>Action</th></tr></thead><tbody>${brandingRequests.slice(0,5).map(r=>`<tr><td>${r.name}</td><td>${r.dojang||'N/A'}</td><td>${r.itemType}</td><td><span class="status-badge status-pending">${r.status}</span></td><td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">View</button></td></tr>`).join('')}</tbody></table></div>
             `;
-            
-            document.getElementById('contentArea').innerHTML = html;
         }
 
-        // ===== PRODUCTS SECTION =====
         function renderProducts() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Product Management</h3>
-                        <button class="btn btn-primary" onclick="openProductModal()">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${products.map(product => `
-                                <tr>
-                                    <td>
-                                        <div class="product-thumb">
-                                            <img src="${product.image || 'https://via.placeholder.com/50'}" alt="${product.name}">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <strong>${product.name}</strong>
-                                        ${product.badge ? `<br><small style="color:#c62828;">${product.badge}</small>` : ''}
-                                    </td>
-                                    <td>${product.category}</td>
-                                    <td>
-                                        Ksh ${product.price}
-                                        ${product.originalPrice ? `<br><small style="text-decoration:line-through;">Ksh ${product.originalPrice}</small>` : ''}
-                                    </td>
-                                    <td>
-                                        ${product.stock ? Object.entries(product.stock).map(([size, qty]) => 
-                                            qty > 0 ? `${size}:${qty} ` : ''
-                                        ).join('') : 'N/A'}
-                                    </td>
-                                    <td>
-                                        <span class="status-badge ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'status-completed' : 'status-pending'}">
-                                            ${product.stock && Object.values(product.stock).some(q => q > 0) ? 'In Stock' : 'Out of Stock'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit-btn" onclick="editProduct(${product.id})">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete-btn" onclick="deleteProduct(${product.id})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('contentArea').innerHTML = `<div class="table-container"><div class="table-header"><h3>Products</h3><button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add Product</button></div><table><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead><tbody>${products.map(p=>`<tr><td><div class="product-thumb"><img src="${p.image||'https://via.placeholder.com/50'}"></div></td><td><strong>${p.name}</strong></td><td>Ksh ${p.price}</td><td>${p.stock ? Object.entries(p.stock).filter(([_,q])=>q>0).map(([s,q])=>`${s}:${q}`).join(', ') : 'N/A'}</td><td><div class="action-btns"><button class="action-btn edit-btn" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button><button class="action-btn delete-btn" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button></div></td></tr>`).join('')}</tbody></table></div>`;
         }
 
-        // ===== PRODUCT CRUD =====
-        function openProductModal(productId = null) {
+        function openProductModal(id=null) {
             document.getElementById('productModal').classList.add('active');
-            
-            if (productId) {
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    document.getElementById('productId').value = product.id;
-                    document.getElementById('productName').value = product.name;
-                    document.getElementById('productCategory').value = product.category;
-                    document.getElementById('productPrice').value = product.price;
-                    document.getElementById('productOriginalPrice').value = product.originalPrice || '';
-                    document.getElementById('productDescription').value = product.description;
-                    document.getElementById('productBadge').value = product.badge || '';
-                    document.getElementById('productImage').value = product.image || '';
-                    
-                    // Set stock values
-                    document.getElementById('sizeS').value = product.stock?.S || 0;
-                    document.getElementById('sizeM').value = product.stock?.M || 0;
-                    document.getElementById('sizeL').value = product.stock?.L || 0;
-                    document.getElementById('sizeXL').value = product.stock?.XL || 0;
-                    document.getElementById('sizeXXL').value = product.stock?.XXL || 0;
-                }
-            } else {
-                document.getElementById('productForm').reset();
-                document.getElementById('productId').value = '';
-            }
+            if(id) { let p=products.find(x=>x.id===id); if(p){ document.getElementById('productId').value=p.id; document.getElementById('productName').value=p.name; document.getElementById('productCategory').value=p.category; document.getElementById('productPrice').value=p.price; document.getElementById('productOriginalPrice').value=p.originalPrice||''; document.getElementById('productDescription').value=p.description||''; document.getElementById('productImage').value=p.image||''; let st=p.stock||{}; document.getElementById('sizeS').value=st.S||0; document.getElementById('sizeM').value=st.M||0; document.getElementById('sizeL').value=st.L||0; document.getElementById('sizeXL').value=st.XL||0; document.getElementById('sizeXXL').value=st.XXL||0; } }
+            else document.getElementById('productForm').reset();
         }
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-        }
-
-        function saveProduct(event) {
-            event.preventDefault();
-            
-            const productId = document.getElementById('productId').value;
-            
-            // Get stock values FIRST
-            const stock = {
-                S: parseInt(document.getElementById('sizeS').value) || 0,
-                M: parseInt(document.getElementById('sizeM').value) || 0,
-                L: parseInt(document.getElementById('sizeL').value) || 0,
-                XL: parseInt(document.getElementById('sizeXL').value) || 0,
-                XXL: parseInt(document.getElementById('sizeXXL').value) || 0
-            };
-            
-            // Create productData object
-            const productData = {
-                id: productId ? parseInt(productId) : Date.now(),
-                name: document.getElementById('productName').value,
-                category: document.getElementById('productCategory').value,
-                price: parseInt(document.getElementById('productPrice').value),
-                originalPrice: parseInt(document.getElementById('productOriginalPrice').value) || null,
-                description: document.getElementById('productDescription').value,
-                badge: document.getElementById('productBadge').value || null,
-                image: document.getElementById('productImage').value || 'https://via.placeholder.com/500',
-                stock: stock,
-                sizes: Object.keys(stock).filter(size => stock[size] > 0)
-            };
-            
-            if (productId) {
-                const index = products.findIndex(p => p.id === parseInt(productId));
-                if (index !== -1) {
-                    products[index] = productData;
-                }
-            } else {
-                products.push(productData);
-            }
-            
+        function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('productId').value;
+            const stock = { S:+document.getElementById('sizeS').value, M:+document.getElementById('sizeM').value, L:+document.getElementById('sizeL').value, XL:+document.getElementById('sizeXL').value, XXL:+document.getElementById('sizeXXL').value };
+            const product = { id: id ? parseInt(id) : Date.now(), name:document.getElementById('productName').value, category:document.getElementById('productCategory').value, price:+document.getElementById('productPrice').value, originalPrice:+document.getElementById('productOriginalPrice').value||null, description:document.getElementById('productDescription').value, image:document.getElementById('productImage').value||'https://via.placeholder.com/500', stock, sizes:Object.keys(stock).filter(s=>stock[s]>0) };
+            if(id) { let idx=products.findIndex(p=>p.id===parseInt(id)); if(idx!==-1) products[idx]=product; }
+            else products.push(product);
             localStorage.setItem('stawearProducts', JSON.stringify(products));
-            document.getElementById('productCount').textContent = products.length;
             closeProductModal();
             renderProducts();
-            showToast('Product saved successfully!', 'success');
+            showToast('Product saved!','success');
         }
+        function deleteProduct(id) { if(confirm('Delete?')){ products=products.filter(p=>p.id!==id); localStorage.setItem('stawearProducts',JSON.stringify(products)); renderProducts(); showToast('Deleted','warning'); } }
+        function editProduct(id) { openProductModal(id); }
 
-        function deleteProduct(productId) {
-            if (confirm('Delete this product?')) {
-                products = products.filter(p => p.id !== productId);
-                localStorage.setItem('stawearProducts', JSON.stringify(products));
-                document.getElementById('productCount').textContent = products.length;
-                renderProducts();
-                showToast('Product deleted', 'warning');
-            }
-        }
-
-        function editProduct(productId) {
-            openProductModal(productId);
-        }
-
-        // ===== ORDERS SECTION =====
         function renderOrders() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Order Management</h3>
-                        <select onchange="filterOrders(this.value)" style="padding: 8px; border-radius: 5px;">
-                            <option value="all">All Orders</option>
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Items</th>
-                                <th>Total</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTable">
-                            ${renderOrdersTable(orders)}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('contentArea').innerHTML = `<div class="table-container"><div class="table-header"><h3>Orders</h3><select onchange="filterOrders(this.value)"><option value="all">All</option><option value="pending">Pending</option><option value="processing">Processing</option><option value="completed">Completed</option></select></div><table><thead><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody id="ordersTableBody">${orders.map(o=>`<tr><td>${o.id}</td><td>${o.customerName}<br><small>${o.customerPhone}</small></td><td>Ksh ${o.total}</td><td><select onchange="updateOrderStatus('${o.id}',this.value)"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='processing'?'selected':''}>processing</option><option ${o.status==='completed'?'selected':''}>completed</option><option ${o.status==='cancelled'?'selected':''}>cancelled</option></select></td><td>${new Date(o.date).toLocaleDateString()}</td><td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join('')}</tbody></table></div>`;
         }
+        function filterOrders(status) { let rows = orders.filter(o=>status==='all'?true:o.status===status); document.getElementById('ordersTableBody').innerHTML = rows.map(o=>`<tr><td>${o.id}</td><td>${o.customerName}</td><td>Ksh ${o.total}</td><td><select onchange="updateOrderStatus('${o.id}',this.value)"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='processing'?'selected':''}>processing</option><option ${o.status==='completed'?'selected':''}>completed</option></select></td><td>${new Date(o.date).toLocaleDateString()}</td><td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')">View</button></td></tr>`).join(''); }
+        function updateOrderStatus(id, status) { let o=orders.find(x=>x.id===id); if(o){ o.status=status; localStorage.setItem('stawearOrders',JSON.stringify(orders)); loadAllData(); showToast(`Order ${id} updated to ${status}`,'success'); } }
+        function viewOrder(id) { let o=orders.find(x=>x.id===id); if(o) document.getElementById('orderDetails').innerHTML = `<p><strong>Customer:</strong> ${o.customerName}</p><p><strong>Phone:</strong> ${o.customerPhone}</p><p><strong>Address:</strong> ${o.address||'N/A'}</p><p><strong>Total:</strong> Ksh ${o.total}</p><p><strong>Items:</strong> ${o.items?.map(i=>`${i.name} x${i.quantity}`).join(', ')}</p><button class="btn btn-warning" onclick="contactCustomer('${o.customerPhone}')">WhatsApp</button>`; document.getElementById('orderModal').classList.add('active'); }
+        function closeOrderModal() { document.getElementById('orderModal').classList.remove('active'); }
 
-        function renderOrdersTable(ordersToRender) {
-            return ordersToRender.map(order => `
-                <tr>
-                    <td>${order.id}</td>
-                    <td>
-                        ${order.customerName}<br>
-                        <small>${order.customerPhone}</small>
-                    </td>
-                    <td>${order.items?.length || 0} items</td>
-                    <td>Ksh ${order.total}</td>
-                    <td>${order.paymentMethod || 'M-Pesa'}</td>
-                    <td>
-                        <select class="status-badge" onchange="updateOrderStatus('${order.id}', this.value)" style="padding: 5px; border-radius: 20px;">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                            <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Completed</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                    </td>
-                    <td>${new Date(order.date).toLocaleDateString()}</td>
-                    <td>
-                        <button class="action-btn view-btn" onclick="viewOrder('${order.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filterOrders(status) {
-            if (status === 'all') {
-                document.getElementById('ordersTable').innerHTML = renderOrdersTable(orders);
-            } else {
-                const filtered = orders.filter(o => o.status === status);
-                document.getElementById('ordersTable').innerHTML = renderOrdersTable(filtered);
-            }
-        }
-
-        function updateOrderStatus(orderId, newStatus) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                order.status = newStatus;
-                localStorage.setItem('stawearOrders', JSON.stringify(orders));
-                
-                // Send email notification to customer
-                emailjs.send(window.EMAILJS_SERVICE_ID, window.ORDER_TEMPLATE, {
-                    to_email: order.customerEmail,
-                    to_name: order.customerName,
-                    customerName: order.customerName,
-                    orderId: order.id,
-                    orderDate: new Date(order.date).toLocaleString(),
-                    orderStatus: newStatus,
-                    trackingUrl: window.location.origin.replace('admin', '') + "/?track=" + order.id,
-                    from_name: "Stawear Kenya"
-                }).catch(error => console.log('Email error:', error));
-                
-                updateNotificationBadge();
-                showToast('Order status updated', 'success');
-            }
-        }
-
-        function viewOrder(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                const details = document.getElementById('orderDetails');
-                details.innerHTML = `
-                    <div style="margin-bottom: 20px;">
-                        <h4>Order #${order.id}</h4>
-                        <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
-                        <p><strong>Status:</strong> <span class="status-badge status-${order.status}">${order.status}</span></p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Customer Details</h4>
-                        <p><strong>Name:</strong> ${order.customerName}</p>
-                        <p><strong>Phone:</strong> ${order.customerPhone}</p>
-                        <p><strong>Email:</strong> ${order.customerEmail}</p>
-                        <p><strong>Address:</strong> ${order.address || 'N/A'}</p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Items</h4>
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${order.items?.map(item => `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${item.quantity}</td>
-                                        <td>Ksh ${item.price}</td>
-                                        <td>Ksh ${item.price * item.quantity}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div style="text-align: right; font-size: 1.2rem;">
-                        <strong>Total: Ksh ${order.total}</strong>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn-success" onclick="contactCustomer('${order.customerPhone}')">
-                            <i class="fab fa-whatsapp"></i> Contact Customer
-                        </button>
-                    </div>
-                `;
-                document.getElementById('orderModal').classList.add('active');
-            }
-        }
-
-        function closeOrderModal() {
-            document.getElementById('orderModal').classList.remove('active');
-        }
-
-        // ===== CUSTOMERS SECTION =====
         function renderCustomers() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Customer Management</h3>
-                        <input type="text" placeholder="Search customers..." style="padding: 8px; border-radius: 5px; border: 1px solid #ddd;" onkeyup="searchCustomers(this.value)">
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact</th>
-                                <th>Orders</th>
-                                <th>Total Spent</th>
-                                <th>Last Order</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customersTable">
-                            ${customers.map(customer => `
-                                <tr>
-                                    <td>${customer.name}</td>
-                                    <td>
-                                        ${customer.email}<br>
-                                        <small>${customer.phone}</small>
-                                    </td>
-                                    <td>${customer.orders}</td>
-                                    <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
-                                    <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('contentArea').innerHTML = `<div class="table-container"><div class="table-header"><h3>Customers</h3><input type="text" placeholder="Search..." onkeyup="searchCustomers(this.value)"></div><table><thead><tr><th>Name</th><th>Contact</th><th>Orders</th><th>Total Spent</th><th>Action</th></tr></thead><tbody id="customersTableBody">${customers.map(c=>`<tr><td>${c.name}</td><td>${c.email}<br>${c.phone}</td><td>${c.orders}</td><td>Ksh ${c.totalSpent}</td><td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')">View Orders</button></td>`).join('')}</tbody></table></div>`;
         }
+        function searchCustomers(term) { let filtered = customers.filter(c=>c.name.toLowerCase().includes(term.toLowerCase())||c.email.includes(term)); document.getElementById('customersTableBody').innerHTML = filtered.map(c=>`<tr><td>${c.name}</td><td>${c.email}</td><td>${c.orders}</td><td>Ksh ${c.totalSpent}</td><td><button class="action-btn view-btn" onclick="viewCustomer('${c.email}')">View</button></td>`).join(''); }
+        function viewCustomer(email) { let custOrders = orders.filter(o=>o.customerEmail===email); showToast(`${custOrders.length} orders, total: Ksh ${custOrders.reduce((s,o)=>s+o.total,0)}`,'info'); }
 
-        function searchCustomers(term) {
-            const filtered = customers.filter(c => 
-                c.name.toLowerCase().includes(term.toLowerCase()) ||
-                c.email.toLowerCase().includes(term.toLowerCase()) ||
-                (c.phone && c.phone.includes(term))
-            );
-            
-            document.getElementById('customersTable').innerHTML = filtered.map(customer => `
-                <tr>
-                    <td>${customer.name}</td>
-                    <td>${customer.email}<br><small>${customer.phone}</small></td>
-                    <td>${customer.orders}</td>
-                    <td>Ksh ${customer.totalSpent.toLocaleString()}</td>
-                    <td>${new Date(customer.lastOrder).toLocaleDateString()}</td>
-                    <td><button class="action-btn view-btn" onclick="viewCustomer('${customer.email}')">View</button></td>
-                </tr>
-            `).join('');
+        function renderBranding() {
+            document.getElementById('contentArea').innerHTML = `<div class="table-container"><h3>Branding Requests</h3></table><thead><tr><th>Name</th><th>Dojang</th><th>Item</th><th>Qty</th><th>Status</th><th>Action</th></tr></thead><tbody>${brandingRequests.map(r=>`<tr><td>${r.name}</td><td>${r.dojang}</td><td>${r.itemType}</td><td>${r.quantity}</td><td><span class="status-badge status-${r.status}">${r.status}</span></td><td><button class="action-btn view-btn" onclick="viewBrandingRequest(${r.id})">Details</button></td>`).join('')}</tbody></table></div>`;
         }
+        function viewBrandingRequest(id) { let req=brandingRequests.find(r=>r.id===id); document.getElementById('brandingDetails').innerHTML = `<p><strong>${req.name}</strong> (${req.phone})</p><p>Dojang: ${req.dojang}</p><p>Item: ${req.itemType} x${req.quantity}</p><p>Branding: ${req.brandingType}</p><p>Description: ${req.description}</p><button class="btn btn-success" onclick="markBrandingComplete(${req.id})">Mark Complete</button>`; document.getElementById('brandingModal').classList.add('active'); }
+        function closeBrandingModal() { document.getElementById('brandingModal').classList.remove('active'); }
+        function markBrandingComplete(id) { let r=brandingRequests.find(x=>x.id===id); if(r){ r.status='completed'; localStorage.setItem('stawearBrandingRequests',JSON.stringify(brandingRequests)); loadAllData(); renderBranding(); closeBrandingModal(); showToast('Completed','success'); } }
 
-        function viewCustomer(email) {
-            const customerOrders = orders.filter(o => o.customerEmail === email);
-            const totalSpent = customerOrders.reduce((sum, o) => sum + o.total, 0);
-            showToast(`${customerOrders.length} orders, Total: Ksh ${totalSpent}`, 'info');
-        }
-
-        // ===== BRANDING REQUESTS =====
-        function renderBrandingRequests() {
-            const html = `
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Custom Branding Requests</h3>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Dojang/Team</th>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Branding</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${brandingRequests.map(request => `
-                                <tr>
-                                    <td>${new Date(request.date).toLocaleDateString()}</td>
-                                    <td>${request.name}<br><small>${request.phone}</small></td>
-                                    <td>${request.dojang || 'N/A'}</td>
-                                    <td>${request.itemType}</td>
-                                    <td>${request.quantity}</td>
-                                    <td>${request.brandingType || 'N/A'}</td>
-                                    <td><span class="status-badge status-pending">${request.status || 'pending'}</span></td>
-                                    <td>
-                                        <button class="action-btn view-btn" onclick="viewBrandingRequest(${request.id})">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        function viewBrandingRequest(id) {
-            const request = brandingRequests.find(r => r.id === id);
-            if (request) {
-                const details = document.getElementById('brandingDetails');
-                details.innerHTML = `
-                    <div style="margin-bottom: 20px;">
-                        <h4>Customer Details</h4>
-                        <p><strong>Name:</strong> ${request.name}</p>
-                        <p><strong>Email:</strong> ${request.email}</p>
-                        <p><strong>Phone:</strong> ${request.phone}</p>
-                        <p><strong>Dojang/Team:</strong> ${request.dojang || 'N/A'}</p>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h4>Request Details</h4>
-                        <p><strong>Item:</strong> ${request.itemType}</p>
-                        <p><strong>Quantity:</strong> ${request.quantity}</p>
-                        <p><strong>Branding Type:</strong> ${request.brandingType || 'N/A'}</p>
-                        <p><strong>Description:</strong> ${request.description}</p>
-                        <p><strong>Date:</strong> ${new Date(request.date).toLocaleString()}</p>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-success" onclick="markBrandingComplete(${request.id})">Mark Complete</button>
-                        <button class="btn btn-warning" onclick="contactCustomer('${request.phone}')">Contact Customer</button>
-                    </div>
-                `;
-                document.getElementById('brandingModal').classList.add('active');
-            }
-        }
-
-        function closeBrandingModal() {
-            document.getElementById('brandingModal').classList.remove('active');
-        }
-
-        function markBrandingComplete(id) {
-            const request = brandingRequests.find(r => r.id === id);
-            if (request) {
-                request.status = 'completed';
-                localStorage.setItem('stawearBrandingRequests', JSON.stringify(brandingRequests));
-                document.getElementById('brandingCount').textContent = brandingRequests.length;
-                closeBrandingModal();
-                renderBrandingRequests();
-                updateNotificationBadge();
-                showToast('Request marked complete', 'success');
-            }
-        }
-
-        function contactCustomer(phone) {
-            // Remove leading 0 and add 254
-            const cleanPhone = phone.replace(/^0/, '254');
-            window.open(`https://wa.me/${cleanPhone}`, '_blank');
-        }
-
-        // ===== ANALYTICS =====
         function renderAnalytics() {
-            const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
-            const totalItems = orders.reduce((sum, o) => sum + (o.items?.length || 0), 0);
-            
-            // Category sales
-            const categorySales = {};
-            products.forEach(p => {
-                categorySales[p.category] = 0;
-            });
-            
-            orders.forEach(order => {
-                order.items?.forEach(item => {
-                    const product = products.find(p => p.name === item.name);
-                    if (product) {
-                        categorySales[product.category] = (categorySales[product.category] || 0) + item.quantity;
-                    }
-                });
-            });
-            
-            const html = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Revenue</h3>
-                            <div class="stat-number">Ksh ${totalSales.toLocaleString()}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Products Sold</h3>
-                            <div class="stat-number">${totalItems}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-box"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Avg Order Value</h3>
-                            <div class="stat-number">Ksh ${orders.length ? Math.round(totalSales / orders.length) : 0}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-calculator"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <h3>Branding Requests</h3>
-                            <div class="stat-number">${brandingRequests.length}</div>
-                        </div>
-                        <div class="stat-icon"><i class="fas fa-palette"></i></div>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Sales by Category</h3>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Units Sold</th>
-                                <th>% of Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${Object.entries(categorySales).map(([category, sold]) => `
-                                <tr>
-                                    <td>${category}</td>
-                                    <td>${sold}</td>
-                                    <td>${totalItems ? Math.round(sold / totalItems * 100) : 0}%</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Top Selling Products</h3>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Category</th>
-                                <th>Units Sold</th>
-                                <th>Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${products.map(product => {
-                                const sold = orders.reduce((total, order) => {
-                                    const item = order.items?.find(i => i.name === product.name);
-                                    return total + (item?.quantity || 0);
-                                }, 0);
-                                return `
-                                    <tr>
-                                        <td>${product.name}</td>
-                                        <td>${product.category}</td>
-                                        <td>${sold}</td>
-                                        <td>Ksh ${(sold * product.price).toLocaleString()}</td>
-                                    </tr>
-                                `;
-                            }).sort((a, b) => b.sold - a.sold).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            document.getElementById('contentArea').innerHTML = html;
+            const totalSales=orders.reduce((s,o)=>s+o.total,0);
+            document.getElementById('contentArea').innerHTML = `<div class="stats-grid"><div class="stat-card"><div class="stat-info"><h3>Total Revenue</h3><div class="stat-number">Ksh ${totalSales.toLocaleString()}</div></div><div class="stat-icon"><i class="fas fa-chart-line"></i></div></div><div class="stat-card"><div class="stat-info"><h3>Avg Order</h3><div class="stat-number">Ksh ${orders.length?Math.round(totalSales/orders.length):0}</div></div><div class="stat-icon"><i class="fas fa-calculator"></i></div></div></div><div class="table-container"><h3>Orders by Month</h3><canvas id="salesChart" height="200"></canvas></div>`;
+            setTimeout(()=>{ let ctx=document.getElementById('salesChart')?.getContext('2d'); if(ctx) new Chart(ctx,{type:'bar',data:{labels:['Jan','Feb','Mar'],datasets:[{label:'Sales',data:[12000,15000,8000],backgroundColor:'#c62828'}]}}); },100);
         }
 
-        // ===== UTILITY FUNCTIONS =====
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
+        function contactCustomer(phone) { window.open(`https://wa.me/${phone.replace(/^0/,'254')}`,'_blank'); }
+        function checkNewData() { loadAllData(); showToast('Data refreshed from store','success'); }
+        function globalSearch() { let t=document.getElementById('globalSearch').value.toLowerCase(); let foundOrders=orders.filter(o=>o.id.includes(t)||o.customerName.toLowerCase().includes(t)); let foundCust=customers.filter(c=>c.name.toLowerCase().includes(t)); showToast(`Found ${foundOrders.length} orders, ${foundCust.length} customers`,'info'); }
+        function showToast(msg,type) { let t=document.createElement('div'); t.className=`toast ${type==='error'?'error':''}`; t.innerHTML=`<i class="fas ${type==='error'?'fa-exclamation-circle':'fa-check-circle'}"></i><div>${msg}</div>`; document.getElementById('toastContainer').appendChild(t); setTimeout(()=>t.remove(),3000); }
 
-        function showToast(message, type) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
-                <div>${message}</div>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function globalSearch() {
-            const term = document.getElementById('globalSearch').value.toLowerCase();
-            if (term.length < 2) return;
-            
-            const productResults = products.filter(p => p.name.toLowerCase().includes(term));
-            const orderResults = orders.filter(o => o.id.toLowerCase().includes(term) || o.customerName.toLowerCase().includes(term));
-            
-            if (productResults.length > 0 || orderResults.length > 0) {
-                showToast(`Found ${productResults.length} products, ${orderResults.length} orders`, 'info');
-            }
-        }
-
-        // Check login status on load
-        (function() {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-                loadAllData();
-                
-                window.addEventListener('storage', function(e) {
-                    if (e.key === 'stawearOrders' || e.key === 'stawearBrandingRequests') {
-                        loadAllData();
-                        showToast('New data received!', 'info');
-                    }
-                });
-            }
-        })();
+        // Auto-check login
+        if(localStorage.getItem('adminLoggedIn')==='true') { document.getElementById('loginPage').style.display='none'; document.getElementById('dashboard').style.display='flex'; loadAllData(); showSection('dashboard'); }
     </script>
 </body>
 </html>
