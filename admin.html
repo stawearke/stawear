@@ -261,6 +261,33 @@
         .chart-card { background: white; border-radius: 15px; padding: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .chart-card h3 { font-size: 1rem; color: #333; margin-bottom: 18px; }
 
+        /* ===== IMAGE UPLOAD ===== */
+        .image-upload-area {
+            border: 2px dashed #d0d0d0; border-radius: 12px; padding: 0;
+            cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+            min-height: 160px; display: flex; align-items: center; justify-content: center;
+            background: #fafafa;
+        }
+        .image-upload-area:hover { border-color: #c62828; background: #fff5f5; }
+        .image-upload-area.drag-over { border-color: #c62828; background: #fff0f0; transform: scale(1.01); }
+        .image-upload-placeholder { text-align: center; padding: 30px 20px; pointer-events: none; }
+        .image-upload-placeholder i { font-size: 2.5rem; color: #c62828; opacity: 0.6; display: block; margin-bottom: 10px; }
+        .image-upload-placeholder p { font-weight: 600; color: #555; margin-bottom: 4px; }
+        .image-upload-placeholder span { font-size: 0.78rem; color: #aaa; }
+        .image-preview-img { width: 100%; height: 200px; object-fit: contain; display: block; background: #f5f5f5; }
+        .image-upload-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.45); color: white;
+            display: flex; align-items: center; justify-content: center; font-weight: 600;
+            font-size: 0.9rem; gap: 8px; opacity: 0; transition: opacity 0.2s;
+        }
+        .image-upload-area:hover .image-upload-overlay { opacity: 1; }
+        .upload-progress { height: 5px; background: #f0f0f0; border-radius: 5px; margin-top: 8px; overflow: hidden; }
+        .upload-progress-bar { height: 100%; background: linear-gradient(90deg, #c62828, #ff9800); border-radius: 5px; width: 0%; transition: width 0.3s; }
+        .upload-status { font-size: 0.8rem; margin-top: 5px; min-height: 18px; }
+        .upload-status.success { color: #28a745; }
+        .upload-status.error { color: #c62828; }
+        .upload-status.loading { color: #888; }
+
         /* ===== CONFIRM DIALOG ===== */
         .confirm-overlay {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
@@ -416,7 +443,30 @@
                 <div class="form-group"><label>Original Price (Ksh)</label><input type="number" id="productOriginalPrice" min="0" placeholder="Optional"></div>
             </div>
             <div class="form-group"><label>Description</label><textarea id="productDescription" rows="3" placeholder="Product description..."></textarea></div>
-            <div class="form-group"><label>Image URL</label><input type="url" id="productImage" placeholder="https://..."></div>
+            <div class="form-group">
+                <label>Product Image</label>
+                <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageFileInput').click()">
+                    <div class="image-upload-placeholder" id="imageUploadPlaceholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click or drag & drop to upload</p>
+                        <span>JPG, PNG, WEBP — max 5MB</span>
+                    </div>
+                    <img id="imagePreview" class="image-preview-img" src="" alt="Preview" style="display:none">
+                    <div class="image-upload-overlay" id="imageUploadOverlay" style="display:none">
+                        <i class="fas fa-camera"></i> Change Image
+                    </div>
+                </div>
+                <input type="file" id="imageFileInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+                <div id="imageUploadProgress" class="upload-progress" style="display:none">
+                    <div class="upload-progress-bar" id="uploadProgressBar"></div>
+                </div>
+                <div id="imageUploadStatus" class="upload-status"></div>
+                <input type="hidden" id="productImage">
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+                    <span style="font-size:0.78rem;color:#aaa">— or paste URL —</span>
+                    <input type="url" id="productImageUrl" placeholder="https://..." style="flex:1;padding:7px 12px;border:2px solid #e5e5e5;border-radius:8px;font-size:0.82rem;font-family:Poppins,sans-serif;outline:none" oninput="handleUrlInput(this.value)" onfocus="this.style.borderColor='#c62828'" onblur="this.style.borderColor='#e5e5e5'">
+                </div>
+            </div>
             <div class="form-group">
                 <label>Stock by Size</label>
                 <div class="form-row">
@@ -740,6 +790,7 @@ function openProductModal(id = null) {
     document.getElementById('productForm').reset();
     document.getElementById('productId').value = '';
     document.getElementById('productModalTitle').innerHTML = '<i class="fas fa-plus" style="color:#c62828;margin-right:8px"></i>Add Product';
+    resetImageUpload();
     if (id) {
         const p = products.find(x => x.id === id);
         if (p) {
@@ -750,19 +801,19 @@ function openProductModal(id = null) {
             document.getElementById('productPrice').value = p.price || '';
             document.getElementById('productOriginalPrice').value = p.originalPrice || '';
             document.getElementById('productDescription').value = p.description || '';
-            document.getElementById('productImage').value = p.image || '';
             const st = p.stock || {};
             document.getElementById('sizeS').value = st.S || 0;
             document.getElementById('sizeM').value = st.M || 0;
             document.getElementById('sizeL').value = st.L || 0;
             document.getElementById('sizeXL').value = st.XL || 0;
             document.getElementById('sizeXXL').value = st.XXL || 0;
+            if (p.image) setImagePreview(p.image);
         }
     }
     document.getElementById('productModal').classList.add('active');
 }
 
-function closeProductModal() { document.getElementById('productModal').classList.remove('active'); }
+function closeProductModal() { document.getElementById('productModal').classList.remove('active'); resetImageUpload(); }
 
 async function saveProduct(e) {
     e.preventDefault();
@@ -1071,7 +1122,114 @@ async function renderAnalytics() {
     }, 100);
 }
 
-// ===== UTILS =====
+// ===== IMAGE UPLOAD =====
+const IMAGE_BUCKET = 'product-images'; // Make sure this bucket exists in Supabase Storage
+
+function resetImageUpload() {
+    document.getElementById('imageFileInput').value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('imagePreview').src = '';
+    document.getElementById('imageUploadPlaceholder').style.display = 'flex';
+    document.getElementById('imageUploadOverlay').style.display = 'none';
+    document.getElementById('imageUploadProgress').style.display = 'none';
+    document.getElementById('uploadProgressBar').style.width = '0%';
+    document.getElementById('imageUploadStatus').textContent = '';
+    document.getElementById('imageUploadStatus').className = 'upload-status';
+    document.getElementById('productImage').value = '';
+    document.getElementById('productImageUrl').value = '';
+}
+
+function setImagePreview(url) {
+    const preview = document.getElementById('imagePreview');
+    preview.src = url;
+    preview.style.display = 'block';
+    document.getElementById('imageUploadPlaceholder').style.display = 'none';
+    document.getElementById('imageUploadOverlay').style.display = 'flex';
+    document.getElementById('productImage').value = url;
+}
+
+function handleUrlInput(url) {
+    if (!url) { resetImageUpload(); return; }
+    setImagePreview(url);
+    document.getElementById('imageUploadStatus').textContent = '';
+}
+
+function handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+        document.getElementById('imageUploadStatus').textContent = 'File too large. Max 5MB.';
+        document.getElementById('imageUploadStatus').className = 'upload-status error';
+        return;
+    }
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = e => setImagePreview(e.target.result);
+    reader.readAsDataURL(file);
+    uploadImageToSupabase(file);
+}
+
+async function uploadImageToSupabase(file) {
+    const statusEl = document.getElementById('imageUploadStatus');
+    const progressEl = document.getElementById('imageUploadProgress');
+    const barEl = document.getElementById('uploadProgressBar');
+
+    statusEl.textContent = 'Uploading...';
+    statusEl.className = 'upload-status loading';
+    progressEl.style.display = 'block';
+    barEl.style.width = '30%';
+
+    const ext = file.name.split('.').pop();
+    const fileName = `product_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+    barEl.style.width = '60%';
+
+    const { data, error } = await sb.storage.from(IMAGE_BUCKET).upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type
+    });
+
+    if (error) {
+        barEl.style.width = '0%';
+        progressEl.style.display = 'none';
+        statusEl.textContent = 'Upload failed: ' + error.message;
+        statusEl.className = 'upload-status error';
+        return;
+    }
+
+    barEl.style.width = '100%';
+    const { data: urlData } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(data.path);
+    const publicUrl = urlData.publicUrl;
+
+    document.getElementById('productImage').value = publicUrl;
+    document.getElementById('productImageUrl').value = publicUrl;
+    setImagePreview(publicUrl);
+
+    statusEl.textContent = '✓ Image uploaded successfully';
+    statusEl.className = 'upload-status success';
+    setTimeout(() => { progressEl.style.display = 'none'; }, 800);
+}
+
+// Drag & drop support
+document.addEventListener('DOMContentLoaded', () => {
+    const area = document.getElementById('imageUploadArea');
+    if (!area) return;
+    area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
+    area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+    area.addEventListener('drop', e => {
+        e.preventDefault(); area.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = ev => setImagePreview(ev.target.result);
+            reader.readAsDataURL(file);
+            uploadImageToSupabase(file);
+        }
+    });
+});
+
+
 function contactViaWhatsApp(phone) {
     const formatted = phone.toString().replace(/^0/, '254').replace(/\s+/g,'').replace(/\+/g,'');
     window.open(`https://wa.me/${formatted}`, '_blank');
