@@ -1476,6 +1476,98 @@ document.addEventListener('DOMContentLoaded', () => {
     loadReviews();
     cart.load();
 });
+    // ===== SEND CUSTOMER ORDER RECEIPT =====
+async function sendCustomerReceipt(orderData, cartItems, cartSubtotal) {
+    try {
+        const result = await emailjs.send('service_ym1oijj', 'receipt_customer', {
+            order_id: orderData.id,
+            order_date: new Date().toLocaleString('en-KE'),
+            customer_name: orderData.customer_name,
+            customer_phone: orderData.customer_phone,
+            customer_email: orderData.customer_email,
+            delivery_address: orderData.delivery_address,
+            delivery_cost: orderData.delivery_cost,
+            subtotal: cartSubtotal,
+            total: orderData.total,
+            mpesa_code: orderData.mpesa_code,
+            items: cartItems.map(item => ({
+                name: item.name,
+                size: item.size,
+                quantity: item.quantity,
+                price: item.price
+            }))
+        });
+        console.log('✅ Receipt sent to customer:', orderData.customer_email);
+        return true;
+    } catch (error) {
+        console.error('❌ Error sending receipt:', error);
+        return false;
+    }
+}async function placeOrder() {
+    const mpesa = document.getElementById('mpesaCode').value.trim();
+    if (!mpesa) { 
+        showToast('Please enter your M-Pesa confirmation code', 'error'); 
+        return; 
+    }
+    
+    const btn = document.getElementById('placeOrderBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+
+    const delivery = parseInt(document.getElementById('deliveryCounty').value) || 200;
+    const total = cart.subtotal + delivery;
+    const orderId = 'STA' + Date.now() + Math.floor(Math.random() * 1000);
+    const name = document.getElementById('customerName').value.trim();
+    const phone = document.getElementById('customerPhone').value.trim();
+    const email = document.getElementById('customerEmail').value.trim();
+    const address = document.getElementById('deliveryAddress').value.trim();
+
+    const orderData = {
+        id: orderId,
+        customer_name: name,
+        customer_phone: phone,
+        customer_email: email,
+        delivery_address: address,
+        delivery_cost: delivery,
+        items: cart.items.map(item => ({
+            name: item.name,
+            size: item.size,
+            quantity: item.quantity,
+            price: item.price
+        })),
+        total: total,
+        status: 'pending',
+        payment_method: 'mpesa',
+        mpesa_code: mpesa,
+        date: new Date().toISOString()
+    };
+
+    // Save to Supabase
+    const { error } = await sb.from('orders').insert([orderData]);
+    
+    if (error) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
+        showToast('Error saving order. Please try again.', 'error');
+        return;
+    }
+
+    // ===== SEND CUSTOMER RECEIPT ONLY =====
+    await sendCustomerReceipt(orderData, cart.items, cart.subtotal);
+    // ====================================
+
+    // WhatsApp confirmation link
+    const waMsg = encodeURIComponent(`Hello Stawear! I just placed an order.\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nItems: ${cart.items.map(i => `${i.name} (${i.size}) x${i.quantity}`).join(', ')}\nTotal: Ksh ${total.toLocaleString()}\nM-Pesa Code: ${mpesa}`);
+    document.getElementById('whatsappConfirm').href = `https://wa.me/254727394165?text=${waMsg}`;
+    document.getElementById('successOrderId').textContent = orderId;
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
+    goToStep(3);
+    showToast('Order placed! Receipt sent to your email. 📧');
+    
+    cart.clear();
+}
 </script>
 </body>
 </html>
