@@ -366,7 +366,7 @@
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
             <h3><i class="fas fa-shopping-bag"></i> Your Cart</h3>
-            <div class="cart-close" onclick="toggleCart()" style="font-size:1.8rem; cursor:pointer;">&times;</div>
+            <div class="cart-close" onclick="window.toggleCart()" style="font-size:1.8rem; cursor:pointer;">&times;</div>
         </div>
         <div class="cart-items" id="cartItems"></div>
         <div class="cart-footer" id="cartFooter" style="display:none;">
@@ -374,14 +374,14 @@
                 <span>Total:</span>
                 <span>Ksh <span id="cartTotal">0</span></span>
             </div>
-            <button class="btn" style="width:100%;" onclick="openCheckout()">Checkout</button>
+            <button class="btn" style="width:100%;" onclick="window.openCheckout()">Checkout</button>
         </div>
     </div>
 
     <!-- Product Modal -->
     <div class="modal" id="productModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <span class="close-modal" onclick="window.closeModal()">&times;</span>
             <div id="modalBody"></div>
         </div>
     </div>
@@ -389,7 +389,7 @@
     <!-- Checkout Modal -->
     <div class="modal" id="checkoutModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeCheckout()">&times;</span>
+            <span class="close-modal" onclick="window.closeCheckout()">&times;</span>
             <h2 style="color:#c62828;">Complete Order</h2>
             <form id="checkoutForm">
                 <div class="form-group">
@@ -431,7 +431,7 @@
     <!-- Custom Branding Modal -->
     <div class="modal" id="brandingModal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeBrandingModal()">&times;</span>
+            <span class="close-modal" onclick="window.closeBrandingModal()">&times;</span>
             <h2 style="color:#c62828;">Custom Branding Request</h2>
             <form id="brandingForm">
                 <div class="form-group">
@@ -477,20 +477,20 @@
     <!-- Header -->
     <header>
         <div class="container header-container">
-            <div class="logo" onclick="scrollToSection('home')">
+            <div class="logo" onclick="window.scrollToSection('home')">
                 <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear Logo" class="logo-image">
                 <div class="logo-text">STAWEAR<span>Taekwondo Branding</span></div>
             </div>
             <nav>
                 <ul>
-                    <li><a onclick="scrollToSection('home')">Home</a></li>
-                    <li><a onclick="scrollToSection('products')">Products</a></li>
-                    <li><a onclick="openBrandingModal()">Custom Branding</a></li>
-                    <li><a onclick="scrollToSection('contact')">Contact</a></li>
+                    <li><a onclick="window.scrollToSection('home')">Home</a></li>
+                    <li><a onclick="window.scrollToSection('products')">Products</a></li>
+                    <li><a onclick="window.openBrandingModal()">Custom Branding</a></li>
+                    <li><a onclick="window.scrollToSection('contact')">Contact</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
-                <div class="cart-icon" onclick="toggleCart()">
+                <div class="cart-icon" onclick="window.toggleCart()">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-count" id="cartCount">0</span>
                 </div>
@@ -504,7 +504,7 @@
             <h1>KENYA'S #1 <span>TAEKWONDO</span> BRANDING STORE</h1>
             <p>Premium custom Taekwondo clothing and gear for dojangs across Kenya</p>
             <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn" onclick="scrollToSection('products')">Shop Now</button>
+                <button class="btn" onclick="window.scrollToSection('products')">Shop Now</button>
                 <a href="https://wa.me/254727394165" class="btn btn-whatsapp" target="_blank">Chat on WhatsApp</a>
             </div>
         </div>
@@ -534,11 +534,11 @@
     </footer>
 
     <script>
-        // ===== SUPABASE CONFIGURATION =====
+        // ===== SUPABASE CONFIGURATION (SINGLE DECLARATION) =====
         const SUPABASE_URL = 'https://hxijjdhvkjhfjxllckip.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // EmailJS
         emailjs.init("rOBcEHt9BFgYEOL1Z");
@@ -547,9 +547,26 @@
         let products = [];
         let cart = { items: [], total: 0, count: 0 };
 
+        // ===== HELPER FUNCTIONS =====
+        function showToast(msg, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderLeftColor = type === 'error' ? '#dc3545' : '#28a745';
+            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}" style="color:${type === 'error' ? '#dc3545' : '#28a745'}"></i> ${msg}`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         // ===== LOAD PRODUCTS FROM SUPABASE =====
         async function loadProducts() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('products')
                 .select('*')
                 .order('id', { ascending: false });
@@ -557,6 +574,7 @@
             if (error) {
                 console.error('Error loading products:', error);
                 showToast('Error loading products', 'error');
+                document.getElementById('productsGrid').innerHTML = '<p style="text-align:center;">Error loading products. Please refresh.</p>';
                 return;
             }
             
@@ -574,17 +592,24 @@
             }
             
             grid.innerHTML = products.map(product => `
-                <div class="product-card" onclick="viewProduct(${product.id})">
+                <div class="product-card" onclick="window.viewProduct(${product.id})">
                     <div class="product-img">
                         <img src="${product.image || 'https://via.placeholder.com/200'}" alt="${product.name}" loading="lazy">
                     </div>
                     <div class="product-info">
-                        <h3>${product.name}</h3>
+                        <h3>${escapeHtml(product.name)}</h3>
                         <p class="product-price">Ksh ${product.price.toLocaleString()}</p>
-                        <button class="btn" style="width:100%; padding:8px;" onclick="event.stopPropagation(); addToCart(${product.id})">Add to Cart</button>
+                        <button class="btn" style="width:100%; padding:8px;" onclick="event.stopPropagation(); window.addToCart(${product.id})">Add to Cart</button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         // ===== CART FUNCTIONS =====
@@ -626,10 +651,10 @@
                     <div style="display:flex; gap:10px; padding:10px; border-bottom:1px solid #eee;">
                         <img src="${item.image}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
                         <div style="flex:1;">
-                            <strong>${item.name}</strong>
+                            <strong>${escapeHtml(item.name)}</strong>
                             <div>Ksh ${item.price.toLocaleString()} x ${item.quantity}</div>
                         </div>
-                        <button onclick="removeFromCart(${idx})" style="background:none; border:none; color:#c62828; cursor:pointer;">Remove</button>
+                        <button onclick="window.removeFromCart(${idx})" style="background:none; border:none; color:#c62828; cursor:pointer;">Remove</button>
                     </div>
                 `).join('');
                 cartFooter.style.display = 'block';
@@ -641,9 +666,30 @@
         function loadCart() {
             const saved = localStorage.getItem('stawearCart');
             if (saved) {
-                cart.items = JSON.parse(saved);
-                updateCart();
+                try {
+                    cart.items = JSON.parse(saved);
+                    updateCart();
+                } catch(e) {
+                    console.error('Error loading cart:', e);
+                }
             }
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+
+        function openCheckout() {
+            if (cart.items.length === 0) {
+                showToast('Cart is empty!');
+                return;
+            }
+            document.getElementById('cartSidebar').classList.remove('active');
+            document.getElementById('checkoutModal').classList.add('active');
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutModal').classList.remove('active');
         }
 
         // ===== CHECKOUT =====
@@ -676,7 +722,7 @@
             };
             
             // Save to Supabase
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('orders')
                 .insert([orderData]);
             
@@ -696,7 +742,7 @@
                     order_items: cart.items.map(i => `${i.name} x${i.quantity}`).join(', ')
                 });
             } catch(e) {
-                console.log('Email error:', e);
+                console.log('Email error (non-critical):', e);
             }
             
             showToast(`Order placed! Order ID: ${orderId}`);
@@ -727,7 +773,7 @@
                 date: new Date().toISOString()
             };
             
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('branding_requests')
                 .insert([requestData]);
             
@@ -742,62 +788,45 @@
             document.getElementById('brandingForm').reset();
         }
 
-        // ===== UI FUNCTIONS =====
-        function viewProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            document.getElementById('modalBody').innerHTML = `
-                <img src="${product.image}" style="width:100%; max-height:300px; object-fit:cover; border-radius:10px;">
-                <h2 style="margin-top:15px;">${product.name}</h2>
-                <p>${product.description || 'Premium quality Taekwondo apparel'}</p>
-                <p style="font-size:1.5rem; font-weight:800; color:#c62828; margin:15px 0;">Ksh ${product.price.toLocaleString()}</p>
-                <button class="btn" style="width:100%;" onclick="addToCart(${product.id}); closeModal();">Add to Cart</button>
-            `;
-            document.getElementById('productModal').classList.add('active');
-        }
-
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-        }
-
-        function openCheckout() {
-            if (cart.items.length === 0) {
-                showToast('Cart is empty!');
-                return;
-            }
-            document.getElementById('cartSidebar').classList.remove('active');
-            document.getElementById('checkoutModal').classList.add('active');
-        }
-
-        function closeCheckout() {
-            document.getElementById('checkoutModal').classList.remove('active');
-        }
-
-        function closeModal() {
-            document.getElementById('productModal').classList.remove('active');
+        function closeBrandingModal() {
+            document.getElementById('brandingModal').classList.remove('active');
         }
 
         function openBrandingModal() {
             document.getElementById('brandingModal').classList.add('active');
         }
 
-        function closeBrandingModal() {
-            document.getElementById('brandingModal').classList.remove('active');
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
         }
 
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        function viewProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            document.getElementById('modalBody').innerHTML = `
+                <img src="${product.image}" style="width:100%; max-height:300px; object-fit:cover; border-radius:10px;">
+                <h2 style="margin-top:15px;">${escapeHtml(product.name)}</h2>
+                <p>${escapeHtml(product.description || 'Premium quality Taekwondo apparel')}</p>
+                <p style="font-size:1.5rem; font-weight:800; color:#c62828; margin:15px 0;">Ksh ${product.price.toLocaleString()}</p>
+                <button class="btn" style="width:100%;" onclick="window.addToCart(${product.id}); window.closeModal();">Add to Cart</button>
+            `;
+            document.getElementById('productModal').classList.add('active');
         }
 
-        function showToast(msg, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.style.borderLeftColor = type === 'error' ? '#dc3545' : '#28a745';
-            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}" style="color:${type === 'error' ? '#dc3545' : '#28a745'}"></i> ${msg}`;
-            document.getElementById('toastContainer').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
+        // ===== EXPOSE FUNCTIONS TO GLOBAL SCOPE =====
+        window.scrollToSection = scrollToSection;
+        window.toggleCart = toggleCart;
+        window.openCheckout = openCheckout;
+        window.closeCheckout = closeCheckout;
+        window.closeModal = closeModal;
+        window.openBrandingModal = openBrandingModal;
+        window.closeBrandingModal = closeBrandingModal;
+        window.addToCart = addToCart;
+        window.removeFromCart = removeFromCart;
+        window.viewProduct = viewProduct;
+        window.processOrder = processOrder;
+        window.submitBrandingRequest = submitBrandingRequest;
 
         // Event listeners
         document.getElementById('checkoutForm')?.addEventListener('submit', processOrder);
