@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stawear — Kenya's #1 Sports Branding Store & Shop </title>
+    <title>Stawear — Kenya's #1 Sports Branding Store | Custom Uniforms & Apparel</title>
+    <link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png">
     <meta name="description" content="Premium Taekwondo apparel & custom branding for Kenyan dojangs. Hoodies, T-Shirts, Jackets, Tracksuits. M-Pesa accepted. Fast nationwide delivery.">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -700,7 +701,8 @@
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-footer" id="cartFooter" style="display:none">
         <div class="cart-subtotal"><span>Subtotal</span><span>Ksh <span id="cartSubtotal">0</span></span></div>
-        <div class="cart-total"><span>Estimated Total</span><span>Ksh <span id="cartTotal">0</span></span></div>
+        <div class="cart-subtotal" style="color:#888;font-size:0.8rem"><span>+ Delivery</span><span>from Ksh 200</span></div>
+        <div class="cart-total"><span>Estimated Total</span><span>Ksh <span id="cartTotal">0</span>+</span></div>
         <button class="btn btn-block" onclick="openCheckout()"><i class="fas fa-lock"></i> Proceed to Checkout</button>
     </div>
 </div>
@@ -955,6 +957,7 @@ let sizeModalQty = 1;
 let selectedSizeValue = null;
 let reviewRating = 0;
 let checkoutStep = 1;
+let modalSelectedSize = null; // replaces unsafe window._modalSelectedSize
 
 // ===== CART =====
 const cart = {
@@ -1132,7 +1135,7 @@ function viewProduct(productId) {
         <p style="color:#555;font-size:0.9rem;line-height:1.6;margin-bottom:16px">${p.description||''}</p>
         <div style="font-weight:700;margin-bottom:8px;font-size:0.9rem">Select Size:</div>
         <div class="sizes-grid" style="margin-bottom:16px">
-            ${sizes.map(s=>`<button class="size-btn" onclick="document.querySelectorAll('#modalBody .size-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');window._modalSelectedSize='${s}'">${s}</button>`).join('')}
+            ${sizes.map(s=>`<button class="size-btn" onclick="document.querySelectorAll('#modalBody .size-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');modalSelectedSize='${s}'">${s}</button>`).join('')}
         </div>
         <div style="display:flex;gap:10px">
             <button class="btn btn-block" onclick="addToCartFromModal(${p.id})"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
@@ -1142,14 +1145,14 @@ function viewProduct(productId) {
             <span><i class="fas fa-undo" style="color:var(--primary)"></i> Quality Guaranteed</span>
             <span><i class="fas fa-mobile-alt" style="color:#22c55e"></i> M-Pesa Accepted</span>
         </div>`;
-    window._modalSelectedSize = null;
+    modalSelectedSize = null;
     document.getElementById('productModal').classList.add('active');
 }
 
 function addToCartFromModal(productId) {
-    if (!window._modalSelectedSize) { showToast('Please select a size first','error'); return; }
+    if (!modalSelectedSize) { showToast('Please select a size first','error'); return; }
     const p = allProducts.find(x=>x.id===productId);
-    cart.add(p, window._modalSelectedSize, 1);
+    cart.add(p, modalSelectedSize, 1);
     closeProductModal();
 }
 
@@ -1185,6 +1188,7 @@ function goToStep(n) {
         const addr = document.getElementById('deliveryAddress').value.trim();
         if (!name||!phone||!email||!addr) { showToast('Please fill in all required fields','error'); return; }
         if (!/^07\d{8}$/.test(phone.replace(/\s/g,''))) { showToast('Enter a valid Kenyan phone number (07xxxxxxxx)','error'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address','error'); return; }
         buildOrderSummary();
     }
     checkoutStep = n;
@@ -1233,7 +1237,12 @@ function updateStepUI() {
 // ===== SEND CUSTOMER ORDER RECEIPT =====
 async function sendCustomerReceipt(orderData, cartItems, cartSubtotal) {
     try {
-        const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_TEMPLATE, {
+        // Format items as plain readable string — EmailJS cannot render arrays
+        const itemsText = cartItems.map(item =>
+            `${item.name} (Size: ${item.size}) x${item.quantity} — Ksh ${(item.price * item.quantity).toLocaleString()}`
+        ).join('\n');
+
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ORDER_TEMPLATE, {
             to_email: orderData.customer_email,
             order_id: orderData.id,
             order_date: new Date().toLocaleString('en-KE'),
@@ -1241,16 +1250,11 @@ async function sendCustomerReceipt(orderData, cartItems, cartSubtotal) {
             customer_phone: orderData.customer_phone,
             customer_email: orderData.customer_email,
             delivery_address: orderData.delivery_address,
-            delivery_cost: orderData.delivery_cost,
-            subtotal: cartSubtotal,
-            total: orderData.total,
+            delivery_cost: `Ksh ${orderData.delivery_cost.toLocaleString()}`,
+            subtotal: `Ksh ${cartSubtotal.toLocaleString()}`,
+            total: `Ksh ${orderData.total.toLocaleString()}`,
             mpesa_code: orderData.mpesa_code,
-            items: cartItems.map(item => ({
-                name: item.name,
-                size: item.size,
-                quantity: item.quantity,
-                price: item.price
-            }))
+            items: itemsText
         });
         console.log('✅ Receipt sent to customer:', orderData.customer_email);
         return true;
@@ -1266,6 +1270,10 @@ async function placeOrder() {
     if (!mpesa) { 
         showToast('Please enter your M-Pesa confirmation code', 'error'); 
         return; 
+    }
+    if (!/^[A-Z0-9]{8,12}$/.test(mpesa.toUpperCase())) {
+        showToast('Invalid M-Pesa code format (e.g. QBC1234XYZ)', 'error');
+        return;
     }
     
     const btn = document.getElementById('placeOrderBtn');
@@ -1311,18 +1319,21 @@ async function placeOrder() {
     }
 
     // ===== SEND CUSTOMER RECEIPT =====
-    await sendCustomerReceipt(orderData, cart.items, cart.subtotal);
+    const emailSent = await sendCustomerReceipt(orderData, cart.items, cart.subtotal);
     // ==================================
 
     // WhatsApp confirmation link
     const waMsg = encodeURIComponent(`Hello Stawear! I just placed an order.\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nItems: ${cart.items.map(i => `${i.name} (${i.size}) x${i.quantity}`).join(', ')}\nTotal: Ksh ${total.toLocaleString()}\nM-Pesa Code: ${mpesa}`);
-    document.getElementById('whatsappConfirm').href = `https://wa.me/254727394165?text=${waMsg}`;
+    document.getElementById('whatsappConfirm').href = `https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`;
     document.getElementById('successOrderId').textContent = orderId;
 
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Order';
     goToStep(3);
-    showToast('Order placed! Receipt sent to your email. 📧');
+    showToast(emailSent
+        ? 'Order placed! Receipt sent to your email. 📧'
+        : 'Order placed! (Email receipt could not be sent — contact us on WhatsApp)'
+    );
     
     cart.clear();
 }
@@ -1350,6 +1361,14 @@ function pickColor(color, el) {
 async function submitCustomOrder(e) {
     e.preventDefault();
     const btn = document.getElementById('brandingSubmitBtn');
+
+    // Validate phone
+    const rawPhone = document.getElementById('customPhone').value.trim();
+    if (!/^07\d{8}$/.test(rawPhone.replace(/\s/g,''))) {
+        showToast('Enter a valid Kenyan phone number (07xxxxxxxx)', 'error');
+        return;
+    }
+
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
 
