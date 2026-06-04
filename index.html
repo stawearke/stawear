@@ -1,800 +1,1419 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Open Graph -->
+<meta property="og:title" content="Stawear - Kenya's #1 Martial Arts Branding Store" />
+<meta property="og:description" content="Premium custom Martial Arts apparel & branding for Kenyan dojangs. Hoodies, T-Shirts, Jackets, Tracksuits. M-Pesa accepted. Fast nationwide delivery." />
+<meta property="og:image" content="https://i.ibb.co/bMFqHhSL/chat-gpt-image-may-4-2026-09-37-10-pm.png" />
+<meta property="og:image:width" content="512" /><meta property="og:image:height" content="512" />
+<meta property="og:type" content="website" /><meta property="og:url" content="https://yourdomain.com" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Stawear - Kenya's #1 Martial Arts Branding Store" />
+<meta name="twitter:description" content="Premium custom Martial Arts apparel & branding for Kenyan dojangs." />
+<meta name="twitter:image" content="https://i.ibb.co/bMFqHhSL/chat-gpt-image-may-4-2026-09-37-10-pm.png" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus Group — Building The Future</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,200;0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<title>Stawear — Kenya's #1 Martial Arts Branding Store</title>
+<link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png">
+<meta name="description" content="Premium Martial Arts apparel & custom branding for Kenyan dojangs. M-Pesa accepted. Fast nationwide delivery.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --ink:#0a0a0a;--paper:#f7f5f0;--steel:#1a1a2e;--chrome:#c8bfb0;
-  --gold:#b8960c;--accent:#e8e0d0;--white:#ffffff;
-  --ff-display:'Bebas Neue',sans-serif;
-  --ff-serif:'DM Serif Display',serif;
-  --ff-body:'DM Sans',sans-serif;
+  --red:#E8192C; --red-dark:#A50F1F; --red-glow:rgba(232,25,44,.5);
+  --orange:#FF8C00; --orange-dark:#CC6F00;
+  --green:#006633; --green-wa:#25D366;
+  --dark:#080810; --dark2:#0F1020; --dark3:#181828;
+  --ink:#1A1A2E; --gray:#6B6B80; --light:#F5F4F1; --white:#FFFFFF;
+  --card-bg:#FFFFFF; --border:#E8E6E0;
+  --shadow-sm:0 2px 12px rgba(0,0,0,.06);
+  --shadow-md:0 8px 32px rgba(0,0,0,.1);
+  --shadow-lg:0 20px 60px rgba(0,0,0,.15);
+  --shadow-red:0 12px 40px rgba(232,25,44,.3);
+  --r:14px; --r-lg:22px; --r-full:999px;
+  --font-display:"Anton",Impact,sans-serif;
+  --font-heading:"Archivo Black",sans-serif;
+  --font-body:"Outfit",sans-serif;
 }
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{background:var(--ink);color:var(--paper);font-family:var(--ff-body);font-weight:300;cursor:none;overflow-x:hidden}
-::selection{background:var(--gold);color:var(--ink)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--light);overflow-x:hidden;
+  background-image:radial-gradient(ellipse 1200px 500px at 100% 0%,rgba(232,25,44,.04),transparent 60%)}
+h1,h2{font-family:var(--font-display);text-transform:uppercase;line-height:.95}
+h3,h4,h5{font-family:var(--font-heading)}
+.container{width:100%;max-width:1360px;margin:0 auto;padding:0 24px}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+::selection{background:var(--red);color:#fff}
 
-/* CURSOR */
-#cursor{position:fixed;width:10px;height:10px;background:var(--paper);border-radius:50%;pointer-events:none;z-index:9999;mix-blend-mode:difference;transition:transform .15s ease}
-#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(232,224,208,.4);border-radius:50%;pointer-events:none;z-index:9998;transition:all .25s ease}
-body:hover #cursor{opacity:1}
+/* ===== ANNOUNCE BAR ===== */
+.announce-bar{
+  background:var(--dark);color:#fff;
+  padding:9px 20px;font-size:.78rem;font-weight:600;letter-spacing:.5px;
+  display:flex;align-items:center;justify-content:center;gap:20px;overflow:hidden;
+}
+.announce-bar strong{color:var(--orange)}
+.adot{width:4px;height:4px;background:var(--orange);border-radius:50%;flex-shrink:0}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 4rem;display:flex;justify-content:space-between;align-items:center;mix-blend-mode:difference}
-.nav-logo{font-family:var(--ff-display);font-size:1.4rem;letter-spacing:.2em;color:var(--paper)}
-.nav-links{display:flex;gap:3rem;list-style:none}
-.nav-links a{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);text-decoration:none;opacity:.6;transition:opacity .3s}
-.nav-links a:hover{opacity:1}
+/* ===== HEADER ===== */
+header{
+  background:rgba(8,8,16,.92);backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  color:#fff;position:sticky;top:0;z-index:1000;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red) 25%,var(--orange) 75%,transparent)}
+.hdr-inner{display:flex;justify-content:space-between;align-items:center;height:70px;gap:16px}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer;flex-shrink:0}
+.logo-img{height:46px;width:auto;object-fit:contain;filter:drop-shadow(0 0 14px var(--red-glow));transition:.3s}
+.logo:hover .logo-img{transform:scale(1.06) rotate(-3deg)}
+.logo-name{font-family:var(--font-display);font-size:1.6rem;letter-spacing:2px;color:#fff;line-height:1}
+.logo-name em{color:var(--orange);font-style:normal}
+.logo-sub{font-family:var(--font-body);font-size:.58rem;color:rgba(255,255,255,.4);letter-spacing:3px;text-transform:uppercase;display:block;margin-top:3px}
+nav ul{display:flex;list-style:none;gap:.1rem}
+nav ul li a{
+  color:rgba(255,255,255,.72);font-size:.76rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:9px 14px;border-radius:8px;display:flex;align-items:center;gap:6px;cursor:pointer;
+  transition:.2s;white-space:nowrap;
+}
+nav ul li a:hover{color:#fff;background:rgba(232,25,44,.15)}
+.hdr-actions{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.hdr-btn{color:#fff;font-size:1.2rem;transition:.25s;display:inline-flex;align-items:center;padding:6px;border-radius:8px}
+.hdr-btn:hover{color:var(--orange);background:rgba(255,255,255,.06)}
+.cart-ico{position:relative;cursor:pointer}
+.cart-badge{
+  position:absolute;top:-8px;right:-9px;background:var(--red);color:#fff;
+  font-size:.62rem;font-weight:800;min-width:18px;height:18px;padding:0 4px;
+  border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--dark);box-shadow:0 0 10px var(--red-glow);
+}
+.mob-menu-btn{display:none;font-size:1.5rem;cursor:pointer;color:#fff;background:none;border:none;padding:6px}
 
-/* HERO */
-#hero{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--ink)}
-.hero-canvas{position:absolute;inset:0;z-index:0}
-canvas#particles{position:absolute;inset:0;width:100%;height:100%}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,191,176,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(200,191,176,.04) 1px,transparent 1px);background-size:80px 80px}
-.hero-content{position:relative;z-index:2;text-align:center;max-width:1100px;padding:0 2rem}
-.hero-eyebrow{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--chrome);margin-bottom:2rem;opacity:0}
-.hero-h1{font-family:var(--ff-display);font-size:clamp(5rem,14vw,13rem);letter-spacing:.04em;line-height:.92;color:var(--paper);margin-bottom:2rem;overflow:hidden}
-.hero-h1 .line{display:block;transform:translateY(120%)}
-.hero-sub{font-family:var(--ff-serif);font-style:italic;font-size:clamp(1.1rem,2.5vw,1.8rem);color:var(--chrome);letter-spacing:.02em;margin-bottom:3rem;opacity:0}
-.hero-cta{display:inline-flex;align-items:center;gap:1rem;border:1px solid rgba(232,224,208,.3);padding:.9rem 2.5rem;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--paper);text-decoration:none;transition:all .3s;opacity:0}
-.hero-cta:hover{background:rgba(232,224,208,.08);border-color:rgba(232,224,208,.6)}
-.hero-cta::after{content:'→';transition:transform .3s}
-.hero-cta:hover::after{transform:translateX(6px)}
-.hero-scroll{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.8rem;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--chrome);opacity:.5}
-.scroll-line{width:1px;height:60px;background:linear-gradient(var(--chrome),transparent);animation:scrollpulse 2s ease infinite}
-@keyframes scrollpulse{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+/* ===== MOBILE NAV ===== */
+.mob-nav{display:none;position:fixed;inset:0;background:rgba(4,4,12,.97);
+  backdrop-filter:blur(24px);z-index:2000;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.mob-nav.open{display:flex;animation:fadeIn .25s ease}
+.mob-nav a{color:#fff;font-family:var(--font-display);font-size:1.7rem;letter-spacing:2px;text-transform:uppercase;
+  padding:16px 40px;width:300px;text-align:center;cursor:pointer;transition:.25s;
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.mob-nav a:hover{color:var(--orange);transform:translateX(8px)}
+.mob-close{position:absolute;top:22px;right:24px;font-size:2rem;color:#fff;cursor:pointer;background:none;border:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* MARQUEE */
-.marquee-wrap{padding:1.2rem 0;border-top:1px solid rgba(200,191,176,.15);border-bottom:1px solid rgba(200,191,176,.15);overflow:hidden;white-space:nowrap;background:rgba(200,191,176,.03)}
-.marquee-track{display:inline-flex;animation:marquee 30s linear infinite}
-.marquee-item{font-family:var(--ff-display);font-size:1rem;letter-spacing:.2em;color:rgba(200,191,176,.4);margin-right:5rem}
-.marquee-dot{color:var(--gold);margin-right:5rem}
-@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+/* ===== WHATSAPP FLOAT ===== */
+.wa-float{
+  position:fixed;bottom:28px;right:28px;width:62px;height:62px;
+  background:linear-gradient(135deg,var(--green-wa),#128C7E);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:2.1rem;
+  box-shadow:0 16px 40px -8px rgba(37,211,102,.7);z-index:998;transition:.3s;
+  animation:waPulse 2.5s infinite;
+}
+.wa-float:hover{transform:scale(1.12) rotate(-8deg)}
+@keyframes waPulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.65),0 16px 40px -8px rgba(37,211,102,.7)}
+  70%{box-shadow:0 0 0 22px rgba(37,211,102,0),0 16px 40px -8px rgba(37,211,102,.7)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0),0 16px 40px -8px rgba(37,211,102,.7)}
+}
 
-/* SECTIONS */
-section{padding:10rem 4rem}
-.section-label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;display:block}
-.section-h2{font-family:var(--ff-display);font-size:clamp(3.5rem,7vw,7rem);letter-spacing:.04em;line-height:.95;color:var(--paper);margin-bottom:3rem}
+/* ===== HERO ===== */
+.hero{
+  position:relative;color:#fff;overflow:hidden;
+  min-height:90vh;display:flex;align-items:center;
+  background:
+    radial-gradient(700px 500px at 75% 20%,rgba(232,25,44,.5),transparent 60%),
+    radial-gradient(600px 500px at 10% 80%,rgba(255,140,0,.4),transparent 60%),
+    linear-gradient(160deg,#060610 0%,#150810 45%,#080816 100%);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:0;opacity:.14;
+  background:url('https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=1600&q=80') center/cover;
+  mix-blend-mode:luminosity;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+}
+.hero::after{content:"";position:absolute;bottom:0;left:0;right:0;height:100px;
+  background:linear-gradient(to bottom,transparent,var(--light));z-index:1}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;padding:6rem 0}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(232,25,44,.15);border:1px solid rgba(232,25,44,.3);
+  color:var(--orange);padding:6px 16px;border-radius:var(--r-full);
+  font-size:.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.4rem;
+}
+.hero h1{
+  font-size:clamp(3rem,7vw,6rem);letter-spacing:1px;margin-bottom:1.4rem;
+  text-shadow:0 4px 30px rgba(232,25,44,.3);
+}
+.hero h1 span{
+  background:linear-gradient(135deg,var(--orange),var(--red));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  display:block;text-shadow:none;
+}
+.hero-desc{font-size:1.05rem;color:rgba(255,255,255,.72);max-width:500px;margin-bottom:2.4rem;line-height:1.75;font-weight:400}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:3rem}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.hero-stat-num{font-family:var(--font-display);font-size:2.2rem;color:#fff;line-height:1}
+.hero-stat-num span{color:var(--orange)}
+.hero-stat-lbl{font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
+.hero-img-side{
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.hero-img-frame{
+  width:100%;max-width:520px;aspect-ratio:4/5;border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:0 40px 100px -20px rgba(232,25,44,.4),0 0 0 1px rgba(255,255,255,.06);
+  position:relative;
+}
+.hero-img-frame img{width:100%;height:100%;object-fit:cover}
+.hero-img-frame::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(8,8,16,.7) 0%,transparent 50%)}
+.hero-img-badge{
+  position:absolute;bottom:24px;left:24px;right:24px;
+  background:rgba(8,8,16,.8);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:16px;display:flex;gap:16px;align-items:center;
+}
+.hero-badge-stars{color:var(--orange);font-size:1rem;letter-spacing:2px}
+.hero-badge-txt{font-size:.82rem;color:#fff;font-weight:600}
+.hero-badge-txt small{display:block;color:rgba(255,255,255,.5);font-size:.7rem;font-weight:400}
 
-/* VISION */
-#vision{background:var(--ink);position:relative}
-.vision-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center}
-.vision-statement{font-family:var(--ff-serif);font-style:italic;font-size:clamp(2rem,4vw,3.2rem);line-height:1.25;color:var(--paper);border-left:1px solid var(--gold);padding-left:3rem}
-.vision-right p{font-size:1rem;line-height:1.8;color:var(--chrome);margin-bottom:1.5rem}
-.timeline{margin-top:4rem;position:relative;padding-left:1.5rem;border-left:1px solid rgba(200,191,176,.2)}
-.tl-item{margin-bottom:2.5rem;position:relative}
-.tl-item::before{content:'';position:absolute;left:-1.6rem;top:.45rem;width:8px;height:8px;border:1px solid var(--gold);border-radius:50%;background:var(--ink)}
-.tl-year{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem}
-.tl-text{font-size:.85rem;color:var(--chrome);line-height:1.6}
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(135deg,var(--red),var(--red-dark));
+  color:#fff;padding:14px 28px;font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:var(--r-full);transition:all .25s cubic-bezier(.2,.7,.2,1);border:none;cursor:pointer;
+  font-family:var(--font-body);position:relative;overflow:hidden;
+  box-shadow:0 8px 24px -8px var(--red-glow),inset 0 1px 0 rgba(255,255,255,.2);
+}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);transform:translateX(-100%);transition:transform .5s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 14px 36px -8px var(--red-glow)}
+.btn:hover::after{transform:translateX(100%)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-dark));box-shadow:0 8px 24px -8px rgba(255,140,0,.55)}
+.btn-orange:hover{box-shadow:0 14px 36px -8px rgba(255,140,0,.7)}
+.btn-outline{background:transparent;border:2px solid rgba(255,255,255,.55);color:#fff;box-shadow:none}
+.btn-outline:hover{background:#fff;color:var(--dark);border-color:#fff}
+.btn-dark{background:var(--dark);border:2px solid var(--dark);color:#fff;box-shadow:none}
+.btn-dark:hover{background:var(--dark2)}
+.btn-wa{background:linear-gradient(135deg,var(--green-wa),#128C7E);box-shadow:0 8px 24px -8px rgba(37,211,102,.5)}
+.btn-wa:hover{box-shadow:0 14px 36px -8px rgba(37,211,102,.7)}
+.btn-block{width:100%}
+.btn-lg{padding:17px 36px;font-size:.9rem}
+.btn-sm{padding:8px 18px;font-size:.74rem}
 
-/* BRAND SECTIONS */
-.brand-section{position:relative;overflow:hidden}
-.brand-section.light{background:var(--paper);color:var(--ink)}
-.brand-section.light .section-h2{color:var(--ink)}
-.brand-section.light .section-label{color:var(--gold)}
-.brand-section.light p{color:#555}
-.brand-inner{max-width:1100px;margin:0 auto}
-.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:4rem}
-.brand-card{background:rgba(200,191,176,.05);padding:2.5rem 2rem;border:1px solid rgba(200,191,176,.08);transition:all .4s}
-.brand-section.light .brand-card{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.07)}
-.brand-card:hover{background:rgba(200,191,176,.1);border-color:rgba(184,150,12,.3)}
-.brand-section.light .brand-card:hover{background:rgba(0,0,0,.06)}
-.brand-card-num{font-family:var(--ff-display);font-size:3rem;color:rgba(200,191,176,.15);margin-bottom:1.5rem;display:block}
-.brand-card h3{font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.8rem;color:var(--paper)}
-.brand-section.light .brand-card h3{color:var(--ink)}
-.brand-card p{font-size:.82rem;line-height:1.7;color:var(--chrome)}
-.brand-section.light .brand-card p{color:#777}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:5rem}
-.kpi{text-align:center;padding:2.5rem 1rem;border-top:1px solid rgba(200,191,176,.15)}
-.brand-section.light .kpi{border-color:rgba(0,0,0,.1)}
-.kpi-num{font-family:var(--ff-display);font-size:3.5rem;letter-spacing:.04em;color:var(--paper);display:block}
-.brand-section.light .kpi-num{color:var(--ink)}
-.kpi-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--chrome);margin-top:.5rem}
+/* ===== TRUST BAR ===== */
+.trust-bar{background:var(--dark);border-top:1px solid rgba(255,255,255,.05);padding:0}
+.trust-bar::before{content:"";display:block;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.trust-inner{display:flex;overflow-x:auto;scrollbar-width:none}
+.trust-inner::-webkit-scrollbar{display:none}
+.trust-item{display:flex;align-items:center;gap:12px;padding:18px 28px;border-right:1px solid rgba(255,255,255,.05);flex-shrink:0;white-space:nowrap}
+.trust-item:last-child{border-right:none}
+.trust-item i{font-size:1.4rem;color:var(--orange);filter:drop-shadow(0 0 8px rgba(255,140,0,.4))}
+.trust-ttl{font-size:.84rem;font-weight:700;color:#fff}
+.trust-sub{font-size:.7rem;color:rgba(255,255,255,.38)}
 
-/* ECOSYSTEM */
-#ecosystem{background:#050508;position:relative;overflow:hidden}
-.eco-inner{max-width:900px;margin:0 auto;text-align:center}
-.eco-network{width:100%;height:400px;position:relative;margin:4rem 0}
-.eco-node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:.6rem;cursor:default;transition:transform .3s}
-.eco-node:hover{transform:scale(1.08)}
-.node-circle{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);letter-spacing:.1em;font-size:.9rem;border:1px solid}
-.node-center{width:120px;height:120px;background:rgba(184,150,12,.15);border-color:rgba(184,150,12,.5);color:var(--gold);font-size:1.1rem}
-.node-brand{width:90px;height:90px;background:rgba(200,191,176,.07);border-color:rgba(200,191,176,.25);color:var(--paper)}
-.node-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--chrome)}
-.eco-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.eco-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
-.eco-card{background:rgba(200,191,176,.04);border:1px solid rgba(200,191,176,.1);padding:2rem 1.5rem;backdrop-filter:blur(10px)}
-.eco-card h3{font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
-.eco-card p{font-size:.82rem;line-height:1.7;color:var(--chrome)}
+/* ===== INFO BAR ===== */
+.info-bar{background:linear-gradient(135deg,#004d20,#006633);padding:1.4rem 0}
+.info-inner{display:flex;justify-content:space-around;flex-wrap:wrap;gap:1rem}
+.info-item{display:flex;align-items:center;gap:12px}
+.info-item i{font-size:1.6rem;color:rgba(255,255,255,.9)}
+.info-item p{color:#fff;font-size:.95rem;font-weight:700}
+.info-item span{font-size:.7rem;color:rgba(255,255,255,.6)}
 
-/* IMPACT */
-#impact{background:var(--ink)}
-.impact-inner{max-width:1100px;margin:0 auto;text-align:center}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:5rem;border:1px solid rgba(200,191,176,.1)}
-.stat-item{padding:4rem 2rem;border-right:1px solid rgba(200,191,176,.1);position:relative;overflow:hidden}
-.stat-item:last-child{border-right:none}
-.stat-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .6s}
-.stat-item:hover::before{transform:scaleX(1)}
-.stat-num{font-family:var(--ff-display);font-size:clamp(3rem,6vw,5.5rem);letter-spacing:.04em;color:var(--paper);display:block;line-height:1}
-.stat-prefix{font-size:2rem}
-.stat-suffix{font-size:2rem;color:var(--gold)}
-.stat-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--chrome);margin-top:1rem}
+/* ===== SECTIONS ===== */
+.sec{padding:5.5rem 0;position:relative}
+.sec-label{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.sec-title{font-size:clamp(2rem,4vw,3.2rem);color:var(--dark);margin-bottom:12px}
+.sec-title span{color:var(--red)}
+.sec-sub{color:var(--gray);font-size:1rem;max-width:560px;line-height:1.7}
+.sec-bar{width:70px;height:4px;background:linear-gradient(90deg,var(--red),var(--orange));border-radius:var(--r-full);margin:14px 0 0;box-shadow:0 0 16px var(--red-glow)}
+.sec-hdr{margin-bottom:3rem}
+.sec-hdr.center{text-align:center}
+.sec-hdr.center .sec-sub{margin:0 auto}
+.sec-hdr.center .sec-bar{margin:14px auto 0}
 
-/* FOUNDERS */
-#founders{background:#0d0d12}
-.founders-inner{max-width:1100px;margin:0 auto}
-.founders-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:5rem}
-.founder-card{border:1px solid rgba(200,191,176,.1);padding:0;overflow:hidden;position:relative;group}
-.founder-img{width:100%;height:320px;background:linear-gradient(135deg,rgba(200,191,176,.08) 0%,rgba(184,150,12,.06) 100%);display:flex;align-items:flex-end;justify-content:flex-end;padding:2rem;position:relative;overflow:hidden}
-.founder-initials{font-family:var(--ff-display);font-size:10rem;color:rgba(200,191,176,.06);position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);letter-spacing:.05em;line-height:1}
-.founder-info{padding:2.5rem}
-.founder-name{font-family:var(--ff-display);font-size:2.5rem;letter-spacing:.08em;margin-bottom:.3rem}
-.founder-role{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem}
-.founder-bio{font-size:.85rem;line-height:1.8;color:var(--chrome)}
-.mission-block{margin-top:6rem;padding:4rem;border:1px solid rgba(184,150,12,.2);text-align:center;position:relative}
-.mission-block::before{content:'✦';position:absolute;top:-1rem;left:50%;transform:translateX(-50%);background:#0d0d12;padding:0 1rem;color:var(--gold);font-size:.8rem}
-.mission-text{font-family:var(--ff-serif);font-style:italic;font-size:clamp(1.3rem,3vw,2rem);line-height:1.5;color:var(--paper)}
+/* ===== CATEGORY FILTER ===== */
+.cat-filters{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:2.5rem}
+.cat-btn{
+  padding:10px 22px;border:1.5px solid var(--border);border-radius:var(--r-full);
+  background:#fff;font-family:var(--font-body);font-size:.78rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:.2s;color:var(--gray);
+}
+.cat-btn:hover{border-color:var(--red);color:var(--red)}
+.cat-btn.active{background:var(--dark);border-color:var(--dark);color:#fff;box-shadow:0 6px 18px -6px rgba(0,0,0,.5)}
 
-/* AI LAB */
-#ailab{background:var(--ink);position:relative;overflow:hidden}
-.ailab-inner{max-width:1100px;margin:0 auto}
-.neural-bg{position:absolute;inset:0;pointer-events:none;opacity:.15}
-.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:4rem}
-.ai-card{background:linear-gradient(135deg,rgba(200,191,176,.05),rgba(184,150,12,.03));border:1px solid rgba(200,191,176,.08);padding:2rem;transition:all .4s;position:relative;overflow:hidden}
-.ai-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(184,150,12,.08),transparent);opacity:0;transition:opacity .4s}
-.ai-card:hover::before{opacity:1}
-.ai-card:hover{border-color:rgba(184,150,12,.3)}
-.ai-icon{font-size:1.5rem;margin-bottom:1.2rem;display:block}
-.ai-card h3{font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.7rem;color:var(--paper)}
-.ai-card p{font-size:.82rem;line-height:1.7;color:var(--chrome)}
+/* ===== PRODUCTS GRID ===== */
+.products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:3rem}
+@media(max-width:1200px){.products-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.products-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.products-grid{grid-template-columns:1fr 1fr;gap:12px}}
 
-/* ROADMAP */
-#roadmap{background:#080810}
-.roadmap-inner{max-width:900px;margin:0 auto}
-.road-items{margin-top:5rem;position:relative}
-.road-items::before{content:'';position:absolute;left:80px;top:0;bottom:0;width:1px;background:linear-gradient(rgba(184,150,12,.4),rgba(200,191,176,.1))}
-.road-item{display:grid;grid-template-columns:80px 1fr;gap:3rem;margin-bottom:4rem;position:relative}
-.road-year{font-family:var(--ff-display);font-size:1.8rem;letter-spacing:.05em;color:var(--gold);text-align:right;padding-top:.3rem}
-.road-content{padding-left:3rem;border-left:none;position:relative}
-.road-dot{position:absolute;left:-1.6rem;top:.5rem;width:14px;height:14px;border:2px solid var(--gold);border-radius:50%;background:#080810}
-.road-content h3{font-size:1.1rem;font-weight:400;margin-bottom:.8rem;color:var(--paper)}
-.road-content p{font-size:.85rem;line-height:1.7;color:var(--chrome)}
-.road-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
-.road-tag{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .8rem;border:1px solid rgba(200,191,176,.15);color:var(--chrome)}
+.pcard{
+  background:var(--card-bg);border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--shadow-sm);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s;
+  border:1px solid rgba(0,0,0,.04);position:relative;cursor:pointer;display:flex;flex-direction:column;
+}
+.pcard:hover{transform:translateY(-10px);box-shadow:0 28px 60px -18px rgba(232,25,44,.3),0 8px 20px -10px rgba(0,0,0,.15)}
+.pcard-badge{position:absolute;top:14px;left:14px;padding:4px 12px;border-radius:6px;font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;z-index:2}
+.pcard-badge.hot{background:var(--dark);color:#fff}
+.pcard-badge.new{background:#16a34a;color:#fff}
+.pcard-badge.sale{background:var(--red);color:#fff;box-shadow:0 4px 14px -2px var(--red-glow)}
+.pcard-badge.best{background:var(--orange);color:var(--dark)}
+.pcard-img{height:240px;overflow:hidden;background:#f5f5f5;position:relative}
+.pcard-img::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.12),transparent 40%)}
+.pcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.pcard:hover .pcard-img img{transform:scale(1.1)}
+.pcard-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,0);
+  display:flex;align-items:center;justify-content:center;gap:10px;transition:.3s;
+}
+.pcard:hover .pcard-overlay{background:rgba(0,0,0,.28)}
+.pcard-qbtn{
+  background:#fff;color:var(--dark);border:none;border-radius:50%;
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.92rem;transform:translateY(12px);opacity:0;
+  transition:.3s;box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+.pcard:hover .pcard-qbtn{transform:translateY(0);opacity:1}
+.pcard-qbtn:hover{background:var(--red);color:#fff}
+.pcard-body{padding:1.2rem;flex:1;display:flex;flex-direction:column}
+.pcard-cat{color:var(--gray);font-size:.65rem;text-transform:uppercase;font-weight:700;letter-spacing:.18em;margin-bottom:5px}
+.pcard-name{font-family:var(--font-heading);font-size:1rem;color:var(--dark);line-height:1.25;margin-bottom:6px}
+.pcard-desc{color:var(--gray);font-size:.78rem;line-height:1.5;flex:1;margin-bottom:10px}
+.pcard-stars{color:var(--orange);font-size:.78rem;letter-spacing:1px;margin-bottom:6px}
+.pcard-sizes{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.size-pill{background:#f0f0f0;color:#555;padding:3px 9px;border-radius:var(--r-full);font-size:.65rem;font-weight:700}
+.pcard-price{font-family:var(--font-heading);font-size:1.25rem;color:var(--dark);display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pcard-price s{font-size:.8rem;color:var(--gray);font-weight:400}
+.pcard-price .disc{background:rgba(232,25,44,.1);color:var(--red);font-size:.65rem;padding:2px 7px;border-radius:4px;font-family:var(--font-body);font-weight:700}
+.pcard-actions{display:grid;grid-template-columns:1fr 44px;gap:8px;margin-top:auto}
+.pcard-actions .btn{padding:10px;font-size:.72rem;border-radius:10px;min-width:0}
 
-/* CONTACT */
-#contact{background:var(--paper);color:var(--ink)}
-.contact-inner{max-width:800px;margin:0 auto}
-.contact-inner .section-label{color:var(--gold)}
-.contact-inner .section-h2{color:var(--ink)}
-.contact-form{margin-top:4rem}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
-.form-group{display:flex;flex-direction:column;gap:.5rem}
-.form-group label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#888}
-.form-group input,.form-group textarea,.form-group select{background:transparent;border:none;border-bottom:1px solid rgba(0,0,0,.15);padding:.8rem 0;font-family:var(--ff-body);font-size:.95rem;color:var(--ink);outline:none;transition:border-color .3s;width:100%}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--gold)}
-.form-group textarea{resize:none;height:120px}
-.form-submit{display:inline-flex;align-items:center;gap:1rem;background:var(--ink);color:var(--paper);border:none;padding:1.1rem 3rem;font-family:var(--ff-body);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;margin-top:2rem;transition:all .3s}
-.form-submit:hover{background:#1a1a1a;gap:1.5rem}
-.contact-alts{display:flex;gap:3rem;margin-top:3rem;padding-top:3rem;border-top:1px solid rgba(0,0,0,.1)}
-.contact-alt{display:flex;flex-direction:column;gap:.3rem}
-.contact-alt span:first-child{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#888}
-.contact-alt span:last-child{font-size:.9rem;color:var(--ink)}
+.loading-spin{display:flex;flex-direction:column;align-items:center;padding:80px 20px;color:var(--gray);gap:14px;grid-column:1/-1}
+.loading-spin i{font-size:2rem;animation:spin 1s linear infinite;color:var(--red)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.empty-prods{text-align:center;padding:80px 20px;grid-column:1/-1;color:var(--gray)}
+.empty-prods i{font-size:3rem;display:block;margin-bottom:12px;opacity:.3}
 
-/* FOOTER */
-footer{background:var(--ink);padding:4rem;border-top:1px solid rgba(200,191,176,.1)}
-.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-.footer-logo{font-family:var(--ff-display);font-size:1.8rem;letter-spacing:.15em;color:var(--paper)}
-.footer-sub{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--chrome);opacity:.5;margin-top:.3rem}
-.footer-right{text-align:right;font-size:.7rem;color:var(--chrome);opacity:.4;line-height:1.8}
+/* ===== PRODUCT DETAIL MODAL ===== */
+.prod-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:2100;align-items:center;justify-content:center;padding:16px}
+.prod-modal.active{display:flex;animation:fadeIn .25s ease}
+.prod-modal-box{background:#fff;border-radius:24px;width:100%;max-width:900px;max-height:92vh;overflow:hidden;display:flex;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.prod-modal-img{width:44%;flex-shrink:0;overflow:hidden;background:#f5f5f5}
+.prod-modal-img img{width:100%;height:100%;object-fit:cover}
+.prod-modal-body{flex:1;overflow-y:auto;padding:2rem}
+.modal-x{position:absolute;top:14px;right:14px;width:38px;height:38px;background:#fff;border:none;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:.2s;z-index:5}
+.modal-x:hover{background:var(--red);color:#fff}
 
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.22,.84,.44,1)}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
-.reveal-delay-4{transition-delay:.4s}
+/* ===== CART ===== */
+.cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1500}
+.cart-overlay.active{display:block;animation:fadeIn .25s ease}
+.cart-side{
+  position:fixed;top:0;right:-110%;width:100%;max-width:440px;height:100%;
+  background:#fff;box-shadow:-20px 0 60px rgba(0,0,0,.4);z-index:1501;
+  transition:right .35s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column;
+}
+.cart-side.active{right:0}
+.cart-hdr{background:linear-gradient(135deg,var(--dark),var(--dark2));color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center}
+.cart-hdr h3{font-family:var(--font-heading);font-size:1.1rem;display:flex;align-items:center;gap:10px}
+.cart-x{font-size:1.9rem;cursor:pointer;line-height:1;color:#fff;transition:.2s}
+.cart-x:hover{color:var(--orange);transform:rotate(90deg)}
+.cart-items{flex:1;overflow-y:auto;padding:16px 18px}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--gray)}
+.cart-empty i{font-size:3rem;display:block;margin-bottom:14px;opacity:.3}
+.cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f0f0f0;position:relative}
+.ci-img{width:70px;height:70px;background:#f5f5f5;border-radius:12px;overflow:hidden;flex-shrink:0}
+.ci-img img{width:100%;height:100%;object-fit:cover}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-weight:700;font-size:.88rem;margin-bottom:2px;color:var(--dark)}
+.ci-meta{font-size:.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.ci-price{color:var(--red);font-weight:800;font-size:.95rem;font-family:var(--font-heading)}
+.ci-qty{display:flex;align-items:center;gap:8px;margin-top:7px}
+.qty-btn{width:27px;height:27px;border:1.5px solid #e0e0e0;border-radius:7px;background:#fff;cursor:pointer;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.2s}
+.qty-btn:hover{border-color:var(--red);color:var(--red)}
+.qty-num{font-weight:700;font-size:.9rem;min-width:22px;text-align:center}
+.ci-rm{position:absolute;top:14px;right:0;color:#ccc;cursor:pointer;font-size:1rem;transition:.2s}
+.ci-rm:hover{color:var(--red);transform:scale(1.15)}
+.cart-foot{padding:18px 22px;border-top:1px solid #f0f0f0;background:linear-gradient(180deg,#fafafa,#fff)}
+.cart-subtotal{display:flex;justify-content:space-between;margin-bottom:7px;font-size:.85rem;color:var(--gray)}
+.cart-total{display:flex;justify-content:space-between;font-family:var(--font-heading);font-size:1.3rem;margin-bottom:16px;color:var(--dark)}
+.cart-total span:last-child{color:var(--red)}
+
+/* ===== SIZE MODAL ===== */
+.size-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:2100;align-items:flex-end;justify-content:center}
+.size-modal.active{display:flex}
+.size-modal-inner{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:28px 26px 40px;animation:slideUp .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sm-name{font-family:var(--font-heading);font-size:1.15rem;margin-bottom:4px;color:var(--dark)}
+.sm-price{font-family:var(--font-heading);color:var(--red);font-size:1.4rem;margin-bottom:20px}
+.sizes-grid{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.size-btn{width:54px;height:54px;border:1.5px solid #e0e0e0;background:#fff;border-radius:12px;font-weight:800;cursor:pointer;font-family:var(--font-body);transition:.2s;font-size:.9rem;color:var(--dark)}
+.size-btn:hover{border-color:var(--dark)}
+.size-btn.active{border-color:var(--dark);background:var(--dark);color:#fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.5)}
+.size-btn.out{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.qty-row{display:flex;align-items:center;gap:18px;margin-bottom:20px}
+.qty-row label{font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:#555}
+.qty-ctl{display:flex;align-items:center;gap:12px}
+.qty-ctl button{width:36px;height:36px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;font-size:1.1rem;font-weight:700;transition:.2s}
+.qty-ctl button:hover{border-color:var(--red);color:var(--red)}
+.qty-ctl span{font-family:var(--font-heading);font-size:1.15rem;min-width:30px;text-align:center}
+
+/* ===== CHECKOUT ===== */
+.checkout-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:2200;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.checkout-modal.active{display:flex;animation:fadeIn .25s ease}
+.co-box{background:#fff;border-radius:24px;width:100%;max-width:640px;max-height:94vh;overflow-y:auto;padding:32px;position:relative;margin:auto;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.co-steps{display:flex;gap:8px;margin-bottom:28px}
+.co-step{flex:1;height:5px;border-radius:var(--r-full);background:#eee;transition:.4s}
+.co-step.done{background:#16a34a}
+.co-step.active{background:linear-gradient(90deg,var(--red),var(--orange))}
+.step-panel{display:none}
+.step-panel.active{display:block;animation:fadeIn .25s ease}
+.step-title{font-family:var(--font-heading);font-size:1.2rem;color:var(--dark);margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.step-num{width:32px;height:32px;background:linear-gradient(135deg,var(--red),var(--red-dark));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;flex-shrink:0;box-shadow:0 6px 16px -4px var(--red-glow)}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;margin-bottom:7px;font-weight:700;font-size:.75rem;color:#555;text-transform:uppercase;letter-spacing:.08em}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:13px 16px;border:1.5px solid #e5e5e5;border-radius:12px;
+  font-size:.95rem;font-family:var(--font-body);transition:.25s;background:#fafafa;color:var(--dark);
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--dark);outline:none;background:#fff;box-shadow:0 0 0 4px rgba(232,25,44,.08)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.mpesa-box{background:linear-gradient(135deg,#ECFDF4,#D1FAE5);border:1.5px solid #22c55e;border-radius:16px;padding:22px;margin:16px 0}
+.mpesa-box h4{color:#15803d;margin-bottom:14px;font-size:1.05rem;display:flex;align-items:center;gap:10px;font-family:var(--font-heading)}
+.mpesa-steps{list-style:none;display:flex;flex-direction:column;gap:10px}
+.mpesa-steps li{display:flex;gap:12px;font-size:.88rem;align-items:flex-start}
+.ms-num{width:26px;height:26px;background:#22c55e;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.74rem;flex-shrink:0;box-shadow:0 4px 10px rgba(34,197,94,.4)}
+.mpesa-detail{background:#fff;border-radius:10px;padding:14px 16px;margin:12px 0;border:1px solid #bbf7d0}
+.mpesa-detail p{font-size:.88rem;margin-bottom:4px}
+.mpesa-detail strong{color:#15803d;font-size:1.05rem}
+.mpesa-amount{font-family:var(--font-heading);font-size:2rem;color:var(--red);text-align:center;margin:10px 0}
+.order-ri{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:.88rem}
+.order-ri img{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.order-totals{margin-top:16px;width:100%;border-collapse:collapse}
+.order-totals td{padding:7px 0;font-size:.88rem}
+.order-totals td:last-child{text-align:right;font-weight:700}
+.order-totals .tot-row td{font-family:var(--font-heading);font-size:1.2rem;color:var(--red);border-top:2px solid #f0f0f0;padding-top:12px}
+.success-screen{text-align:center;padding:28px 0}
+.success-icon{font-size:4.5rem;color:#16a34a;margin-bottom:16px;animation:popIn .55s cubic-bezier(.2,.7,.2,1.4)}
+@keyframes popIn{from{transform:scale(0) rotate(-180deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+/* ===== BRANDING SECTION ===== */
+.brand-sec{
+  padding:6rem 0;color:#fff;position:relative;overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(800px 500px at 15% 40%,rgba(232,25,44,.4),transparent 60%),
+    radial-gradient(700px 500px at 90% 60%,rgba(255,140,0,.3),transparent 60%),
+    linear-gradient(135deg,#080816,#060410 50%,#080016);
+}
+.brand-sec::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.04;
+  background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
+  background-size:60px 60px}
+.brand-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start}
+@media(max-width:768px){.brand-grid{grid-template-columns:1fr}}
+.brand-form-wrap{background:#fff;border-radius:24px;padding:32px;color:var(--ink);box-shadow:0 40px 80px -20px rgba(0,0,0,.6)}
+.brand-form-wrap h3{font-family:var(--font-heading);color:var(--dark);margin-bottom:20px;font-size:1.2rem;display:flex;align-items:center;gap:10px}
+.brand-form-wrap h3 i{color:var(--red)}
+.brand-benefits{list-style:none;display:flex;flex-direction:column;gap:16px}
+.brand-benefits li{display:flex;gap:14px;align-items:flex-start}
+.brand-benefits li i{color:var(--orange);font-size:1.2rem;margin-top:3px;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(255,140,0,.5))}
+.brand-benefits li strong{color:#fff;font-size:.95rem;display:block;margin-bottom:2px}
+.brand-benefits li small{color:rgba(255,255,255,.55);font-size:.78rem}
+
+/* ===== PROCESS SECTION ===== */
+.process-sec{background:var(--light);padding:5.5rem 0}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:3rem;position:relative}
+.process-steps::before{content:"";position:absolute;top:32px;left:12%;right:12%;height:2px;background:linear-gradient(90deg,var(--red),var(--orange));z-index:0}
+.process-step{text-align:center;padding:0 1.5rem;position:relative;z-index:1}
+.proc-num{width:64px;height:64px;background:var(--dark);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.5rem;margin:0 auto 1.2rem;border:3px solid var(--dark);transition:.3s}
+.process-step:hover .proc-num{background:var(--red);border-color:var(--red);box-shadow:0 8px 24px var(--red-glow)}
+.process-step h4{font-family:var(--font-heading);font-size:1rem;text-transform:uppercase;margin-bottom:6px}
+.process-step p{font-size:.8rem;color:var(--gray);line-height:1.6}
+
+/* ===== TESTIMONIALS ===== */
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:2rem}
+@media(max-width:900px){.test-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.test-grid{grid-template-columns:1fr}}
+.test-card{background:#fff;border-radius:20px;padding:26px;border:1px solid var(--border);position:relative;transition:.3s}
+.test-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:rgba(232,25,44,.2)}
+.test-card::before{content:'"';position:absolute;top:4px;left:18px;font-size:4.5rem;color:var(--red);opacity:.12;font-family:serif;line-height:1}
+.test-stars{color:var(--orange);font-size:.9rem;letter-spacing:2px;margin-bottom:10px}
+.test-text{color:#555;font-size:.9rem;line-height:1.65;margin-bottom:14px;font-style:italic}
+.test-author{font-family:var(--font-heading);color:var(--dark);font-size:.9rem}
+.test-role{font-size:.74rem;color:var(--gray);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+
+/* ===== REVIEWS ===== */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:2rem;margin-bottom:3rem}
+@media(max-width:900px){.reviews-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.reviews-grid{grid-template-columns:1fr}}
+.rev-card{background:#fff;border-radius:20px;padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;transition:.3s}
+.rev-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px -18px rgba(232,25,44,.25)}
+.rev-card::before{content:'"';position:absolute;top:4px;left:16px;font-size:4rem;color:var(--red);opacity:.1;font-family:serif;line-height:1}
+.rev-stars{color:var(--orange);font-size:.92rem;margin-bottom:10px;letter-spacing:1px}
+.rev-text{color:#444;font-size:.88rem;line-height:1.65;margin-bottom:14px;font-style:italic}
+.rev-author{font-family:var(--font-heading);color:var(--dark);font-size:.92rem}
+.rev-date{font-size:.72rem;color:#bbb;margin-top:4px}
+.rev-verified{display:inline-flex;align-items:center;gap:5px;background:#ECFDF4;color:#15803d;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:var(--r-full);margin-top:8px}
+.leave-rev-wrap{background:#fff;border-radius:24px;padding:32px;max-width:620px;margin:0 auto;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.leave-rev-wrap h3{font-family:var(--font-heading);color:var(--dark);margin-bottom:20px}
+.star-picker{display:flex;gap:8px;margin-bottom:16px}
+.star-pick{font-size:1.9rem;cursor:pointer;color:#ddd;transition:.2s}
+.star-pick:hover{transform:scale(1.15)}
+.star-pick.lit{color:var(--orange);filter:drop-shadow(0 0 8px rgba(255,140,0,.5))}
+
+/* ===== CUSTOMIZE MODAL ===== */
+.custom-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:2000;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.custom-modal.active{display:flex;animation:fadeIn .25s ease}
+.custom-box{background:#fff;border-radius:24px;width:100%;max-width:740px;max-height:94vh;overflow-y:auto;padding:32px;position:relative;margin:auto;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.form-sec-title{font-family:var(--font-heading);font-size:1rem;color:var(--dark);margin:24px 0 12px;padding-bottom:10px;border-bottom:2px solid #f0f0f0;display:flex;align-items:center;gap:10px}
+.form-sec-title i{color:var(--red)}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:600px){.form-row-3{grid-template-columns:1fr}}
+.color-picker{display:flex;gap:10px;flex-wrap:wrap}
+.color-opt{width:40px;height:40px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.25s;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.color-opt:hover{transform:scale(1.1)}
+.color-opt.selected{border-color:var(--dark);transform:scale(1.18);box-shadow:0 0 0 3px var(--red),0 4px 16px rgba(0,0,0,.25)}
+.cb-wrap{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:.9rem;color:#555}
+.cb-wrap input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--red)}
+.modal-close{position:absolute;top:14px;right:16px;font-size:1.6rem;cursor:pointer;width:40px;height:40px;background:#f0f0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;color:#555}
+.modal-close:hover{background:var(--red);color:#fff;transform:rotate(90deg)}
+
+/* ===== TRACK ORDER ===== */
+.track-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);z-index:2000;align-items:center;justify-content:center;padding:16px}
+.track-modal.active{display:flex;animation:fadeIn .25s ease}
+.track-box{background:#fff;border-radius:24px;width:100%;max-width:520px;padding:32px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.track-card{background:linear-gradient(135deg,#fafafa,#f4f4f4);border-radius:16px;padding:20px;border-left:5px solid var(--red);margin-top:18px}
+.track-status{display:inline-block;padding:5px 16px;border-radius:var(--r-full);font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em}
+.track-status.pending{background:#fff3cd;color:#856404}
+.track-status.processing{background:#cce5ff;color:#004085}
+.track-status.completed{background:#d4edda;color:#155724}
+.track-timeline{display:flex;flex-direction:column;gap:0;margin-top:16px}
+.track-step{display:flex;gap:14px;align-items:flex-start;padding-bottom:16px;position:relative}
+.track-step::before{content:"";position:absolute;left:13px;top:26px;bottom:0;width:2px;background:#e0e0e0}
+.track-step:last-child::before{display:none}
+.tdot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#fff;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.tdot.done{background:#16a34a}
+.tdot.current{background:var(--orange);animation:dotPulse 1.6s infinite}
+.tdot.pend{background:#ddd;color:#999;box-shadow:none}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,140,0,.55)}50%{box-shadow:0 0 0 10px rgba(255,140,0,0)}}
+
+/* ===== FOOTER ===== */
+footer{
+  background:
+    radial-gradient(600px 400px at 80% 20%,rgba(232,25,44,.18),transparent 60%),
+    linear-gradient(180deg,#07070F,#0A0A14);
+  color:#fff;padding:5rem 0 2rem;border-top:1px solid rgba(255,255,255,.05);position:relative;
+}
+footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),var(--red),transparent)}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:3rem;margin-bottom:3rem}
+@media(max-width:1024px){.footer-grid{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr;gap:1.5rem}}
+.footer-col h3{font-family:var(--font-heading);font-size:.9rem;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.2rem;color:#fff}
+.footer-col p{color:rgba(255,255,255,.55);font-size:.86rem;line-height:1.75}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul li a{color:rgba(255,255,255,.55);font-size:.86rem;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.25s}
+.footer-col ul li a:hover{color:var(--orange);transform:translateX(4px)}
+.footer-col ul li a i{font-size:.68rem}
+.foot-social{display:flex;gap:10px;margin-top:18px}
+.soc-btn{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);transition:.25s}
+.soc-btn:hover{transform:translateY(-4px);background:var(--red);border-color:var(--red);box-shadow:0 10px 24px -5px var(--red-glow)}
+.foot-pay{display:flex;flex-direction:column;gap:10px}
+.pay-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.pay-item strong{color:#fff;font-size:.85rem;display:block}
+.pay-item small{color:rgba(255,255,255,.4);font-size:.68rem}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:1.8rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.foot-bottom p{color:rgba(255,255,255,.4);font-size:.8rem}
+
+/* ===== DIVIDER ===== */
+.divider{height:3px;background:linear-gradient(90deg,var(--red),var(--orange),var(--green))}
+
+/* ===== TOAST ===== */
+#toastBox{position:fixed;top:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast{background:#fff;border-radius:14px;padding:14px 20px;box-shadow:0 18px 50px -10px rgba(0,0,0,.25);display:flex;align-items:center;gap:14px;animation:slideInR .35s cubic-bezier(.2,.7,.2,1);border-left:5px solid #16a34a;min-width:280px}
+.toast.error{border-left-color:var(--red)}
+.toast.error i{color:var(--red)}
+.toast.info{border-left-color:#3b82f6}
+.toast.info i{color:#3b82f6}
+.toast i{color:#16a34a;font-size:1.1rem}
+.toast span{font-size:.88rem;color:var(--dark);font-weight:500}
+@keyframes slideInR{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;text-align:center}
+  .hero-img-side{display:none}
+  .hero-btns{justify-content:center}
+  .hero-stats{justify-content:center}
+  .hero-desc{margin:0 auto 2.4rem}
+  .process-steps{grid-template-columns:repeat(2,1fr);gap:2.5rem}
+  .process-steps::before{display:none}
+}
+@media(max-width:768px){
+  nav{display:none}
+  .mob-menu-btn{display:block}
+  .hero{min-height:auto}
+  .hero-grid{padding:4rem 0 3rem}
+  .hero h1{font-size:2.8rem}
+  .test-grid,.reviews-grid{grid-template-columns:1fr}
+  .form-row-3{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .hdr-actions{gap:8px}
+  .hero-btns .btn{width:100%;justify-content:center}
+  .prod-modal-box{flex-direction:column;max-height:95vh}
+  .prod-modal-img{width:100%;height:220px}
+}
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
+<!-- ANNOUNCE BAR -->
+<div class="announce-bar">
+  <span>🇰🇪 <strong>FREE DESIGN</strong> consultation on all bulk orders</span>
+  <div class="adot"></div>
+  <span>M-Pesa Accepted · <strong>Nationwide Delivery</strong></span>
+  <div class="adot"></div>
+  <span>Call: <strong>0727 394 165</strong></span>
+</div>
 
-<nav>
-  <div class="nav-logo">NEXUS</div>
-  <ul class="nav-links">
-    <li><a href="#vision">Vision</a></li>
-    <li><a href="#brands">Brands</a></li>
-    <li><a href="#impact">Impact</a></li>
-    <li><a href="#founders">Founders</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
+<!-- HEADER -->
+<header id="home">
+  <div class="container hdr-inner">
+    <div class="logo" onclick="navGo('home')">
+      <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear" class="logo-img" onerror="this.style.display='none'">
+      <div><div class="logo-name">STA<em>WEAR</em></div><span class="logo-sub">Martial Arts Branding</span></div>
+    </div>
+    <nav><ul>
+      <li><a onclick="navGo('products')"><i class="fas fa-tshirt"></i> Products</a></li>
+      <li><a onclick="navGo('branding')"><i class="fas fa-palette"></i> Custom Branding</a></li>
+      <li><a onclick="navGo('reviews')"><i class="fas fa-star"></i> Reviews</a></li>
+      <li><a onclick="showTrack()"><i class="fas fa-truck"></i> Track Order</a></li>
+    </ul></nav>
+    <div class="hdr-actions">
+      <a href="tel:0727394165" class="hdr-btn"><i class="fas fa-phone-alt"></i></a>
+      <a href="https://wa.me/254727394165" target="_blank" class="hdr-btn" style="color:#25D366"><i class="fab fa-whatsapp"></i></a>
+      <div class="hdr-btn cart-ico" onclick="toggleCart()">
+        <i class="fas fa-shopping-bag" style="font-size:1.2rem"></i>
+        <div class="cart-badge" id="cartCount">0</div>
+      </div>
+      <button class="mob-menu-btn" onclick="openMobNav()"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobNav">
+  <button class="mob-close" onclick="closeMobNav()"><i class="fas fa-times"></i></button>
+  <a onclick="navGo('home')">Home</a>
+  <a onclick="navGo('products')">Products</a>
+  <a onclick="openCustomModal()">Custom Branding</a>
+  <a onclick="navGo('reviews')">Reviews</a>
+  <a onclick="showTrack()">Track Order</a>
+  <a href="tel:0727394165" style="color:var(--orange);margin-top:10px"><i class="fas fa-phone-alt"></i> 0727 394 165</a>
+</div>
+
+<!-- WHATSAPP -->
+<a class="wa-float" href="https://wa.me/254727394165?text=Hello%20Stawear!%20I'm%20interested%20in%20your%20products." target="_blank"><i class="fab fa-whatsapp"></i></a>
 
 <!-- HERO -->
-<section id="hero">
-  <div class="hero-grid"></div>
-  <canvas id="particles"></canvas>
-  <div class="hero-content">
-    <p class="hero-eyebrow">Nexus Group · Est. 2024 · Nairobi</p>
-    <h1 class="hero-h1">
-      <span class="line">BUILDING</span>
-      <span class="line">THE FUTURE</span>
-    </h1>
-    <p class="hero-sub">Media. Software. Fashion.<br>One Vision.</p>
-    <a href="#vision" class="hero-cta">Discover the Ecosystem</a>
-  </div>
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><i class="fas fa-bolt"></i> Kenya's #1 Martial Arts Store</div>
+        <h1>GEAR UP.<br>TRAIN HARD.<br><span>LOOK SHARP.</span></h1>
+        <p class="hero-desc">Premium custom apparel and branding for Kenyan dojangs and champions. Quality gear, authentic pride, fast delivery nationwide.</p>
+        <div class="hero-btns">
+          <button class="btn btn-orange btn-lg" onclick="navGo('products')"><i class="fas fa-shopping-bag"></i> Shop Collection</button>
+          <button class="btn btn-outline btn-lg" onclick="openCustomModal()"><i class="fas fa-palette"></i> Custom Branding</button>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">500<span>+</span></div><div class="hero-stat-lbl">Dojangs Served</div></div>
+          <div><div class="hero-stat-num">47</div><div class="hero-stat-lbl">Counties Reached</div></div>
+          <div><div class="hero-stat-num">4.9<span>★</span></div><div class="hero-stat-lbl">Avg. Rating</div></div>
+        </div>
+      </div>
+      <div class="hero-img-side">
+        <div class="hero-img-frame">
+          <img src="https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=800&q=80" alt="Martial Arts Gear">
+          <div class="hero-img-badge">
+            <div>
+              <div class="hero-badge-stars">★★★★★</div>
+              <div class="hero-badge-txt">Premium Quality<small>100% Satisfaction Guaranteed</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- MARQUEE -->
-<div class="marquee-wrap">
-  <div class="marquee-track">
-    <span class="marquee-item">ON POINT MEDIA</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">SMARTDEV</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">STARWEAR</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">AI INNOVATION</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">BRAND STRATEGY</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">SOFTWARE PRODUCTS</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">FASHION & CULTURE</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">ON POINT MEDIA</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">SMARTDEV</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">STARWEAR</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">AI INNOVATION</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">BRAND STRATEGY</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">SOFTWARE PRODUCTS</span><span class="marquee-dot">✦</span>
-    <span class="marquee-item">FASHION & CULTURE</span><span class="marquee-dot">✦</span>
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner container">
+    <div class="trust-item"><i class="fas fa-medal"></i><div><div class="trust-ttl">Premium Quality</div><div class="trust-sub">100% satisfaction guarantee</div></div></div>
+    <div class="trust-item"><i class="fas fa-shipping-fast"></i><div><div class="trust-ttl">Nationwide Delivery</div><div class="trust-sub">All 47 counties covered</div></div></div>
+    <div class="trust-item"><i class="fas fa-mobile-alt"></i><div><div class="trust-ttl">M-Pesa Payments</div><div class="trust-sub">Paybill & STK push</div></div></div>
+    <div class="trust-item"><i class="fas fa-pencil-ruler"></i><div><div class="trust-ttl">Free Design Help</div><div class="trust-sub">Custom logos & branding</div></div></div>
+    <div class="trust-item"><i class="fas fa-clock"></i><div><div class="trust-ttl">Express Turnaround</div><div class="trust-sub">Ready in as little as 1 week</div></div></div>
+    <div class="trust-item"><i class="fas fa-headset"></i><div><div class="trust-ttl">Quick Support</div><div class="trust-sub">WhatsApp in 2 hrs</div></div></div>
   </div>
 </div>
 
-<!-- VISION -->
-<section id="vision">
-  <div class="vision-inner">
-    <div>
-      <span class="section-label reveal">§ 01 — The Vision</span>
-      <div class="vision-statement reveal reveal-delay-1">
-        "We don't launch businesses.<br>We build ecosystems."
-      </div>
+<!-- INFO BAR -->
+<div class="info-bar">
+  <div class="container info-inner">
+    <div class="info-item"><i class="fas fa-phone-alt"></i><div><p>0727 394 165</p><span>Call Anytime</span></div></div>
+    <div class="info-item"><i class="fab fa-whatsapp"></i><div><p>Chat on WhatsApp</p><span>Quick Responses</span></div></div>
+    <div class="info-item"><i class="fas fa-map-marker-alt"></i><div><p>Nairobi, Kenya</p><span>Nationwide Delivery</span></div></div>
+    <div class="info-item"><i class="fas fa-mobile-alt"></i><div><p>M-Pesa Accepted</p><span>Paybill Payment</span></div></div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="sec" id="products" style="background:#fff">
+  <div class="container">
+    <div class="sec-hdr center">
+      <div class="sec-label">Our Collection</div>
+      <h2 class="sec-title">PREMIUM <span>GEAR</span></h2>
+      <div class="sec-bar"></div>
+      <p class="sec-sub" style="margin-top:14px">Quality Martial Arts apparel crafted for champions — train, compete, and represent with pride.</p>
     </div>
-    <div class="vision-right">
-      <p class="reveal">Nexus Group is a vertically integrated holding company operating at the intersection of media, technology, and culture. We don't just participate in industries — we reshape them.</p>
-      <p class="reveal reveal-delay-1">Founded with a singular conviction: that the future belongs to companies who can move fluidly across disciplines, connecting creative production with technological infrastructure.</p>
-      <div class="timeline">
-        <div class="tl-item reveal reveal-delay-2">
-          <div class="tl-year">2024</div>
-          <div class="tl-text">Nexus Group founded. On Point Media launches first campaigns.</div>
-        </div>
-        <div class="tl-item reveal reveal-delay-3">
-          <div class="tl-year">2025</div>
-          <div class="tl-text">SmartDev ships first SaaS platform. Starwear concept established.</div>
-        </div>
-        <div class="tl-item reveal reveal-delay-4">
-          <div class="tl-year">2026</div>
-          <div class="tl-text">Full ecosystem activation. AI lab launches. $5M revenue target.</div>
-        </div>
-      </div>
+    <div class="cat-filters">
+      <button class="cat-btn active" onclick="filterProds('all',this)">All</button>
+      <button class="cat-btn" onclick="filterProds('Hoodies',this)">Hoodies</button>
+      <button class="cat-btn" onclick="filterProds('T-Shirts',this)">T-Shirts</button>
+      <button class="cat-btn" onclick="filterProds('Jackets',this)">Jackets</button>
+      <button class="cat-btn" onclick="filterProds('Tracksuits',this)">Tracksuits</button>
+      <button class="cat-btn" onclick="filterProds('Accessories',this)">Accessories</button>
+    </div>
+    <div class="products-grid" id="productsGrid">
+      <div class="loading-spin"><i class="fas fa-circle-notch"></i><span>Loading products...</span></div>
     </div>
   </div>
 </section>
 
-<!-- ON POINT MEDIA -->
-<section id="brands" class="brand-section light">
-  <div class="brand-inner">
-    <span class="section-label reveal">§ 02 — Brand Portfolio</span>
-    <h2 class="section-h2 reveal">ON POINT<br>MEDIA</h2>
-    <p class="reveal" style="max-width:600px;font-size:1rem;line-height:1.8;color:#666">The creative engine of the group. We produce culture-defining content, brand narratives, and digital campaigns that move people to act.</p>
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="process-sec" id="process">
+  <div class="container">
+    <div class="sec-hdr center">
+      <div class="sec-label">Our Process</div>
+      <h2 class="sec-title">HOW CUSTOM <span>BRANDING</span> WORKS</h2>
+      <div class="sec-bar"></div>
+      <p class="sec-sub" style="margin-top:14px">Simple, fast, professional — from idea to your dojang in 4 steps.</p>
+    </div>
+    <div class="process-steps">
+      <div class="process-step"><div class="proc-num">01</div><h4>Submit Request</h4><p>Fill our quick branding form with your dojang name, item type, quantity and design notes.</p></div>
+      <div class="process-step"><div class="proc-num">02</div><h4>Design Review</h4><p>Our team creates a digital mockup and shares it with you via WhatsApp for approval.</p></div>
+      <div class="process-step"><div class="proc-num">03</div><h4>M-Pesa Payment</h4><p>Confirm with a 50% deposit via M-Pesa. Balance on delivery or collection.</p></div>
+      <div class="process-step"><div class="proc-num">04</div><h4>Delivery</h4><p>Your branded gear is shipped nationwide. Track your order with your unique ID.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOM BRANDING -->
+<section class="brand-sec" id="branding">
+  <div class="container">
+    <div class="sec-hdr center" style="margin-bottom:3rem">
+      <div class="sec-label" style="color:var(--orange)">Custom Orders</div>
+      <h2 class="sec-title" style="color:#fff">BRAND YOUR <span style="color:var(--orange)">DOJANG</span></h2>
+      <p class="sec-sub" style="color:rgba(255,255,255,.55);margin:12px auto 0">Get your team wearing your identity. Minimum 5 pieces for custom orders.</p>
+    </div>
     <div class="brand-grid">
-      <div class="brand-card reveal">
-        <span class="brand-card-num">01</span>
-        <h3>Brand Strategy</h3>
-        <p>Deep positioning work that gives brands a singular point of view in their category.</p>
+      <div class="brand-form-wrap">
+        <h3><i class="fas fa-pen-fancy"></i> Quick Branding Request</h3>
+        <form id="quickBrandForm" onsubmit="handleQuickBrand(event)">
+          <div class="form-group"><label>Your Name *</label><input type="text" id="quickName" required placeholder="John Kamau"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="quickEmail" required placeholder="you@example.com"></div>
+          <div class="form-group"><label>Dojang / Team Name *</label><input type="text" id="quickDojang" required placeholder="Nairobi Martial Arts Club"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Item Type</label>
+              <select id="quickItem"><option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option><option>Full Uniforms</option></select>
+            </div>
+            <div class="form-group"><label>Quantity</label><input type="number" id="quickQty" value="10" min="1"></div>
+          </div>
+          <button type="submit" class="btn btn-block" style="margin-top:8px"><i class="fas fa-arrow-right"></i> Open Full Form</button>
+        </form>
       </div>
-      <div class="brand-card reveal reveal-delay-1">
-        <span class="brand-card-num">02</span>
-        <h3>Video Production</h3>
-        <p>Cinematic storytelling from concept through post-production and distribution.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-2">
-        <span class="brand-card-num">03</span>
-        <h3>Social & Digital</h3>
-        <p>Platform-native campaigns built for engagement, reach, and measurable conversion.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">04</span>
-        <h3>Photography</h3>
-        <p>Editorial and commercial photography that communicates brand identity at a glance.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-4">
-        <span class="brand-card-num">05</span>
-        <h3>Motion Graphics</h3>
-        <p>Kinetic visual language that brings brands to life across every touchpoint.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">06</span>
-        <h3>Creative Direction</h3>
-        <p>End-to-end creative leadership for launches, campaigns, and brand moments.</p>
-      </div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi reveal"><span class="kpi-num" data-target="50">0</span><div class="kpi-label">Campaigns Delivered</div></div>
-      <div class="kpi reveal reveal-delay-1"><span class="kpi-num" data-target="30">0</span><div class="kpi-label">Brand Clients</div></div>
-      <div class="kpi reveal reveal-delay-2"><span class="kpi-num" data-target="95">0</span><div class="kpi-label">Client Retention %</div></div>
-      <div class="kpi reveal reveal-delay-3"><span class="kpi-num" data-target="12">0</span><div class="kpi-label">Active Projects</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- SMARTDEV -->
-<section class="brand-section" style="background:#06060e">
-  <div class="brand-inner">
-    <span class="section-label reveal">§ 03 — Brand Portfolio</span>
-    <h2 class="section-h2 reveal">SMART<br>DEV</h2>
-    <p class="reveal" style="max-width:600px;font-size:1rem;line-height:1.8;color:var(--chrome)">The technology arm. We design and build the software infrastructure that powers businesses, from mobile apps to AI-driven automation systems.</p>
-    <div class="brand-grid">
-      <div class="brand-card reveal">
-        <span class="brand-card-num">01</span>
-        <h3>SaaS Products</h3>
-        <p>Scalable cloud software solving real operational challenges for modern businesses.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-1">
-        <span class="brand-card-num">02</span>
-        <h3>Mobile Applications</h3>
-        <p>Native iOS and Android experiences with intuitive design and powerful backends.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-2">
-        <span class="brand-card-num">03</span>
-        <h3>AI Agents</h3>
-        <p>Intelligent automation systems that learn, adapt, and perform complex workflows.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">04</span>
-        <h3>Web Applications</h3>
-        <p>Full-stack platforms built for performance, security, and real-world scale.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-4">
-        <span class="brand-card-num">05</span>
-        <h3>Automation Systems</h3>
-        <p>Business process automation that eliminates bottlenecks and multiplies output.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">06</span>
-        <h3>Digital Infrastructure</h3>
-        <p>Cloud-native architecture designed for enterprise reliability at startup velocity.</p>
-      </div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi reveal"><span class="kpi-num" data-target="15">0</span><div class="kpi-label">Products Shipped</div></div>
-      <div class="kpi reveal reveal-delay-1"><span class="kpi-num" data-target="40">0</span><div class="kpi-label">Enterprise Clients</div></div>
-      <div class="kpi reveal reveal-delay-2"><span class="kpi-num" data-target="99">0</span><div class="kpi-label">Uptime %</div></div>
-      <div class="kpi reveal reveal-delay-3"><span class="kpi-num" data-target="8">0</span><div class="kpi-label">AI Systems Live</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- STARWEAR -->
-<section class="brand-section light">
-  <div class="brand-inner">
-    <span class="section-label reveal">§ 04 — Brand Portfolio</span>
-    <h2 class="section-h2 reveal">STAR<br>WEAR</h2>
-    <p class="reveal" style="max-width:600px;font-size:1rem;line-height:1.8;color:#666">Where culture meets craft. Starwear produces premium apparel collections that exist at the intersection of streetwear identity and luxury editorial aesthetics.</p>
-    <div class="brand-grid">
-      <div class="brand-card reveal">
-        <span class="brand-card-num">01</span>
-        <h3>Premium Collections</h3>
-        <p>Seasonal apparel with meticulous attention to material, construction, and detail.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-1">
-        <span class="brand-card-num">02</span>
-        <h3>Editorial Lookbooks</h3>
-        <p>Cinematic visual storytelling that positions each collection as cultural artifact.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-2">
-        <span class="brand-card-num">03</span>
-        <h3>Limited Drops</h3>
-        <p>Scarcity-driven releases that create community, conversation, and demand.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">04</span>
-        <h3>Custom & Collab</h3>
-        <p>Brand collaborations and custom pieces for cultural moments and corporate clients.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-4">
-        <span class="brand-card-num">05</span>
-        <h3>Direct Commerce</h3>
-        <p>Premium DTC experience designed for conversion, loyalty, and lifetime value.</p>
-      </div>
-      <div class="brand-card reveal reveal-delay-3">
-        <span class="brand-card-num">06</span>
-        <h3>Brand Identity</h3>
-        <p>A distinct visual and cultural language that commands attention in any room.</p>
-      </div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi reveal"><span class="kpi-num" data-target="4">0</span><div class="kpi-label">Collections Launched</div></div>
-      <div class="kpi reveal reveal-delay-1"><span class="kpi-num" data-target="2500">0</span><div class="kpi-label">Units Sold</div></div>
-      <div class="kpi reveal reveal-delay-2"><span class="kpi-num" data-target="18">0</span><div class="kpi-label">Stockist Partners</div></div>
-      <div class="kpi reveal reveal-delay-3"><span class="kpi-num" data-target="3">0</span><div class="kpi-label">Collab Releases</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ECOSYSTEM -->
-<section id="ecosystem">
-  <div class="eco-inner">
-    <span class="section-label reveal">§ 05 — The Ecosystem</span>
-    <h2 class="section-h2 reveal">ONE<br>NETWORK</h2>
-    <div class="eco-network" id="ecoNetwork">
-      <svg class="eco-svg" id="ecoSvg" viewBox="0 0 900 400"></svg>
-      <div class="eco-node" id="nodeCenter" style="left:50%;top:50%;transform:translate(-50%,-50%)">
-        <div class="node-circle node-center">NEXUS</div>
-      </div>
-      <div class="eco-node" id="nodeMedia" style="left:15%;top:50%;transform:translate(-50%,-50%)">
-        <div class="node-circle node-brand">OPM</div>
-        <span class="node-label">On Point Media</span>
-      </div>
-      <div class="eco-node" id="nodeDev" style="left:85%;top:50%;transform:translate(-50%,-50%)">
-        <div class="node-circle node-brand">SD</div>
-        <span class="node-label">SmartDev</span>
-      </div>
-      <div class="eco-node" id="nodeFash" style="left:50%;top:10%;transform:translate(-50%,-50%)">
-        <div class="node-circle node-brand">SW</div>
-        <span class="node-label">Starwear</span>
-      </div>
-    </div>
-    <div class="eco-cards">
-      <div class="eco-card reveal">
-        <h3>Shared Intelligence</h3>
-        <p>AI systems, data infrastructure, and analytical tools developed by SmartDev power every brand in the portfolio.</p>
-      </div>
-      <div class="eco-card reveal reveal-delay-1">
-        <h3>Cross-Brand Production</h3>
-        <p>On Point Media produces content for SmartDev product launches and Starwear campaigns, creating compounding creative value.</p>
-      </div>
-      <div class="eco-card reveal reveal-delay-2">
-        <h3>Unified Vision</h3>
-        <p>A single holding strategy ensures that each brand strengthens the others — shared identity, distinct voices.</p>
+      <div>
+        <ul class="brand-benefits">
+          <li><i class="fas fa-check-circle"></i><div><strong>Your Dojang Name & Logo</strong><small>Embroidered or printed on any item</small></div></li>
+          <li><i class="fas fa-palette"></i><div><strong>Choose Your Colors</strong><small>8+ color options available</small></div></li>
+          <li><i class="fas fa-boxes"></i><div><strong>Bulk Order Discounts</strong><small>Save up to 20% on orders over 50pcs</small></div></li>
+          <li><i class="fas fa-pencil-ruler"></i><div><strong>Free Design Consultation</strong><small>Our team creates the perfect design</small></div></li>
+          <li><i class="fas fa-shipping-fast"></i><div><strong>Fast Turnaround</strong><small>Standard: 2–3 weeks | Express: 1 week</small></div></li>
+          <li><i class="fas fa-medal"></i><div><strong>Quality Guaranteed</strong><small>100% satisfaction or we redo it</small></div></li>
+        </ul>
+        <a href="https://wa.me/254727394165?text=Hello%20Stawear!%20I'm%20interested%20in%20custom%20branding." target="_blank" class="btn btn-wa btn-block btn-lg" style="margin-top:2rem;justify-content:center"><i class="fab fa-whatsapp"></i> WhatsApp Quick Inquiry</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- IMPACT -->
-<section id="impact">
-  <div class="impact-inner">
-    <span class="section-label reveal">§ 06 — Impact</span>
-    <h2 class="section-h2 reveal">THE<br>NUMBERS</h2>
-    <div class="stats-grid">
-      <div class="stat-item reveal">
-        <span class="stat-num"><span class="stat-prefix">$</span><span class="stat-count" data-target="5">0</span><span class="stat-suffix">M+</span></span>
-        <div class="stat-label">Revenue Target 2026</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-1">
-        <span class="stat-num"><span class="stat-count" data-target="100">0</span><span class="stat-suffix">+</span></span>
-        <div class="stat-label">Projects Delivered</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-2">
-        <span class="stat-num"><span class="stat-count" data-target="3">0</span></span>
-        <div class="stat-label">Portfolio Brands</div>
-      </div>
-      <div class="stat-item reveal reveal-delay-3">
-        <span class="stat-num"><span class="stat-count" data-target="12">0</span><span class="stat-suffix">+</span></span>
-        <div class="stat-label">Countries Reached</div>
-      </div>
+<!-- TESTIMONIALS -->
+<section class="sec" id="testimonials" style="background:#fff">
+  <div class="container">
+    <div class="sec-hdr center">
+      <div class="sec-label">Testimonials</div>
+      <h2 class="sec-title">WHAT <span>CHAMPIONS</span> SAY</h2>
+      <div class="sec-bar"></div>
+    </div>
+    <div class="test-grid">
+      <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">Best quality Martial Arts gear in Kenya! We ordered 30 custom t-shirts and they were perfect. The printing quality is excellent and delivery was fast.</p><div class="test-author">Sensei Kamau</div><div class="test-role">Nairobi Martial Arts Club</div></div>
+      <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">Stawear delivered our tournament uniforms on time. The design was exactly what we wanted and the material is perfect for active training sessions.</p><div class="test-author">Coach Wanjiku</div><div class="test-role">Mombasa Martial Arts Academy</div></div>
+      <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">As a national competitor I need gear that handles intense training. Stawear's hoodies are durable, comfortable and look amazing on the mat.</p><div class="test-author">David Omondi</div><div class="test-role">National Martial Arts Team</div></div>
     </div>
   </div>
 </section>
 
-<!-- FOUNDERS -->
-<section id="founders">
-  <div class="founders-inner">
-    <span class="section-label reveal">§ 07 — Leadership</span>
-    <h2 class="section-h2 reveal">THE<br>FOUNDERS</h2>
-    <div class="founders-grid">
-      <div class="founder-card reveal">
-        <div class="founder-img">
-          <div class="founder-initials">F·O</div>
-        </div>
-        <div class="founder-info">
-          <div class="founder-name">Founder One</div>
-          <div class="founder-role">Co-Founder & CEO</div>
-          <p class="founder-bio">Visionary entrepreneur with a track record of building category-defining companies. Leads overall strategy, investor relations, and ecosystem architecture across all three brands.</p>
-        </div>
-      </div>
-      <div class="founder-card reveal reveal-delay-2">
-        <div class="founder-img">
-          <div class="founder-initials">F·T</div>
-        </div>
-        <div class="founder-info">
-          <div class="founder-name">Founder Two</div>
-          <div class="founder-role">Co-Founder & CTO</div>
-          <p class="founder-bio">Technology architect and product builder. Drives SmartDev's engineering excellence and the AI infrastructure that powers the entire Nexus ecosystem.</p>
-        </div>
-      </div>
+<!-- REVIEWS -->
+<section class="sec" id="reviews" style="background:var(--light)">
+  <div class="container">
+    <div class="sec-hdr center">
+      <div class="sec-label">Customer Reviews</div>
+      <h2 class="sec-title">VERIFIED <span>BUYER REVIEWS</span></h2>
+      <div class="sec-bar"></div>
+      <p class="sec-sub" style="margin-top:14px">Real experiences from real customers across Kenya.</p>
     </div>
-    <div class="mission-block reveal">
-      <p class="mission-text">"We are building the infrastructure of tomorrow's culture — the tools, stories, and garments that define how a generation lives, works, and expresses itself."</p>
+    <div class="reviews-grid" id="reviewsGrid">
+      <div class="loading-spin" style="grid-column:1/-1"><i class="fas fa-circle-notch"></i><span>Loading reviews...</span></div>
     </div>
-  </div>
-</section>
-
-<!-- AI LAB -->
-<section id="ailab">
-  <canvas class="neural-bg" id="neuralCanvas"></canvas>
-  <div class="ailab-inner">
-    <span class="section-label reveal">§ 08 — AI Innovation Lab</span>
-    <h2 class="section-h2 reveal">AI<br>POWERED</h2>
-    <p class="reveal" style="max-width:600px;font-size:1rem;line-height:1.8;color:var(--chrome)">Our internal AI lab develops next-generation automation and intelligence systems that compound competitive advantage across every brand we operate.</p>
-    <div class="ai-grid">
-      <div class="ai-card reveal"><span class="ai-icon">◈</span><h3>AI Agents</h3><p>Autonomous systems that execute complex, multi-step workflows with minimal oversight.</p></div>
-      <div class="ai-card reveal reveal-delay-1"><span class="ai-icon">◉</span><h3>Business Automation</h3><p>End-to-end process automation from lead capture through delivery and reporting.</p></div>
-      <div class="ai-card reveal reveal-delay-2"><span class="ai-icon">◎</span><h3>Content Automation</h3><p>AI-powered content pipelines producing brand-consistent output at scale.</p></div>
-      <div class="ai-card reveal reveal-delay-1"><span class="ai-icon">⬡</span><h3>Custom GPTs</h3><p>Specialized language models fine-tuned for specific business domains and tasks.</p></div>
-      <div class="ai-card reveal reveal-delay-2"><span class="ai-icon">◈</span><h3>Predictive Analytics</h3><p>Machine learning models that surface actionable insight from complex data streams.</p></div>
-      <div class="ai-card reveal reveal-delay-3"><span class="ai-icon">◉</span><h3>Workflow Systems</h3><p>Intelligent orchestration of tools, teams, and information across the enterprise.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ROADMAP -->
-<section id="roadmap">
-  <div class="roadmap-inner">
-    <span class="section-label reveal">§ 09 — Future Roadmap</span>
-    <h2 class="section-h2 reveal">WHERE<br>WE'RE GOING</h2>
-    <div class="road-items">
-      <div class="road-item reveal">
-        <div class="road-year">2026</div>
-        <div class="road-content">
-          <div class="road-dot"></div>
-          <h3>Ecosystem Activation</h3>
-          <p>Full deployment of the Nexus ecosystem. SmartDev ERP launch, Starwear first major collection, On Point Media studio expansion.</p>
-          <div class="road-tags"><span class="road-tag">Funding Round</span><span class="road-tag">Team Scale</span><span class="road-tag">$5M Target</span></div>
-        </div>
-      </div>
-      <div class="road-item reveal reveal-delay-1">
-        <div class="road-year">2027</div>
-        <div class="road-content">
-          <div class="road-dot"></div>
-          <h3>Continental Expansion</h3>
-          <p>Pan-African market penetration. SmartDev platform reaches 10 countries. Starwear opens first flagship retail presence.</p>
-          <div class="road-tags"><span class="road-tag">Series A</span><span class="road-tag">10 Markets</span><span class="road-tag">50+ Team</span></div>
-        </div>
-      </div>
-      <div class="road-item reveal reveal-delay-2">
-        <div class="road-year">2028</div>
-        <div class="road-content">
-          <div class="road-dot"></div>
-          <h3>Global Brand Status</h3>
-          <p>Nexus Group establishes a global presence. On Point Media operates as a recognized international creative agency.</p>
-          <div class="road-tags"><span class="road-tag">Global Offices</span><span class="road-tag">$25M ARR</span><span class="road-tag">IPO Prep</span></div>
-        </div>
-      </div>
-      <div class="road-item reveal reveal-delay-3">
-        <div class="road-year">2030</div>
-        <div class="road-content">
-          <div class="road-dot"></div>
-          <h3>Billion-Dollar Horizon</h3>
-          <p>Nexus Group achieves unicorn status. The ecosystem becomes the dominant infrastructure for African creative and technology industries.</p>
-          <div class="road-tags"><span class="road-tag">$1B Valuation</span><span class="road-tag">Listed</span><span class="road-tag">Category Leader</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="contact-inner">
-    <span class="section-label reveal">§ 10 — Contact</span>
-    <h2 class="section-h2 reveal">LET'S<br>TALK</h2>
-    <p class="reveal" style="font-size:1rem;line-height:1.8;color:#888;max-width:500px">Whether you're a potential investor, client, partner, or future team member — we want to hear from you.</p>
-    <div class="contact-form">
-      <div class="form-row reveal">
+    <div class="leave-rev-wrap">
+      <h3><i class="fas fa-pen" style="color:var(--red);margin-right:8px"></i>Leave a Review</h3>
+      <form id="reviewForm" onsubmit="submitReview(event)">
+        <div class="form-group"><label>Your Name *</label><input type="text" id="reviewName" required placeholder="e.g. Jane Mwangi"></div>
         <div class="form-group">
-          <label>First Name</label>
-          <input type="text" placeholder="Your name">
+          <label>Your Rating *</label>
+          <div class="star-picker" id="starPicker">
+            <span class="star-pick" onclick="setRating(1)">★</span><span class="star-pick" onclick="setRating(2)">★</span>
+            <span class="star-pick" onclick="setRating(3)">★</span><span class="star-pick" onclick="setRating(4)">★</span><span class="star-pick" onclick="setRating(5)">★</span>
+          </div>
+          <input type="hidden" id="reviewRating" value="0">
         </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" placeholder="Your surname">
-        </div>
-      </div>
-      <div class="form-row reveal reveal-delay-1">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" placeholder="your@email.com">
-        </div>
-        <div class="form-group">
-          <label>Inquiry Type</label>
-          <select>
-            <option>General Inquiry</option>
-            <option>Partnership</option>
-            <option>Investment</option>
-            <option>Client Brief</option>
-            <option>Careers</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group reveal reveal-delay-2">
-        <label>Message</label>
-        <textarea placeholder="Tell us about your project or interest..."></textarea>
-      </div>
-      <button class="form-submit reveal reveal-delay-3">Send Message →</button>
-    </div>
-    <div class="contact-alts reveal">
-      <div class="contact-alt"><span>Email</span><span>hello@nexusgroup.co</span></div>
-      <div class="contact-alt"><span>WhatsApp</span><span>+254 700 000 000</span></div>
-      <div class="contact-alt"><span>Location</span><span>Nairobi, Kenya</span></div>
+        <div class="form-group"><label>Your Review *</label><textarea id="reviewText" required rows="3" placeholder="Share your experience with Stawear..."></textarea></div>
+        <div class="form-group"><label>Order ID (optional — for Verified badge)</label><input type="text" id="reviewOrderId" placeholder="e.g. STA1234567890"></div>
+        <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Submit Review</button>
+      </form>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <div>
-      <div class="footer-logo">NEXUS GROUP</div>
-      <div class="footer-sub">Building brands, software & culture</div>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+          <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" style="height:42px;width:auto" alt="Stawear">
+          <span style="font-family:var(--font-display);font-size:1.5rem;color:#fff;letter-spacing:2px">STA<span style="color:var(--orange)">WEAR</span></span>
+        </div>
+        <h3>Kenya's Premier Martial Arts Branding</h3>
+        <p>Quality martial arts apparel with authentic Kenyan style and pride. Serving dojangs nationwide since 2022.</p>
+        <div class="foot-social">
+          <a href="https://wa.me/254727394165" target="_blank" class="soc-btn" style="background:#25D366"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="soc-btn" style="background:#E1306C"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="soc-btn" style="background:#1877F2"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="soc-btn" style="background:#000"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a onclick="navGo('home')"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a onclick="navGo('products')"><i class="fas fa-chevron-right"></i> Products</a></li>
+          <li><a onclick="openCustomModal()"><i class="fas fa-chevron-right"></i> Custom Branding</a></li>
+          <li><a onclick="navGo('reviews')"><i class="fas fa-chevron-right"></i> Reviews</a></li>
+          <li><a onclick="showTrack()"><i class="fas fa-chevron-right"></i> Track Order</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Contact Us</h3>
+        <ul>
+          <li><a href="tel:0727394165"><i class="fas fa-phone"></i> 0727 394 165</a></li>
+          <li><a href="https://wa.me/254727394165" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Chat</a></li>
+          <li><a href="mailto:stawearke@gmail.com"><i class="fas fa-envelope"></i> stawearke@gmail.com</a></li>
+          <li><a><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>We Accept</h3>
+        <div class="foot-pay">
+          <div class="pay-item"><i class="fas fa-mobile-alt" style="color:#22c55e;font-size:1.3rem"></i><div><strong>M-Pesa</strong><small>ACCEPTED · FAST · SAFE</small></div></div>
+          <div class="pay-item"><i class="fas fa-credit-card" style="color:#60a5fa;font-size:1.3rem"></i><div><strong>Bank Transfer</strong><small>Details on request</small></div></div>
+          <div class="pay-item"><i class="fas fa-hand-holding-usd" style="color:#fbbf24;font-size:1.3rem"></i><div><strong>Cash on Delivery</strong><small>Nairobi CBD only</small></div></div>
+        </div>
+      </div>
     </div>
-    <div class="footer-right">
-      On Point Media · SmartDev · Starwear<br>
-      © 2024–2026 Nexus Group. All rights reserved.<br>
-      Nairobi · Kenya
+    <div class="foot-bottom">
+      <p>&copy; 2026 Stawear Martial Arts Branding Store. All rights reserved. Proudly Kenyan 🇰🇪</p>
+      <p style="color:rgba(255,255,255,.22);font-size:.72rem">Built with ❤️ in Nairobi</p>
     </div>
   </div>
 </footer>
 
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-side" id="cartSide">
+  <div class="cart-hdr">
+    <h3><i class="fas fa-shopping-bag"></i> Your Cart (<span id="cartCountInner">0</span>)</h3>
+    <div class="cart-x" onclick="toggleCart()">&times;</div>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-subtotal"><span>Subtotal</span><span>Ksh <span id="cartSubtotal">0</span></span></div>
+    <div class="cart-subtotal" style="color:#aaa;font-size:.8rem"><span>+ Delivery from</span><span>Ksh 200</span></div>
+    <div class="cart-total"><span>Estimated Total</span><span>Ksh <span id="cartTotal">0</span>+</span></div>
+    <button class="btn btn-block btn-lg" onclick="openCheckout()"><i class="fas fa-lock"></i> Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- SIZE MODAL -->
+<div class="size-modal" id="sizeModal">
+  <div class="size-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div><div class="sm-name" id="smName"></div><div class="sm-price" id="smPrice"></div></div>
+      <span onclick="closeSizeModal()" style="cursor:pointer;font-size:1.8rem;color:#aaa;line-height:1">&times;</span>
+    </div>
+    <div style="font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;color:#555;margin-bottom:10px">Select Size *</div>
+    <div class="sizes-grid" id="sizesGrid"></div>
+    <div class="qty-row">
+      <label>Qty</label>
+      <div class="qty-ctl">
+        <button onclick="adjSmQty(-1)">−</button>
+        <span id="smQtyDisplay">1</span>
+        <button onclick="adjSmQty(1)">+</button>
+      </div>
+    </div>
+    <button class="btn btn-block btn-lg" onclick="confirmAddCart()"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="prod-modal" id="prodModal">
+  <div class="prod-modal-box">
+    <div class="prod-modal-img"><img id="modalImg" src="" alt=""></div>
+    <div class="prod-modal-body" id="modalBody"></div>
+    <button class="modal-x" onclick="closeProdModal()"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-modal" id="checkoutModal">
+  <div class="co-box">
+    <span class="modal-close" onclick="closeCheckout()">&times;</span>
+    <h2 style="font-family:var(--font-heading);font-size:1.3rem;margin-bottom:18px"><i class="fas fa-lock" style="color:var(--red);margin-right:8px"></i>Secure Checkout</h2>
+    <div class="co-steps">
+      <div class="co-step active" id="step-bar-1"></div>
+      <div class="co-step" id="step-bar-2"></div>
+      <div class="co-step" id="step-bar-3"></div>
+    </div>
+    <!-- Step 1 -->
+    <div class="step-panel active" id="step1">
+      <div class="step-title"><span class="step-num">1</span> Your Details</div>
+      <div class="form-group"><label>Full Name *</label><input type="text" id="custName" required placeholder="John Kamau"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone (M-Pesa) *</label><input type="tel" id="custPhone" required placeholder="0712 345 678"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="custEmail" required placeholder="you@example.com"></div>
+      </div>
+      <div class="form-group"><label>County (Delivery) *</label>
+        <select id="delCounty" onchange="updateDelivery()">
+          <option value="200">Nairobi — Ksh 200</option><option value="250">Kiambu — Ksh 250</option>
+          <option value="300">Machakos — Ksh 300</option><option value="350">Nakuru — Ksh 350</option>
+          <option value="400">Eldoret — Ksh 400</option><option value="450">Kisumu — Ksh 450</option>
+          <option value="500">Mombasa — Ksh 500</option><option value="550">Nyeri — Ksh 550</option>
+          <option value="600">Other County — Ksh 600</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Delivery Address *</label><textarea id="delAddress" required rows="2" placeholder="Street, building, landmark, estate..."></textarea></div>
+      <button class="btn btn-block btn-lg" onclick="goStep(2)"><i class="fas fa-arrow-right"></i> Continue to Payment</button>
+    </div>
+    <!-- Step 2 -->
+    <div class="step-panel" id="step2">
+      <div class="step-title"><span class="step-num">2</span> M-Pesa Payment</div>
+      <div id="orderSummaryMini"></div>
+      <div class="mpesa-box">
+        <h4><i class="fas fa-mobile-alt" style="color:#15803d"></i> Pay via M-Pesa</h4>
+        <div class="mpesa-amount">Ksh <span id="mpesaTotal">0</span></div>
+        <div class="mpesa-detail">
+          <p>Account Number: <strong>0727394165</strong></p>
+          <p>Amount: <strong>Ksh <span id="mpesaAmt">0</span></strong></p>
+        </div>
+        <ul class="mpesa-steps">
+          <li><div class="ms-num">1</div><span>Go to <strong>M-Pesa</strong> on your phone</span></li>
+          <li><div class="ms-num">2</div><span>Select <strong>Lipa na M-Pesa → Pay Bill</strong></span></li>
+          <li><div class="ms-num">3</div><span>Business No: <strong>400200</strong></span></li>
+          <li><div class="ms-num">4</div><span>Account No: <strong>01101068566001</strong></span></li>
+          <li><div class="ms-num">5</div><span>Amount: <strong>Ksh <span id="mpesaStepAmt">0</span></strong></span></li>
+          <li><div class="ms-num">6</div><span>Enter your M-Pesa PIN and confirm</span></li>
+          <li><div class="ms-num">7</div><span>Enter the <strong>SMS confirmation code</strong> below</span></li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <label>M-Pesa Confirmation Code *</label>
+        <input type="text" id="mpesaCode" placeholder="e.g. QBC1234XYZ" style="font-size:1.1rem;letter-spacing:2px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+        <small style="color:var(--gray);font-size:.76rem">Enter the code from your M-Pesa SMS confirmation</small>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:5px">
+        <button class="btn btn-dark" onclick="goStep(1)" style="flex:1"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-lg" onclick="placeOrder()" style="flex:2" id="placeOrderBtn"><i class="fas fa-check-circle"></i> Confirm Order</button>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="step-panel" id="step3">
+      <div class="success-screen">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h2 style="font-family:var(--font-heading);font-size:1.8rem;margin-bottom:8px">Order Placed! 🎉</h2>
+        <p style="color:var(--gray);margin-bottom:20px">Your order has been received. We'll confirm via WhatsApp/SMS shortly.</p>
+        <div style="background:var(--light);border-radius:14px;padding:18px;margin-bottom:22px;text-align:left;border:1px solid var(--border)">
+          <p style="font-size:.72rem;color:var(--gray);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;font-weight:700">Your Order ID</p>
+          <p style="font-family:var(--font-heading);font-size:1.4rem;color:var(--red)" id="successOrderId"></p>
+          <p style="font-size:.76rem;color:var(--gray);margin-top:4px">Save this ID to track your order</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+          <button class="btn btn-dark" onclick="closeCheckout()">Continue Shopping</button>
+          <a id="waConfirm" href="#" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Confirm on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMIZE MODAL -->
+<div class="custom-modal" id="customModal">
+  <div class="custom-box">
+    <span class="modal-close" onclick="closeCustomModal()">&times;</span>
+    <h2 style="font-family:var(--font-heading);font-size:1.35rem;color:var(--dark);margin-bottom:4px"><i class="fas fa-palette" style="color:var(--red);margin-right:8px"></i>Branding Request</h2>
+    <p style="color:var(--gray);font-size:.85rem;margin-bottom:20px">Fill in your details and we'll get back to you within 2 hours</p>
+    <form id="customForm" onsubmit="submitCustomOrder(event)">
+      <div class="form-sec-title"><i class="fas fa-user"></i> 1. Personal Information</div>
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="customName" required placeholder="John Kamau"></div>
+        <div class="form-group"><label>Phone *</label><input type="tel" id="customPhone" required placeholder="0712 345 678"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email *</label><input type="email" id="customEmail" required placeholder="you@example.com"></div>
+        <div class="form-group"><label>Dojang / Team *</label><input type="text" id="dojangName" required placeholder="Nairobi TKD Club"></div>
+      </div>
+      <div class="form-sec-title"><i class="fas fa-box-open"></i> 2. Order Details</div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Item Type *</label>
+          <select id="itemType" required><option value="">Select...</option><option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option><option>Full Uniforms</option><option>Caps</option><option>Bags</option></select>
+        </div>
+        <div class="form-group"><label>Quantity *</label><input type="number" id="customQty" required min="1" value="10"></div>
+        <div class="form-group"><label>Urgency</label>
+          <select id="urgency"><option value="standard">Standard (2–3 weeks)</option><option value="express">Express (1 week)</option><option value="urgent">Urgent (3–4 days)</option></select>
+        </div>
+      </div>
+      <div class="form-sec-title"><i class="fas fa-paint-brush"></i> 3. Branding Details</div>
+      <div class="form-row">
+        <div class="form-group"><label>Branding Type</label>
+          <select id="brandingType"><option>Screen Print</option><option>Embroidery</option><option>Sublimation</option><option>Heat Transfer</option></select>
+        </div>
+        <div class="form-group"><label>Print Location</label>
+          <select id="printLoc"><option>Front Chest</option><option>Back</option><option>Left Chest</option><option>Both Sides</option><option>Sleeve</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Preferred Color</label>
+        <div class="color-picker">
+          <div class="color-opt" style="background:#000" title="Black" onclick="pickColor('Black',this)"></div>
+          <div class="color-opt" style="background:#fff;border:2px solid #ddd" title="White" onclick="pickColor('White',this)"></div>
+          <div class="color-opt" style="background:#E8192C" title="Red" onclick="pickColor('Red',this)"></div>
+          <div class="color-opt" style="background:#1A237E" title="Navy Blue" onclick="pickColor('Navy Blue',this)"></div>
+          <div class="color-opt" style="background:#006633" title="Green" onclick="pickColor('Green',this)"></div>
+          <div class="color-opt" style="background:#FF8C00" title="Orange" onclick="pickColor('Orange',this)"></div>
+          <div class="color-opt" style="background:#9C27B0" title="Purple" onclick="pickColor('Purple',this)"></div>
+          <div class="color-opt" style="background:#607D8B" title="Grey" onclick="pickColor('Grey',this)"></div>
+        </div>
+        <input type="hidden" id="selectedColor">
+      </div>
+      <div class="form-group"><label>Design Description *</label><textarea id="designDesc" required rows="4" placeholder="Describe your design: colors, text, logo placement, special requirements..."></textarea></div>
+      <div class="cb-wrap"><input type="checkbox" id="needDesign"><label for="needDesign">I need Stawear to create a design for me (free consultation)</label></div>
+      <div class="cb-wrap"><input type="checkbox" id="sampleNeeded"><label for="sampleNeeded">I would like a sample before full production</label></div>
+      <div style="display:flex;gap:12px;margin-top:20px">
+        <button type="button" class="btn btn-dark" style="flex:1" onclick="closeCustomModal()"><i class="fas fa-times"></i> Cancel</button>
+        <button type="submit" class="btn btn-lg" style="flex:2" id="brandSubmitBtn"><i class="fas fa-paper-plane"></i> Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TRACK ORDER MODAL -->
+<div class="track-modal" id="trackModal">
+  <div class="track-box">
+    <span class="modal-close" onclick="closeTrack()">&times;</span>
+    <h2 style="font-family:var(--font-heading);font-size:1.3rem;margin-bottom:6px"><i class="fas fa-truck" style="color:var(--red);margin-right:8px"></i>Track Your Order</h2>
+    <p style="color:var(--gray);font-size:.85rem;margin-bottom:20px">Enter your Order ID to see live status</p>
+    <div class="form-group"><label>Order ID</label><input type="text" id="trackId" placeholder="e.g. STA1234567890" oninput="this.value=this.value.toUpperCase()"></div>
+    <button class="btn btn-block" onclick="trackOrder()"><i class="fas fa-search"></i> Track Order</button>
+    <div id="trackResult"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastBox"></div>
+
 <script>
-// CURSOR
-const cur = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.left=mx-5+'px';cur.style.top=my-5+'px';
-});
-function animRing(){
-  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
-  ring.style.left=rx-18+'px';ring.style.top=ry-18+'px';
-  requestAnimationFrame(animRing);
-}animRing();
-document.querySelectorAll('a,button,.eco-node,.brand-card,.ai-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.style.transform='scale(3)');
-  el.addEventListener('mouseleave',()=>cur.style.transform='scale(1)');
-});
+// CONFIG
+const SB_URL='https://hxijjdhvkjhfjxllckip.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4aWpqZGh2a2poZmp4bGxja2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDY3NDgsImV4cCI6MjA4ODk4Mjc0OH0.1GgPoNTFCRxvwVGsbMYoOKRzmfdr3XIlJo4orQwR0J8';
+const EJS_KEY='Pb1AX0JB8oSz8LV-3', EJS_SVC='service_ym1oijj', EJS_TPL='template_jra9me1';
+const WA='254727394165';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+emailjs.init(EJS_KEY);
 
-// PARTICLES
-const pc=document.getElementById('particles');
-const pctx=pc.getContext('2d');
-let pts=[];
-function resizePC(){pc.width=window.innerWidth;pc.height=window.innerHeight;}
-resizePC();window.addEventListener('resize',resizePC);
-for(let i=0;i<80;i++)pts.push({
-  x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
-  vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
-  size:Math.random()*1.5+.5,alpha:Math.random()*.4+.1
-});
-function drawPts(){
-  pctx.clearRect(0,0,pc.width,pc.height);
-  pts.forEach(p=>{
-    p.x+=p.vx;p.y+=p.vy;
-    if(p.x<0)p.x=pc.width;if(p.x>pc.width)p.x=0;
-    if(p.y<0)p.y=pc.height;if(p.y>pc.height)p.y=0;
-    pctx.beginPath();pctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-    pctx.fillStyle=`rgba(200,191,176,${p.alpha})`;pctx.fill();
-  });
-  requestAnimationFrame(drawPts);
-}drawPts();
+// STATE
+let allProducts=[],currentCat='all',smProduct=null,smQty=1,smSize=null,rvRating=0,coStep=1,modalSize=null;
 
-// HERO ANIMATION
-window.addEventListener('load',()=>{
-  document.querySelectorAll('.hero-h1 .line').forEach((l,i)=>{
-    setTimeout(()=>{l.style.transition='transform .9s cubic-bezier(.22,.84,.44,1)';l.style.transform='translateY(0)';},200+i*150);
-  });
-  setTimeout(()=>{document.querySelector('.hero-eyebrow').style.cssText='opacity:1;transition:opacity .8s ease';},100);
-  setTimeout(()=>{document.querySelector('.hero-sub').style.cssText='opacity:1;transition:opacity .8s ease';},600);
-  setTimeout(()=>{document.querySelector('.hero-cta').style.cssText='opacity:1;transition:opacity .8s ease';},900);
-});
-
-// SCROLL REVEAL
-const revObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
-},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
-document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
-
-// COUNTUP
-function countUp(el,target,dur=1800){
-  let start=0,step=target/dur*16;
-  let timer=setInterval(()=>{
-    start=Math.min(start+step,target);
-    el.textContent=Math.floor(start).toLocaleString();
-    if(start>=target)clearInterval(timer);
-  },16);
-}
-const countObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting&&!e.target.dataset.counted){
-      e.target.dataset.counted='1';
-      const t=parseInt(e.target.dataset.target);
-      countUp(e.target,t);
+// CART
+const cart={
+  items:[],
+  get count(){return this.items.reduce((s,i)=>s+i.quantity,0)},
+  get subtotal(){return this.items.reduce((s,i)=>s+(i.price*i.quantity),0)},
+  add(p,size,qty=1){
+    const idx=this.items.findIndex(i=>i.id===p.id&&i.size===size);
+    if(idx>-1)this.items[idx].quantity+=qty;
+    else this.items.push({...p,size,quantity:qty});
+    this.save();this.render();
+    showToast(`${p.name} (${size}) added to cart!`);
+  },
+  remove(idx){this.items.splice(idx,1);this.save();this.render()},
+  changeQty(idx,d){this.items[idx].quantity=Math.max(1,this.items[idx].quantity+d);this.save();this.render()},
+  clear(){this.items=[];this.save();this.render()},
+  save(){try{localStorage.setItem('stawearCart2',JSON.stringify(this.items))}catch(e){}},
+  load(){try{const s=localStorage.getItem('stawearCart2');if(s)this.items=JSON.parse(s)}catch(e){}this.render()},
+  render(){
+    const count=this.count;
+    document.getElementById('cartCount').textContent=count;
+    document.getElementById('cartCountInner').textContent=count;
+    document.getElementById('cartSubtotal').textContent=this.subtotal.toLocaleString();
+    document.getElementById('cartTotal').textContent=this.subtotal.toLocaleString();
+    const foot=document.getElementById('cartFoot');
+    const con=document.getElementById('cartItems');
+    if(!this.items.length){
+      con.innerHTML=`<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p style="font-family:var(--font-heading);font-size:1.1rem;text-transform:uppercase;margin-bottom:8px">Cart is empty</p><button class="btn btn-sm btn-dark" onclick="toggleCart()">Browse Products</button></div>`;
+      foot.style.display='none';
+    }else{
+      con.innerHTML=this.items.map((item,i)=>`<div class="cart-item"><div class="ci-img"><img src="${item.image||''}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/70'"></div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">Size: <strong>${item.size}</strong></div><div class="ci-price">Ksh ${(item.price*item.quantity).toLocaleString()}</div><div class="ci-qty"><button class="qty-btn" onclick="cart.changeQty(${i},-1)">−</button><span class="qty-num">${item.quantity}</span><button class="qty-btn" onclick="cart.changeQty(${i},1)">+</button></div></div><div class="ci-rm" onclick="cart.remove(${i})"><i class="fas fa-times"></i></div></div>`).join('');
+      foot.style.display='block';
     }
-  });
-},{threshold:.5});
-document.querySelectorAll('[data-target]').forEach(el=>countObs.observe(el));
+  }
+};
 
-// ECOSYSTEM LINES
-const svg=document.getElementById('ecoSvg');
-function drawLines(){
-  const net=document.getElementById('ecoNetwork');
-  const w=net.offsetWidth,h=net.offsetHeight;
-  const cx=w/2,cy=h/2;
-  const nodes=[
-    {id:'nodeMedia',x:.15,y:.5},
-    {id:'nodeDev',x:.85,y:.5},
-    {id:'nodeFash',x:.5,y:.1}
-  ];
-  svg.innerHTML='';
-  nodes.forEach(n=>{
-    const x2=n.x*w,y2=n.y*h;
-    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',cx);line.setAttribute('y1',cy);
-    line.setAttribute('x2',x2);line.setAttribute('y2',y2);
-    line.setAttribute('stroke','rgba(184,150,12,.25)');
-    line.setAttribute('stroke-width','1');
-    line.setAttribute('stroke-dasharray','4 8');
-    svg.appendChild(line);
-    const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    circle.setAttribute('cx',x2);circle.setAttribute('cy',y2);
-    circle.setAttribute('r','3');circle.setAttribute('fill','rgba(184,150,12,.4)');
-    svg.appendChild(circle);
+// PRODUCTS
+async function loadProducts(){
+  try{
+    const{data,error}=await sb.from('products').select('*').order('id',{ascending:false});
+    if(!error&&data&&data.length>0){allProducts=data;}else throw new Error('fallback');
+  }catch{
+    allProducts=[
+      {id:1,name:'Black Belt Master Hoodie',category:'Hoodies',price:2499,originalPrice:3200,image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80',description:'Premium heavyweight hoodie with embroidered black belt design. Made from 80% cotton, 20% polyester.',badge:'BEST SELLER',sizes:['S','M','L','XL']},
+      {id:2,name:'Kenyan TKD Champion Tee',category:'T-Shirts',price:1299,originalPrice:1800,image:'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80',description:'Lightweight 100% cotton tee with Kenyan flag colors and champion print.',badge:'NEW',sizes:['S','M','L','XL','XXL']},
+      {id:3,name:'Stawear Training Jacket',category:'Jackets',price:3499,originalPrice:4200,image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80',description:'Windproof training jacket with full zip and embroidered Stawear logo.',badge:'HOT',sizes:['M','L','XL']},
+      {id:4,name:'Dojang Tracksuit Set',category:'Tracksuits',price:4999,originalPrice:6500,image:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=80',description:'Full tracksuit set — top and pants included. Perfect for tournaments.',sizes:['S','M','L','XL','XXL']},
+      {id:5,name:'Champion Zip-Up Hoodie',category:'Hoodies',price:2799,originalPrice:3500,image:'https://images.unsplash.com/photo-1556821840-3a63f15232d0?auto=format&fit=crop&w=500&q=80',description:'Full-zip hoodie with side pockets. Perfect for warm-ups.',badge:'SALE',sizes:['S','M','L','XL']},
+      {id:6,name:'TKD Graphic Tee',category:'T-Shirts',price:999,image:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&q=80',description:'Bold Martial Arts graphic tee — wear your sport with pride.',sizes:['S','M','L','XL','XXL']},
+      {id:7,name:'Performance Sports Jacket',category:'Jackets',price:4299,originalPrice:5200,image:'https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=500&q=80',description:'Lightweight performance jacket for outdoor training in all weather.',sizes:['M','L','XL','XXL']},
+      {id:8,name:'Martial Arts Wristbands (Pair)',category:'Accessories',price:349,image:'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=500&q=80',description:'Moisture-wicking wristbands. One size fits all.',badge:'NEW',sizes:['One Size']}
+    ];
+  }
+  renderProducts();
+}
+
+function badgeClass(b){const m={NEW:'new',SALE:'sale',HOT:'hot','BEST SELLER':'best'};return m[b]||'hot'}
+function renderProducts(){
+  const grid=document.getElementById('productsGrid');
+  const list=currentCat==='all'?allProducts:allProducts.filter(p=>p.category===currentCat);
+  if(!list.length){grid.innerHTML=`<div class="empty-prods"><i class="fas fa-tshirt"></i><p style="font-weight:700">No products in this category yet.</p></div>`;return}
+  grid.innerHTML=list.map(p=>{
+    const sizes=p.sizes||['S','M','L','XL'];
+    const disc=p.originalPrice?Math.round((1-p.price/p.originalPrice)*100):0;
+    return`<div class="pcard" onclick="viewProduct(${p.id})">
+      ${p.badge?`<div class="pcard-badge ${badgeClass(p.badge)}">${p.badge}</div>`:''}
+      ${disc>0&&!p.badge?`<div class="pcard-badge sale">-${disc}%</div>`:''}
+      <div class="pcard-img"><img src="${p.image||''}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x240'">
+      <div class="pcard-overlay">
+        <button class="pcard-qbtn" onclick="event.stopPropagation();openSizeModal(${p.id})" title="Add to Cart"><i class="fas fa-shopping-bag"></i></button>
+        <button class="pcard-qbtn" onclick="event.stopPropagation();viewProduct(${p.id})" title="Quick View"><i class="fas fa-eye"></i></button>
+      </div></div>
+      <div class="pcard-body">
+        <div class="pcard-cat">${p.category}</div>
+        <h3 class="pcard-name">${p.name}</h3>
+        <p class="pcard-desc">${p.description||''}</p>
+        <div class="pcard-stars">★★★★★ <span style="color:var(--gray);font-size:.72rem">(${Math.floor(Math.random()*80)+12})</span></div>
+        <div class="pcard-sizes">${sizes.map(s=>`<span class="size-pill">${s}</span>`).join('')}</div>
+        <div class="pcard-price">Ksh ${p.price.toLocaleString()}${p.originalPrice?` <s>Ksh ${p.originalPrice.toLocaleString()}</s>`:''} ${disc>0?`<span class="disc">-${disc}%</span>`:''}</div>
+        <div class="pcard-actions">
+          <button class="btn btn-sm" onclick="event.stopPropagation();openSizeModal(${p.id})"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
+          <button class="btn btn-sm btn-dark" onclick="event.stopPropagation();viewProduct(${p.id})"><i class="fas fa-eye"></i></button>
+        </div>
+      </div></div>`;
+  }).join('');
+}
+
+function filterProds(cat,btn){
+  currentCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts();
+}
+
+// SIZE MODAL
+function openSizeModal(id){
+  smProduct=allProducts.find(p=>p.id===id);if(!smProduct)return;
+  smQty=1;smSize=null;
+  document.getElementById('smName').textContent=smProduct.name;
+  document.getElementById('smPrice').textContent=`Ksh ${smProduct.price.toLocaleString()}`;
+  document.getElementById('smQtyDisplay').textContent='1';
+  const sizes=smProduct.sizes||['S','M','L','XL'];
+  const stock=smProduct.stock||{};
+  document.getElementById('sizesGrid').innerHTML=sizes.map(s=>{
+    const out=stock[s]!==undefined&&stock[s]===0;
+    return`<button class="size-btn${out?' out':''}" ${out?'disabled':''} onclick="${out?'':` selectSize(this,'${s}') `}">${s}${out?'<br><small style="font-size:.58rem">Out</small>':''}</button>`;
+  }).join('');
+  document.getElementById('sizeModal').classList.add('active');
+}
+function selectSize(btn,s){
+  document.querySelectorAll('#sizesGrid .size-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');smSize=s;
+}
+function adjSmQty(d){smQty=Math.max(1,smQty+d);document.getElementById('smQtyDisplay').textContent=smQty}
+function confirmAddCart(){
+  if(!smSize){showToast('Please select a size','error');return}
+  cart.add(smProduct,smSize,smQty);closeSizeModal();
+}
+function closeSizeModal(){document.getElementById('sizeModal').classList.remove('active')}
+
+// PRODUCT DETAIL
+function viewProduct(id){
+  const p=allProducts.find(x=>x.id===id);if(!p)return;
+  document.getElementById('modalImg').src=p.image||'https://via.placeholder.com/800x600';
+  document.getElementById('modalImg').alt=p.name;
+  const sizes=p.sizes||['S','M','L','XL'];
+  const disc=p.originalPrice?Math.round((1-p.price/p.originalPrice)*100):0;
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:var(--gray);margin-bottom:6px">${p.category}</div>
+    ${p.badge?`<span style="background:var(--red);color:#fff;padding:4px 12px;border-radius:var(--r-full);font-size:.65rem;font-weight:800;text-transform:uppercase">${p.badge}</span>`:''}
+    <h2 style="font-family:var(--font-heading);font-size:1.7rem;margin:10px 0 8px;line-height:1.15">${p.name}</h2>
+    <div style="font-family:var(--font-heading);font-size:1.6rem;color:var(--dark);margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      Ksh ${p.price.toLocaleString()}
+      ${p.originalPrice?`<s style="font-size:1rem;color:#aaa;font-weight:400">Ksh ${p.originalPrice.toLocaleString()}</s>`:''}
+      ${disc>0?`<span style="background:rgba(232,25,44,.1);color:var(--red);font-size:.78rem;padding:2px 10px;border-radius:var(--r-full);font-family:var(--font-body);font-weight:700">-${disc}% OFF</span>`:''}
+    </div>
+    <div style="color:var(--orange);font-size:.9rem;margin-bottom:14px">★★★★★ <span style="color:var(--gray);font-size:.8rem">Verified Quality</span></div>
+    <p style="color:#555;font-size:.9rem;line-height:1.7;margin-bottom:18px">${p.description||''}</p>
+    <div style="font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dark);margin-bottom:10px">Select Size</div>
+    <div class="sizes-grid" style="margin-bottom:18px">
+      ${sizes.map(s=>`<button class="size-btn" onclick="document.querySelectorAll('#modalBody .size-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');modalSize='${s}'">${s}</button>`).join('')}
+    </div>
+    <button class="btn btn-block btn-lg" onclick="addFromModal(${p.id})"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
+    <div style="margin-top:14px;padding:12px;background:#f9f9f9;border-radius:10px;font-size:.8rem;color:var(--gray);display:flex;gap:16px;flex-wrap:wrap">
+      <span><i class="fas fa-shipping-fast" style="color:#16a34a"></i> Nationwide Delivery</span>
+      <span><i class="fas fa-undo" style="color:var(--red)"></i> Quality Guaranteed</span>
+      <span><i class="fas fa-mobile-alt" style="color:#22c55e"></i> M-Pesa Accepted</span>
+    </div>`;
+  modalSize=null;
+  document.getElementById('prodModal').classList.add('active');
+}
+function addFromModal(id){
+  if(!modalSize){showToast('Please select a size first','error');return}
+  cart.add(allProducts.find(x=>x.id===id),modalSize,1);closeProdModal();
+}
+function closeProdModal(){document.getElementById('prodModal').classList.remove('active')}
+
+// CART
+function toggleCart(){
+  document.getElementById('cartSide').classList.toggle('active');
+  document.getElementById('cartOverlay').classList.toggle('active');
+}
+
+// CHECKOUT
+function openCheckout(){
+  if(!cart.items.length){showToast('Your cart is empty','error');return}
+  coStep=1;updateCoSteps();
+  document.getElementById('checkoutModal').classList.add('active');
+  document.getElementById('cartSide').classList.remove('active');
+  document.getElementById('cartOverlay').classList.remove('active');
+  updateDelivery();
+}
+function closeCheckout(){
+  document.getElementById('checkoutModal').classList.remove('active');
+  if(coStep===3){cart.clear();coStep=1;updateCoSteps()}
+}
+function goStep(n){
+  if(n===2){
+    const name=document.getElementById('custName').value.trim();
+    const phone=document.getElementById('custPhone').value.trim();
+    const email=document.getElementById('custEmail').value.trim();
+    const addr=document.getElementById('delAddress').value.trim();
+    if(!name||!phone||!email||!addr){showToast('Please fill in all required fields','error');return}
+    if(!/^07\d{8}$/.test(phone.replace(/\s/g,''))){showToast('Enter a valid Kenyan phone (07xxxxxxxx)','error');return}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email','error');return}
+    buildOrderSummary();
+  }
+  coStep=n;updateCoSteps();
+}
+function updateDelivery(){
+  const d=parseInt(document.getElementById('delCounty').value)||200;
+  const t=cart.subtotal+d;
+  ['mpesaTotal','mpesaAmt','mpesaStepAmt'].forEach(id=>document.getElementById(id).textContent=t.toLocaleString());
+}
+function buildOrderSummary(){
+  updateDelivery();
+  const d=parseInt(document.getElementById('delCounty').value)||200;
+  document.getElementById('orderSummaryMini').innerHTML=`
+    <div style="background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #f0f0f0">
+      <div style="font-weight:700;font-size:.82rem;margin-bottom:10px;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Order Summary</div>
+      ${cart.items.map(item=>`<div class="order-ri"><img src="${item.image||''}" onerror="this.src='https://via.placeholder.com/52'"><div><div style="font-weight:700;font-size:.85rem">${item.name}</div><div style="font-size:.75rem;color:var(--gray)">Size: ${item.size} × ${item.quantity}</div><div style="font-weight:800;color:var(--red);font-size:.88rem">Ksh ${(item.price*item.quantity).toLocaleString()}</div></div></div>`).join('')}
+      <table class="order-totals"><tr><td>Subtotal</td><td>Ksh ${cart.subtotal.toLocaleString()}</td></tr><tr><td>Delivery</td><td>Ksh ${d.toLocaleString()}</td></tr><tr class="tot-row"><td>Total</td><td>Ksh ${(cart.subtotal+d).toLocaleString()}</td></tr></table>
+    </div>`;
+}
+function updateCoSteps(){
+  [1,2,3].forEach(n=>{
+    document.getElementById(`step${n}`).classList.toggle('active',coStep===n);
+    const b=document.getElementById(`step-bar-${n}`);
+    b.className='co-step'+(n<coStep?' done':n===coStep?' active':'');
   });
 }
-setTimeout(drawLines,100);
-window.addEventListener('resize',drawLines);
 
-// NEURAL CANVAS
-const nc=document.getElementById('neuralCanvas');
-if(nc){
-  const nctx=nc.getContext('2d');
-  function resizeNC(){nc.width=nc.parentElement.offsetWidth;nc.height=nc.parentElement.offsetHeight;}
-  resizeNC();window.addEventListener('resize',resizeNC);
-  let nnodes=[];
-  for(let i=0;i<40;i++)nnodes.push({
-    x:Math.random()*nc.width,y:Math.random()*nc.height,
-    vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5
-  });
-  function drawNeural(){
-    nctx.clearRect(0,0,nc.width,nc.height);
-    nnodes.forEach((n,i)=>{
-      n.x+=n.vx;n.y+=n.vy;
-      if(n.x<0||n.x>nc.width)n.vx*=-1;
-      if(n.y<0||n.y>nc.height)n.vy*=-1;
-      nnodes.forEach((m,j)=>{
-        if(j<=i)return;
-        const d=Math.hypot(n.x-m.x,n.y-m.y);
-        if(d<150){
-          nctx.beginPath();nctx.moveTo(n.x,n.y);nctx.lineTo(m.x,m.y);
-          nctx.strokeStyle=`rgba(184,150,12,${.3*(1-d/150)})`;
-          nctx.lineWidth=.5;nctx.stroke();
-        }
-      });
-      nctx.beginPath();nctx.arc(n.x,n.y,2,0,Math.PI*2);
-      nctx.fillStyle='rgba(184,150,12,.3)';nctx.fill();
-    });
-    requestAnimationFrame(drawNeural);
-  }drawNeural();
+async function sendReceipt(od,items,sub){
+  try{
+    const itemsText=items.map(i=>`${i.name} (Size: ${i.size}) x${i.quantity} — Ksh ${(i.price*i.quantity).toLocaleString()}`).join('\n');
+    await emailjs.send(EJS_SVC,EJS_TPL,{to_email:od.customer_email,order_id:od.id,order_date:new Date().toLocaleString('en-KE'),customer_name:od.customer_name,customer_phone:od.customer_phone,customer_email:od.customer_email,delivery_address:od.delivery_address,delivery_cost:`Ksh ${od.delivery_cost.toLocaleString()}`,subtotal:`Ksh ${sub.toLocaleString()}`,total:`Ksh ${od.total.toLocaleString()}`,mpesa_code:od.mpesa_code,items:itemsText});
+    return true;
+  }catch(e){console.error(e);return false}
 }
+
+async function placeOrder(){
+  const mpesa=document.getElementById('mpesaCode').value.trim();
+  if(!mpesa){showToast('Please enter your M-Pesa confirmation code','error');return}
+  if(!/^[A-Z0-9]{8,12}$/.test(mpesa.toUpperCase())){showToast('Invalid M-Pesa code format (e.g. QBC1234XYZ)','error');return}
+  const btn=document.getElementById('placeOrderBtn');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+  const d=parseInt(document.getElementById('delCounty').value)||200;
+  const total=cart.subtotal+d;
+  const orderId='STA'+Date.now()+Math.floor(Math.random()*1000);
+  const name=document.getElementById('custName').value.trim();
+  const phone=document.getElementById('custPhone').value.trim();
+  const email=document.getElementById('custEmail').value.trim();
+  const address=document.getElementById('delAddress').value.trim();
+  const od={id:orderId,customer_name:name,customer_phone:phone,customer_email:email,delivery_address:address,delivery_cost:d,items:cart.items.map(i=>({name:i.name,size:i.size,quantity:i.quantity,price:i.price})),total,status:'pending',payment_method:'mpesa',mpesa_code:mpesa.toUpperCase(),date:new Date().toISOString()};
+  const{error}=await sb.from('orders').insert([od]);
+  if(error){btn.disabled=false;btn.innerHTML='<i class="fas fa-check-circle"></i> Confirm Order';showToast('Error saving order. Please try again.','error');return}
+  const sent=await sendReceipt(od,cart.items,cart.subtotal);
+  const waMsg=encodeURIComponent(`Hello Stawear! I just placed an order.\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nItems: ${cart.items.map(i=>`${i.name} (${i.size}) x${i.quantity}`).join(', ')}\nTotal: Ksh ${total.toLocaleString()}\nM-Pesa Code: ${mpesa}`);
+  document.getElementById('waConfirm').href=`https://wa.me/${WA}?text=${waMsg}`;
+  document.getElementById('successOrderId').textContent=orderId;
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-check-circle"></i> Confirm Order';
+  goStep(3);
+  showToast(sent?'Order placed! Receipt sent to your email. 📧':'Order placed! Please confirm via WhatsApp.');
+  cart.clear();
+}
+
+// CUSTOM BRANDING
+function handleQuickBrand(e){
+  e.preventDefault();
+  document.getElementById('customName').value=document.getElementById('quickName').value;
+  document.getElementById('customEmail').value=document.getElementById('quickEmail').value;
+  document.getElementById('dojangName').value=document.getElementById('quickDojang').value;
+  document.getElementById('itemType').value=document.getElementById('quickItem').value;
+  document.getElementById('customQty').value=document.getElementById('quickQty').value;
+  openCustomModal();
+}
+function openCustomModal(){document.getElementById('customModal').classList.add('active');document.body.style.overflow='hidden';closeMobNav()}
+function closeCustomModal(){document.getElementById('customModal').classList.remove('active');document.body.style.overflow=''}
+function pickColor(c,el){document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');document.getElementById('selectedColor').value=c}
+async function submitCustomOrder(e){
+  e.preventDefault();
+  const btn=document.getElementById('brandSubmitBtn');
+  const phone=document.getElementById('customPhone').value.trim();
+  if(!/^07\d{8}$/.test(phone.replace(/\s/g,''))){showToast('Enter a valid Kenyan phone (07xxxxxxxx)','error');return}
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
+  const data={name:document.getElementById('customName').value,phone,email:document.getElementById('customEmail').value,dojang:document.getElementById('dojangName').value,item_type:document.getElementById('itemType').value,quantity:parseInt(document.getElementById('customQty').value),branding_type:document.getElementById('brandingType').value,print_location:document.getElementById('printLoc').value,color:document.getElementById('selectedColor').value||'Not specified',urgency:document.getElementById('urgency').value,need_design:document.getElementById('needDesign').checked,sample_needed:document.getElementById('sampleNeeded').checked,description:document.getElementById('designDesc').value,status:'pending',date:new Date().toISOString()};
+  const{error}=await sb.from('branding_requests').insert([data]);
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Request';
+  if(error){showToast('Error submitting. Please try again.','error');return}
+  const waMsg=encodeURIComponent(`Hello Stawear! I just submitted a branding request.\n\nName: ${data.name}\nDojang: ${data.dojang}\nItem: ${data.item_type} x${data.quantity}\nBranding: ${data.branding_type}\nUrgency: ${data.urgency}\nDescription: ${data.description}`);
+  window.open(`https://wa.me/${WA}?text=${waMsg}`,'_blank');
+  showToast('Branding request submitted! We will contact you shortly. 🎨');
+  closeCustomModal();document.getElementById('customForm').reset();
+  document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected'));
+}
+
+// TRACK ORDER
+function showTrack(){document.getElementById('trackModal').classList.add('active');closeMobNav()}
+function closeTrack(){
+  document.getElementById('trackModal').classList.remove('active');
+  const r=document.getElementById('trackResult');r.style.display='none';r.innerHTML='';
+}
+async function trackOrder(){
+  const id=document.getElementById('trackId').value.trim();
+  if(!id){showToast('Please enter an Order ID','error');return}
+  const result=document.getElementById('trackResult');
+  result.innerHTML=`<div style="text-align:center;padding:20px;color:var(--gray)"><i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem;display:block;margin-bottom:8px"></i>Looking up order...</div>`;
+  result.style.display='block';
+  const{data,error}=await sb.from('orders').select('*').eq('id',id).single();
+  if(error||!data){result.innerHTML=`<div class="track-card" style="border-left-color:var(--red)"><p style="color:var(--red);font-weight:700"><i class="fas fa-times-circle"></i> Order not found</p><p style="font-size:.85rem;color:var(--gray);margin-top:6px">Please check your Order ID and try again.</p></div>`;return}
+  const steps=['pending','processing','completed'];
+  const idx=steps.indexOf(data.status);
+  const labels={pending:'Order Received',processing:'Being Processed',completed:'Delivered 🎉'};
+  result.innerHTML=`<div class="track-card"><p style="font-family:var(--font-heading);font-size:1.2rem;font-weight:900;margin-bottom:4px">Order #${String(data.id).slice(-10)}</p><p style="font-size:.82rem;color:var(--gray)">Customer: ${data.customer_name}</p><p style="font-size:.82rem;color:var(--gray);margin-bottom:10px">Total: Ksh ${(data.total||0).toLocaleString()}</p><div style="margin-bottom:10px"><span style="font-weight:700;font-size:.82rem">Status: </span><span class="track-status ${data.status||'pending'}">${(data.status||'pending').toUpperCase()}</span></div><div class="track-timeline">${steps.map((s,i)=>{const cls=i<idx?'done':i===idx?'current':'pend';return`<div class="track-step"><div class="tdot ${cls}">${i<idx?'✓':i+1}</div><div><p style="font-weight:700;font-size:.88rem">${labels[s]}</p><p style="font-size:.75rem;color:#aaa">${s==='pending'?new Date(data.date).toLocaleDateString('en-KE'):''}</p></div></div>`}).join('')}</div></div>`;
+}
+
+// REVIEWS
+async function loadReviews(){
+  const grid=document.getElementById('reviewsGrid');
+  try{
+    const{data,error}=await sb.from('reviews').select('*').order('created_at',{ascending:false}).limit(20);
+    if(error||!data||!data.length)throw new Error('none');
+    grid.innerHTML=data.map(r=>`<div class="rev-card"><div class="rev-stars">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</div><p class="rev-text">${r.text||''}</p><div class="rev-author">${r.name||'Anonymous'}</div>${r.order_id?`<div style="font-size:.72rem;color:var(--gray)">Order: ${r.order_id.slice(-8)}</div>`:''}<div class="rev-date">${r.created_at?new Date(r.created_at).toLocaleDateString('en-KE',{month:'short',day:'numeric',year:'numeric'}):''}</div>${r.order_id?`<div class="rev-verified"><i class="fas fa-check-circle"></i> Verified Purchase</div>`:''}</div>`).join('');
+  }catch{
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray)"><i class="fas fa-star" style="font-size:2.5rem;display:block;margin-bottom:12px;opacity:.2"></i><p style="font-weight:700">No reviews yet. Be the first!</p></div>`;
+  }
+}
+function setRating(v){rvRating=v;document.getElementById('reviewRating').value=v;document.querySelectorAll('.star-pick').forEach((s,i)=>s.classList.toggle('lit',i<v))}
+async function submitReview(e){
+  e.preventDefault();
+  if(!rvRating){showToast('Please select a star rating','error');return}
+  const name=document.getElementById('reviewName').value.trim();
+  const text=document.getElementById('reviewText').value.trim();
+  const orderId=document.getElementById('reviewOrderId').value.trim();
+  if(!name||!text){showToast('Please fill in all required fields','error');return}
+  const{error}=await sb.from('reviews').insert([{name,rating:rvRating,text,order_id:orderId||null,created_at:new Date().toISOString()}]);
+  if(error){showToast('Error submitting review.','error');return}
+  showToast('Thank you for your review! 🌟');
+  document.getElementById('reviewForm').reset();setRating(0);loadReviews();
+}
+
+// NAV
+function navGo(sec){
+  closeMobNav();
+  if(sec==='home'){window.scrollTo({top:0,behavior:'smooth'});return}
+  const el=document.getElementById(sec);if(el)el.scrollIntoView({behavior:'smooth'});
+}
+function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden'}
+function closeMobNav(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow=''}
+
+// TOAST
+function showToast(msg,type='success'){
+  const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  const t=document.createElement('div');t.className=`toast ${type}`;
+  t.innerHTML=`<i class="fas ${icons[type]||icons.success}"></i><span>${msg}</span>`;
+  document.getElementById('toastBox').appendChild(t);
+  setTimeout(()=>{t.style.transition='all .3s';t.style.opacity='0';t.style.transform='translateX(110%)';setTimeout(()=>t.remove(),300)},3500);
+}
+
+// ESC key
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeProdModal();closeSizeModal();closeCheckout();closeCustomModal();closeTrack()}
+});
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{loadProducts();loadReviews();cart.load()});
 </script>
 </body>
 </html>
