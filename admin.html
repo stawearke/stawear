@@ -638,7 +638,7 @@ select:focus{border-color:var(--red)}
 <div class="modal" id="addReviewModal">
   <div class="modal-box modal-box-sm">
     <div class="modal-head">
-      <h2><i class="fas fa-plus"></i> Add Review</h2>
+      <h2 id="addReviewModalTitle"><i class="fas fa-plus"></i> Add Review</h2>
       <div class="modal-x" onclick="closeAddReviewModal()">&times;</div>
     </div>
     <form id="addReviewForm" onsubmit="saveNewReview(event)">
@@ -1004,8 +1004,24 @@ async function renderOrders(filter=ordersFilter){
 
 async function updateOrderStatus(id,status){
   const{error}=await sb.from('orders').update({status}).eq('id',id);
-  if(!error){showToast(`Order updated to ${status}`,'success');await loadOrders();updateBadges()}
-  else showToast('Error updating order','error');
+  if(error){showToast('Error updating order','error');return}
+  showToast(`Order updated to ${status}`,'success');
+  await loadOrders();updateBadges();
+  if(status==='completed'){
+    const o=orders.find(x=>String(x.id)===String(id));
+    if(o?.customer_phone){
+      const waMsg=encodeURIComponent(
+        `Hello ${o.customer_name||'there'}! 🎉 Your Stawear order #${String(o.id).slice(-6)} has been delivered!\n\nWe hope you love your gear! Could you spare 30 seconds to leave us a review? It helps other Kenyan dojangs find us.\n\n👉 Visit our store and scroll to Reviews: https://yourdomain.com\n\nThank you! 🙏 — Stawear Team`
+      );
+      const phone=o.customer_phone.toString().replace(/^0/,'254').replace(/\s+/g,'').replace(/\+/g,'');
+      showConfirm(
+        'Order Delivered! 🎉',
+        `Send ${o.customer_name||'the customer'} a WhatsApp review request?`,
+        ()=>window.open('https://wa.me/'+phone+'?text='+waMsg,'_blank'),
+        'Send WhatsApp'
+      );
+    }
+  }
 }
 
 function viewOrder(id){
@@ -1201,8 +1217,35 @@ function confirmDeleteReview(id,name){
   });
 }
 
-function openAddReviewModal(){document.getElementById('addReviewForm').reset();document.getElementById('addReviewRating').value='5';renderAddStars(5);document.getElementById('addReviewModal').classList.add('active')}
-function closeAddReviewModal(){document.getElementById('addReviewModal').classList.remove('active')}
+let editingReviewId=null;
+
+function openAddReviewModal(){
+  editingReviewId=null;
+  document.getElementById('addReviewForm').reset();
+  document.getElementById('addReviewRating').value='5';
+  renderAddStars(5);
+  document.getElementById('addRevFeatured').checked=false;
+  document.getElementById('addReviewModalTitle').innerHTML='<i class="fas fa-plus"></i> Add Review';
+  document.getElementById('saveReviewBtn').innerHTML='<i class="fas fa-save"></i> Save Review';
+  document.getElementById('addReviewModal').classList.add('active');
+}
+
+function openEditReviewModal(id){
+  const r=reviews.find(x=>x.id===id);if(!r)return;
+  editingReviewId=id;
+  document.getElementById('addRevName').value=r.name||'';
+  document.getElementById('addRevText').value=r.text||'';
+  document.getElementById('addRevOrderId').value=r.order_id||'';
+  document.getElementById('addRevFeatured').checked=!!r.featured;
+  const rating=r.rating||5;
+  document.getElementById('addReviewRating').value=rating;
+  renderAddStars(rating);
+  document.getElementById('addReviewModalTitle').innerHTML='<i class="fas fa-edit"></i> Edit Review';
+  document.getElementById('saveReviewBtn').innerHTML='<i class="fas fa-save"></i> Update Review';
+  document.getElementById('addReviewModal').classList.add('active');
+}
+
+function closeAddReviewModal(){document.getElementById('addReviewModal').classList.remove('active');editingReviewId=null}
 
 function renderAddStars(val){
   document.querySelectorAll('.add-star').forEach((s,i)=>{
@@ -1217,13 +1260,20 @@ async function saveNewReview(e){
   const name=document.getElementById('addRevName').value.trim();
   const text=document.getElementById('addRevText').value.trim();
   const orderId=document.getElementById('addRevOrderId').value.trim();
+  const featured=document.getElementById('addRevFeatured').checked;
   if(!name||!text){showToast('Name and review text are required','error');return}
   const btn=document.getElementById('saveReviewBtn');
   btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Saving...';
-  const{error}=await sb.from('reviews').insert([{name,rating,text,order_id:orderId||null,featured:document.getElementById('addRevFeatured').checked,created_at:new Date().toISOString()}]);
+  let error;
+  if(editingReviewId){
+    ({error}=await sb.from('reviews').update({name,rating,text,order_id:orderId||null,featured}).eq('id',editingReviewId));
+  } else {
+    ({error}=await sb.from('reviews').insert([{name,rating,text,order_id:orderId||null,featured,created_at:new Date().toISOString()}]));
+  }
   btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Review';
-  if(error){showToast('Error saving review: '+error.message,'error');return}
-  showToast('Review added successfully! ⭐','success');closeAddReviewModal();await renderReviews();updateBadges();
+  if(error){showToast('Error: '+error.message,'error');return}
+  showToast(editingReviewId?'Review updated! ✏️':'Review added! ⭐','success');
+  closeAddReviewModal();await renderReviews();updateBadges();
 }
 
 // ===== ANALYTICS =====
