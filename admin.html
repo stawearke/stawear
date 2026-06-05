@@ -450,6 +450,10 @@ select:focus{border-color:var(--red)}
           <i class="fas fa-palette sb-icon"></i> Branding Requests
           <span class="sb-badge" id="brandingCount">0</span>
         </div>
+        <div class="sb-item" data-section="reviews" onclick="showSection('reviews')">
+          <i class="fas fa-star sb-icon"></i> Reviews
+          <span class="sb-badge" id="reviewCount">0</span>
+        </div>
         <div class="sb-divider"></div>
         <div class="sb-section-label">Insights</div>
         <div class="sb-item" data-section="analytics" onclick="showSection('analytics')">
@@ -618,6 +622,61 @@ select:focus{border-color:var(--red)}
   </div>
 </div>
 
+
+<!-- ===== REVIEW DETAIL MODAL ===== -->
+<div class="modal" id="reviewDetailModal">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-head">
+      <h2><i class="fas fa-star"></i> Review Details</h2>
+      <div class="modal-x" onclick="closeReviewDetailModal()">&times;</div>
+    </div>
+    <div id="reviewDetailContent"></div>
+  </div>
+</div>
+
+<!-- ===== ADD REVIEW MODAL ===== -->
+<div class="modal" id="addReviewModal">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-head">
+      <h2><i class="fas fa-plus"></i> Add Review</h2>
+      <div class="modal-x" onclick="closeAddReviewModal()">&times;</div>
+    </div>
+    <form id="addReviewForm" onsubmit="saveNewReview(event)">
+      <div class="form-group">
+        <label>Reviewer Name *</label>
+        <input type="text" id="addRevName" required placeholder="e.g. Jane Mwangi">
+      </div>
+      <div class="form-group">
+        <label>Star Rating *</label>
+        <input type="hidden" id="addReviewRating" value="5">
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <span class="add-star" onclick="setAddRating(1)" style="font-size:2rem;cursor:pointer;color:#fbbf24;transition:.15s">★</span>
+          <span class="add-star" onclick="setAddRating(2)" style="font-size:2rem;cursor:pointer;color:#fbbf24;transition:.15s">★</span>
+          <span class="add-star" onclick="setAddRating(3)" style="font-size:2rem;cursor:pointer;color:#fbbf24;transition:.15s">★</span>
+          <span class="add-star" onclick="setAddRating(4)" style="font-size:2rem;cursor:pointer;color:#fbbf24;transition:.15s">★</span>
+          <span class="add-star" onclick="setAddRating(5)" style="font-size:2rem;cursor:pointer;color:#fbbf24;transition:.15s">★</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Review Text *</label>
+        <textarea id="addRevText" required rows="4" placeholder="Write the review here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Order ID (optional — adds Verified badge)</label>
+        <input type="text" id="addRevOrderId" placeholder="e.g. STA1234567890">
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+        <input type="checkbox" id="addRevFeatured" style="width:18px;height:18px;accent-color:var(--orange);cursor:pointer">
+        <label for="addRevFeatured" style="font-size:.88rem;color:var(--text2);cursor:pointer">Mark as Featured (shown prominently on store)</label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeAddReviewModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveReviewBtn"><i class="fas fa-save"></i> Save Review</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- ===== CONFIRM OVERLAY ===== -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
@@ -642,7 +701,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 emailjs.init('Pb1AX0JB8oSz8LV-3');
 const EMAILJS_SERVICE='service_ym1oijj', ORDER_TEMPLATE='template_jra9me1';
 
-let products=[],orders=[],brandingRequests=[],customers=[];
+let products=[],orders=[],brandingRequests=[],customers=[],reviews=[];
 let currentSection='dashboard',analyticsCharts=[];
 
 // ===== TOAST =====
@@ -712,12 +771,14 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // ===== DATA =====
 async function loadAllData(){
-  await Promise.all([loadProducts(),loadOrders(),loadBrandingRequests()]);
+  await Promise.all([loadProducts(),loadOrders(),loadBrandingRequests(),loadReviews()]);
   loadCustomersFromOrders();updateBadges();
 }
 async function loadProducts(){const{data,error}=await sb.from('products').select('*').order('id',{ascending:false});products=error?[]:(data||[])}
 async function loadOrders(){const{data,error}=await sb.from('orders').select('*').order('date',{ascending:false});orders=error?[]:(data||[])}
 async function loadBrandingRequests(){const{data,error}=await sb.from('branding_requests').select('*').order('date',{ascending:false});brandingRequests=error?[]:(data||[])}
+
+async function loadReviews(){const{data,error}=await sb.from('reviews').select('*').order('created_at',{ascending:false});reviews=error?[]:(data||[])}
 
 function loadCustomersFromOrders(){
   const map=new Map();
@@ -734,12 +795,13 @@ function updateBadges(){
   document.getElementById('orderCount').textContent=orders.length;
   document.getElementById('customerCount').textContent=customers.length;
   document.getElementById('brandingCount').textContent=brandingRequests.length;
+  document.getElementById('reviewCount').textContent=reviews.length;
   const pending=orders.filter(o=>o.status==='pending').length+brandingRequests.filter(r=>r.status==='pending').length;
   document.getElementById('notificationBadge').textContent=pending;
 }
 
 // ===== NAVIGATION =====
-const sectionTitles={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',branding:'Branding Requests',analytics:'Analytics'};
+const sectionTitles={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',analytics:'Analytics'};
 
 async function showSection(section){
   closeSidebar();currentSection=section;
@@ -753,6 +815,7 @@ async function showSection(section){
   else if(section==='orders')await renderOrders();
   else if(section==='customers')await renderCustomers();
   else if(section==='branding')await renderBranding();
+  else if(section==='reviews')await renderReviews();
   else if(section==='analytics')await renderAnalytics();
 }
 
@@ -1068,6 +1131,99 @@ async function markBrandingComplete(id){
   const{error}=await sb.from('branding_requests').update({status:'completed'}).eq('id',id);
   if(!error){await loadBrandingRequests();closeBrandingModal();showToast('Marked as complete!','success');await renderBranding();updateBadges()}
   else showToast('Error updating request','error');
+}
+
+// ===== REVIEWS =====
+async function renderReviews(filterVal='all'){
+  await loadReviews();
+  let filtered=reviews;
+  if(filterVal==='featured')filtered=reviews.filter(r=>r.featured);
+  else if(filterVal==='verified')filtered=reviews.filter(r=>r.order_id);
+  document.getElementById('contentArea').innerHTML=`
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-star"></i> Reviews (${filtered.length})</div>
+        <div class="card-actions">
+          <div class="filter-tabs">
+            ${['all','featured','verified'].map(f=>`<button class="filter-tab ${filterVal===f?'active':''}" onclick="renderReviews('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openAddReviewModal()"><i class="fas fa-plus"></i> Add Review</button>
+        </div>
+      </div>
+      ${filtered.length===0?'<div class="empty-state"><i class="fas fa-star"></i><p>No reviews found</p></div>':`
+      <div class="table-wrap"><table><thead><tr><th>Reviewer</th><th>Rating</th><th>Review</th><th>Order ID</th><th>Date</th><th>Featured</th><th>Actions</th></tr></thead>
+      <tbody>${filtered.map(r=>`<tr>
+        <td><strong>${r.name||'Anonymous'}</strong></td>
+        <td><span style="color:#fbbf24;font-size:1rem">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</span></td>
+        <td style="max-width:260px"><span style="color:var(--text2);font-size:.82rem;line-height:1.5">${(r.text||'').slice(0,120)}${(r.text||'').length>120?'…':''}</span></td>
+        <td>${r.order_id?`<span class="badge status-completed" style="font-size:.66rem">${String(r.order_id).slice(-8)}</span>`:'<span style="color:var(--text3);font-size:.78rem">—</span>'}</td>
+        <td style="color:var(--text2);font-size:.8rem;white-space:nowrap">${r.created_at?new Date(r.created_at).toLocaleDateString('en-KE'):'N/A'}</td>
+        <td><button onclick="toggleFeatured(${r.id},${!!r.featured})" class="action-btn ${r.featured?'view-btn':'edit-btn'}" title="${r.featured?'Unfeature':'Feature'}"><i class="fas fa-${r.featured?'star':'star'}" style="color:${r.featured?'#fbbf24':'var(--text3)'}"></i> ${r.featured?'Featured':'Feature'}</button></td>
+        <td><div class="action-btns">
+          <button class="action-btn view-btn" onclick="viewReview(${r.id})"><i class="fas fa-eye"></i></button>
+          <button class="action-btn delete-btn" onclick="confirmDeleteReview(${r.id},'${(r.name||'Anonymous').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`).join('')}</tbody></table></div>`}
+    </div>`;
+}
+
+function viewReview(id){
+  const r=reviews.find(x=>x.id===id);if(!r)return;
+  document.getElementById('reviewDetailContent').innerHTML=`
+    <div class="detail-row"><strong>Name</strong><span style="color:#fff;font-weight:700">${r.name||'Anonymous'}</span></div>
+    <div class="detail-row"><strong>Rating</strong><span style="color:#fbbf24;font-size:1.3rem">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</span></div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--card-border);border-radius:12px;padding:16px;margin:14px 0;font-style:italic;color:var(--text2);font-size:.92rem;line-height:1.7">"${r.text||''}"</div>
+    <div class="detail-row"><strong>Order ID</strong>${r.order_id?`<span class="badge status-completed">${r.order_id}</span>`:'<span style="color:var(--text3)">Not verified</span>'}</div>
+    <div class="detail-row"><strong>Featured</strong>${r.featured?'<span class="badge status-completed"><i class="fas fa-star"></i> Yes</span>':'<span style="color:var(--text3)">No</span>'}</div>
+    <div class="detail-row"><strong>Date</strong>${r.created_at?new Date(r.created_at).toLocaleString('en-KE'):'N/A'}</div>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn ${r.featured?'btn-warning':'btn-success'}" onclick="toggleFeatured(${r.id},${!!r.featured});closeReviewDetailModal()">
+        <i class="fas fa-star"></i> ${r.featured?'Unfeature':'Mark as Featured'}
+      </button>
+      <button class="btn btn-danger" onclick="confirmDeleteReview(${r.id},'${(r.name||'Anonymous').replace(/'/g,"\\'")}');closeReviewDetailModal()"><i class="fas fa-trash"></i> Delete</button>
+      <button class="btn btn-secondary" onclick="closeReviewDetailModal()">Close</button>
+    </div>`;
+  document.getElementById('reviewDetailModal').classList.add('active');
+}
+function closeReviewDetailModal(){document.getElementById('reviewDetailModal').classList.remove('active')}
+
+async function toggleFeatured(id,isFeatured){
+  const{error}=await sb.from('reviews').update({featured:!isFeatured}).eq('id',id);
+  if(!error){showToast(isFeatured?'Review unfeatured':'Review featured! ⭐','success');await renderReviews()}
+  else showToast('Error updating review','error');
+}
+
+function confirmDeleteReview(id,name){
+  showConfirm('Delete Review',`Delete review by "${name}"? This cannot be undone.`,async()=>{
+    const{error}=await sb.from('reviews').delete().eq('id',id);
+    if(!error){showToast('Review deleted','warning');await renderReviews();updateBadges()}
+    else showToast('Error deleting review','error');
+  });
+}
+
+function openAddReviewModal(){document.getElementById('addReviewForm').reset();document.getElementById('addReviewRating').value='5';renderAddStars(5);document.getElementById('addReviewModal').classList.add('active')}
+function closeAddReviewModal(){document.getElementById('addReviewModal').classList.remove('active')}
+
+function renderAddStars(val){
+  document.querySelectorAll('.add-star').forEach((s,i)=>{
+    s.style.color=i<val?'#fbbf24':'var(--text3)';
+  });
+}
+function setAddRating(val){document.getElementById('addReviewRating').value=val;renderAddStars(val)}
+
+async function saveNewReview(e){
+  e.preventDefault();
+  const rating=parseInt(document.getElementById('addReviewRating').value)||5;
+  const name=document.getElementById('addRevName').value.trim();
+  const text=document.getElementById('addRevText').value.trim();
+  const orderId=document.getElementById('addRevOrderId').value.trim();
+  if(!name||!text){showToast('Name and review text are required','error');return}
+  const btn=document.getElementById('saveReviewBtn');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+  const{error}=await sb.from('reviews').insert([{name,rating,text,order_id:orderId||null,featured:document.getElementById('addRevFeatured').checked,created_at:new Date().toISOString()}]);
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Review';
+  if(error){showToast('Error saving review: '+error.message,'error');return}
+  showToast('Review added successfully! ⭐','success');closeAddReviewModal();await renderReviews();updateBadges();
 }
 
 // ===== ANALYTICS =====
