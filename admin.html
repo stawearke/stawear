@@ -259,6 +259,7 @@ tbody tr:hover td{background:rgba(255,255,255,.025)}
 .status-processing{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
 .status-completed{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.2)}
 .status-cancelled{background:rgba(232,25,44,.1);color:#fca5a5;border:1px solid rgba(232,25,44,.15)}
+.status-delivered{background:rgba(167,139,250,.12);color:#c4b5fd;border:1px solid rgba(167,139,250,.2)}
 
 /* ─── FORMS ─── */
 .form-group{margin-bottom:18px}
@@ -987,7 +988,7 @@ async function renderOrders(filter=ordersFilter){
     <div class="card">
       <div class="card-header">
         <div class="card-title"><i class="fas fa-shopping-bag"></i> Orders (${filtered.length})</div>
-        <div class="filter-tabs">${['all','pending','processing','completed','cancelled'].map(f=>`<button class="filter-tab ${filter===f?'active':''}" onclick="renderOrders('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div>
+        <div class="filter-tabs">${['all','pending','processing','completed','delivered','cancelled'].map(f=>`<button class="filter-tab ${filter===f?'active':''}" onclick="renderOrders('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div>
       </div>
       ${filtered.length===0?'<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>No orders found</p></div>':`
       <div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
@@ -995,7 +996,7 @@ async function renderOrders(filter=ordersFilter){
         <td><strong style="color:var(--orange)">#${String(o.id).slice(-6)}</strong></td>
         <td><strong>${o.customer_name||'N/A'}</strong><br><small style="color:var(--text3)">${o.customer_phone||''}</small></td>
         <td><strong style="color:#fff">Ksh ${(o.total||0).toLocaleString()}</strong></td>
-        <td><select onchange="updateOrderStatus('${o.id}',this.value)" style="font-size:.76rem;padding:4px 8px;background:var(--card2)"><option value="pending" ${o.status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.status==='processing'?'selected':''}>Processing</option><option value="completed" ${o.status==='completed'?'selected':''}>Completed</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option></select></td>
+        <td><select onchange="updateOrderStatus('${o.id}',this.value)" style="font-size:.76rem;padding:4px 8px;background:var(--card2)"><option value="pending" ${o.status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.status==='processing'?'selected':''}>Processing</option><option value="completed" ${o.status==='completed'?'selected':''}>Completed</option><option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option></select></td>
         <td style="color:var(--text2)">${o.date?new Date(o.date).toLocaleDateString('en-KE'):'N/A'}</td>
         <td><button class="action-btn view-btn" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i> View</button></td>
       </tr>`).join('')}</tbody></table></div>`}
@@ -1007,7 +1008,7 @@ async function updateOrderStatus(id,status){
   if(error){showToast('Error updating order','error');return}
   showToast(`Order updated to ${status}`,'success');
   await loadOrders();updateBadges();
-  if(status==='completed'){
+  if(status==='completed'||status==='delivered'){
     const o=orders.find(x=>String(x.id)===String(id));
     if(o?.customer_phone){
       const waMsg=encodeURIComponent(
@@ -1298,9 +1299,9 @@ async function renderAnalytics(){
     </div>`;
   const chartDefaults={plugins:{legend:{labels:{color:'#9AA0B8',font:{family:'Outfit'}}}}};
   setTimeout(()=>{
-    const statuses=['pending','processing','completed','cancelled'];
+    const statuses=['pending','processing','completed','delivered','cancelled'];
     const statusCounts=statuses.map(s=>orders.filter(o=>o.status===s).length);
-    analyticsCharts.push(new Chart(document.getElementById('chartOrderStatus'),{type:'doughnut',data:{labels:statuses.map(s=>s.charAt(0).toUpperCase()+s.slice(1)),datasets:[{data:statusCounts,backgroundColor:['#fbbf24','#3b82f6','#22c55e','#E8192C'],borderWidth:2,borderColor:'#161926'}]},options:{...chartDefaults,cutout:'60%'}}));
+    analyticsCharts.push(new Chart(document.getElementById('chartOrderStatus'),{type:'doughnut',data:{labels:statuses.map(s=>s.charAt(0).toUpperCase()+s.slice(1)),datasets:[{data:statusCounts,backgroundColor:['#fbbf24','#3b82f6','#22c55e','#a78bfa','#E8192C'],borderWidth:2,borderColor:'#161926'}]},options:{...chartDefaults,cutout:'60%'}}));
     const monthData={};
     orders.forEach(o=>{if(!o.date)return;const m=new Date(o.date).toLocaleString('en-KE',{month:'short',year:'2-digit'});monthData[m]=(monthData[m]||0)+(o.total||0)});
     const mLabels=Object.keys(monthData).slice(-6);
