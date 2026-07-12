@@ -581,15 +581,15 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
 <!-- HEADER -->
 <header id="home">
   <div class="container hdr-inner">
-    <div class="logo" onclick="navGo('home')">
+    <a class="logo" href="#/" onclick="navGo('home');return false;">
       <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear" class="logo-img" onerror="this.style.display='none'">
       <div><div class="logo-name">STA<em>WEAR</em></div><span class="logo-sub">Martial Arts Branding</span></div>
-    </div>
+    </a>
     <nav><ul>
-      <li><a onclick="navGo('products')"><i class="fas fa-tshirt"></i> Products</a></li>
-      <li><a onclick="navGo('branding')"><i class="fas fa-palette"></i> Custom Branding</a></li>
-      <li><a onclick="navGo('reviews')"><i class="fas fa-star"></i> Reviews</a></li>
-      <li><a onclick="showTrack()"><i class="fas fa-truck"></i> Track Order</a></li>
+      <li><a href="#/products" onclick="navGo('products');return false;"><i class="fas fa-tshirt"></i> Products</a></li>
+      <li><a href="#/branding" onclick="navGo('branding');return false;"><i class="fas fa-palette"></i> Custom Branding</a></li>
+      <li><a href="#/reviews" onclick="navGo('reviews');return false;"><i class="fas fa-star"></i> Reviews</a></li>
+      <li><a href="#/track" onclick="navGo('track');return false;"><i class="fas fa-truck"></i> Track Order</a></li>
     </ul></nav>
     <div class="hdr-actions">
       <a href="tel:0727394165" class="hdr-btn"><i class="fas fa-phone-alt"></i></a>
@@ -606,11 +606,11 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
 <!-- MOBILE NAV -->
 <div class="mob-nav" id="mobNav">
   <button class="mob-close" onclick="closeMobNav()"><i class="fas fa-times"></i></button>
-  <a onclick="navGo('home')">Home</a>
-  <a onclick="navGo('products')">Products</a>
-  <a onclick="openCustomModal()">Custom Branding</a>
-  <a onclick="navGo('reviews')">Reviews</a>
-  <a onclick="showTrack()">Track Order</a>
+  <a href="#/" onclick="navGo('home');return false;">Home</a>
+  <a href="#/products" onclick="navGo('products');return false;">Products</a>
+  <a href="#/branding" onclick="openCustomModal();closeMobNav();return false;">Custom Branding</a>
+  <a href="#/reviews" onclick="navGo('reviews');return false;">Reviews</a>
+  <a href="#/track" onclick="navGo('track');return false;">Track Order</a>
   <a href="tel:0727394165" style="color:var(--orange);margin-top:10px"><i class="fas fa-phone-alt"></i> 0727 394 165</a>
 </div>
 
@@ -626,7 +626,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
         <h1>GEAR UP.<br>TRAIN HARD.<br><span>LOOK SHARP.</span></h1>
         <p class="hero-desc">Premium custom apparel and branding for Kenyan dojangs and champions. Quality gear, authentic pride, fast delivery nationwide.</p>
         <div class="hero-btns">
-          <button class="btn btn-orange btn-lg" onclick="navGo('products')"><i class="fas fa-shopping-bag"></i> Shop Collection</button>
+          <button class="btn btn-orange btn-lg" onclick="navGo('products')" type="button"><i class="fas fa-shopping-bag"></i> Shop Collection</button>
           <button class="btn btn-outline btn-lg" onclick="openCustomModal()"><i class="fas fa-palette"></i> Custom Branding</button>
         </div>
         <div class="hero-stats">
@@ -682,12 +682,12 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       <p class="sec-sub" style="margin-top:14px">Quality Martial Arts apparel crafted for champions — train, compete, and represent with pride.</p>
     </div>
     <div class="cat-filters">
-      <button class="cat-btn active" onclick="filterProds('all',this)">All</button>
-      <button class="cat-btn" onclick="filterProds('Hoodies',this)">Hoodies</button>
-      <button class="cat-btn" onclick="filterProds('T-Shirts',this)">T-Shirts</button>
-      <button class="cat-btn" onclick="filterProds('Jackets',this)">Jackets</button>
-      <button class="cat-btn" onclick="filterProds('Tracksuits',this)">Tracksuits</button>
-      <button class="cat-btn" onclick="filterProds('Accessories',this)">Accessories</button>
+      <button class="cat-btn active" data-cat="all" onclick="filterProds('all')">All</button>
+      <button class="cat-btn" data-cat="Hoodies" onclick="filterProds('Hoodies')">Hoodies</button>
+      <button class="cat-btn" data-cat="T-Shirts" onclick="filterProds('T-Shirts')">T-Shirts</button>
+      <button class="cat-btn" data-cat="Jackets" onclick="filterProds('Jackets')">Jackets</button>
+      <button class="cat-btn" data-cat="Tracksuits" onclick="filterProds('Tracksuits')">Tracksuits</button>
+      <button class="cat-btn" data-cat="Accessories" onclick="filterProds('Accessories')">Accessories</button>
     </div>
     <div class="products-grid" id="productsGrid">
       <div class="loading-spin"><i class="fas fa-circle-notch"></i><span>Loading products...</span></div>
@@ -823,11 +823,11 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       <div class="footer-col">
         <h3>Quick Links</h3>
         <ul>
-          <li><a onclick="navGo('home')"><i class="fas fa-chevron-right"></i> Home</a></li>
-          <li><a onclick="navGo('products')"><i class="fas fa-chevron-right"></i> Products</a></li>
-          <li><a onclick="openCustomModal()"><i class="fas fa-chevron-right"></i> Custom Branding</a></li>
-          <li><a onclick="navGo('reviews')"><i class="fas fa-chevron-right"></i> Reviews</a></li>
-          <li><a onclick="showTrack()"><i class="fas fa-chevron-right"></i> Track Order</a></li>
+          <li><a href="#/" onclick="navGo('home');return false;"><i class="fas fa-chevron-right"></i> Home</a></li>
+          <li><a href="#/products" onclick="navGo('products');return false;"><i class="fas fa-chevron-right"></i> Products</a></li>
+          <li><a href="#/branding" onclick="openCustomModal();return false;"><i class="fas fa-chevron-right"></i> Custom Branding</a></li>
+          <li><a href="#/reviews" onclick="navGo('reviews');return false;"><i class="fas fa-chevron-right"></i> Reviews</a></li>
+          <li><a href="#/track" onclick="navGo('track');return false;"><i class="fas fa-chevron-right"></i> Track Order</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1155,10 +1155,12 @@ function renderProducts(){
   }).join('');
 }
 
-function filterProds(cat,btn){
-  currentCat=cat;
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function filterProds(cat){
+  setRoute(cat==='all'?'/products':'/products/'+encodeURIComponent(cat));
+}
+function setActiveCategory(cat){
+  currentCat=cat||'all';
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===currentCat));
   renderProducts();
 }
 
@@ -1190,7 +1192,11 @@ function closeSizeModal(){document.getElementById('sizeModal').classList.remove(
 
 // PRODUCT DETAIL
 function viewProduct(id){
-  const p=allProducts.find(x=>x.id===id);if(!p)return;
+  setRoute('/product/'+id);
+}
+function openProductModal(id){
+  const p=allProducts.find(x=>x.id===id);
+  if(!p){document.getElementById('prodModal').classList.remove('active');return}
   document.getElementById('modalImg').src=p.image||'https://via.placeholder.com/800x600';
   document.getElementById('modalImg').alt=p.name;
   const sizes=p.sizes||['S','M','L','XL'];
@@ -1218,12 +1224,16 @@ function viewProduct(id){
     </div>`;
   modalSize=null;
   document.getElementById('prodModal').classList.add('active');
+  document.title=`${p.name} — Stawear`;
 }
 function addFromModal(id){
   if(!modalSize){showToast('Please select a size first','error');return}
   cart.add(allProducts.find(x=>x.id===id),modalSize,1);closeProdModal();
 }
-function closeProdModal(){document.getElementById('prodModal').classList.remove('active')}
+function closeProdModal(silent){
+  document.getElementById('prodModal').classList.remove('active');
+  if(!silent && parseRoute()[0]==='product') setRoute('/products');
+}
 
 // CART
 function toggleCart(){
@@ -1345,10 +1355,12 @@ async function submitCustomOrder(e){
 }
 
 // TRACK ORDER
-function showTrack(){document.getElementById('trackModal').classList.add('active');closeMobNav()}
-function closeTrack(){
+function showTrack(){setRoute('/track');closeMobNav()}
+function openTrackModal(){document.getElementById('trackModal').classList.add('active');document.title='Track Order — Stawear'}
+function closeTrack(silent){
   document.getElementById('trackModal').classList.remove('active');
   const r=document.getElementById('trackResult');r.style.display='none';r.innerHTML='';
+  if(!silent && parseRoute()[0]==='track') setRoute('/');
 }
 async function trackOrder(){
   const id=document.getElementById('trackId').value.trim();
@@ -1358,9 +1370,9 @@ async function trackOrder(){
   result.style.display='block';
   const{data,error}=await sb.from('orders').select('*').eq('id',id).single();
   if(error||!data){result.innerHTML=`<div class="track-card" style="border-left-color:var(--red)"><p style="color:var(--red);font-weight:700"><i class="fas fa-times-circle"></i> Order not found</p><p style="font-size:.85rem;color:var(--gray);margin-top:6px">Please check your Order ID and try again.</p></div>`;return}
-  const steps=['pending','processing','completed','delivered'];
+  const steps=['pending','processing','completed'];
   const idx=steps.indexOf(data.status);
-  const labels={pending:'Order Received',processing:'Being Processed',completed:'Out for Delivery 🚚',delivered:'Delivered 🎉'};
+  const labels={pending:'Order Received',processing:'Being Processed',completed:'Delivered 🎉'};
   result.innerHTML=`<div class="track-card"><p style="font-family:var(--font-heading);font-size:1.2rem;font-weight:900;margin-bottom:4px">Order #${String(data.id).slice(-10)}</p><p style="font-size:.82rem;color:var(--gray)">Customer: ${data.customer_name}</p><p style="font-size:.82rem;color:var(--gray);margin-bottom:10px">Total: Ksh ${(data.total||0).toLocaleString()}</p><div style="margin-bottom:10px"><span style="font-weight:700;font-size:.82rem">Status: </span><span class="track-status ${data.status||'pending'}">${(data.status||'pending').toUpperCase()}</span></div><div class="track-timeline">${steps.map((s,i)=>{const cls=i<idx?'done':i===idx?'current':'pend';return`<div class="track-step"><div class="tdot ${cls}">${i<idx?'✓':i+1}</div><div><p style="font-weight:700;font-size:.88rem">${labels[s]}</p><p style="font-size:.75rem;color:#aaa">${s==='pending'?new Date(data.date).toLocaleDateString('en-KE'):''}</p></div></div>`}).join('')}</div></div>`;
 }
 
@@ -1389,11 +1401,52 @@ async function submitReview(e){
   document.getElementById('reviewForm').reset();setRating(0);loadReviews();
 }
 
-// NAV
-function navGo(sec){
+// ===== ROUTER =====
+// Every page and every product gets its own shareable, bookmarkable URL (e.g. #/products,
+// #/products/Hoodies, #/branding, #/reviews, #/track, #/product/3). Back/forward works too.
+const PAGE_TITLE='Stawear — Kenya\'s #1 Martial Arts Branding Store';
+
+function parseRoute(){
+  return location.hash.replace(/^#\/?/,'').split('/').filter(Boolean).map(p=>{
+    try{return decodeURIComponent(p)}catch(e){return p}
+  });
+}
+function setRoute(path){
+  const newHash='#'+path;
+  if(location.hash===newHash){router()}else{location.hash=newHash}
+}
+function scrollToSection(id){
+  if(id==='home'){window.scrollTo({top:0,behavior:'smooth'});return}
+  const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});
+}
+function router(){
+  const parts=parseRoute();
+  closeProdModal(true);
+  closeTrack(true);
+  document.title=PAGE_TITLE;
+  if(parts.length===0){
+    scrollToSection('home');
+  }else if(parts[0]==='products'){
+    setActiveCategory(parts[1]||'all');
+    scrollToSection('products');
+    document.title=(parts[1]?`${parts[1]} — `:'')+`Products — Stawear`;
+  }else if(parts[0]==='branding'){
+    scrollToSection('branding');
+    document.title='Custom Branding — Stawear';
+  }else if(parts[0]==='reviews'){
+    scrollToSection('reviews');
+    document.title='Reviews — Stawear';
+  }else if(parts[0]==='track'){
+    openTrackModal();
+  }else if(parts[0]==='product'&&parts[1]){
+    openProductModal(parseInt(parts[1],10));
+  }else{
+    scrollToSection('home');
+  }
   closeMobNav();
-  if(sec==='home'){window.scrollTo({top:0,behavior:'smooth'});return}
-  const el=document.getElementById(sec);if(el)el.scrollIntoView({behavior:'smooth'});
+}
+function navGo(sec){
+  setRoute(sec==='home'?'/':'/'+sec);
 }
 function openMobNav(){document.getElementById('mobNav').classList.add('open');document.body.style.overflow='hidden'}
 function closeMobNav(){document.getElementById('mobNav').classList.remove('open');document.body.style.overflow=''}
