@@ -1151,6 +1151,13 @@ emailjs.init(EJS_KEY);
 let allProducts=[],currentCat='all',smProduct=null,smQty=1,smSize=null,rvRating=0,coStep=1,modalSize=null;
 let allPartners=[],allPartnerProducts=[],galleryList=[],galleryIdx=0,currentPartnerProductCtx=null;
 
+// PLACEHOLDER IMAGE (self-contained — no external service, so it can never fail to load)
+function PH(w,h){
+  h=h||w;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="#EEEEEE"/><g fill="#BBBBBB"><circle cx="${w*0.5}" cy="${h*0.42}" r="${Math.min(w,h)*0.13}"/><path d="M${w*0.2} ${h*0.78} L${w*0.4} ${h*0.55} L${w*0.55} ${h*0.68} L${w*0.7} ${h*0.5} L${w*0.85} ${h*0.78} Z"/></g></svg>`;
+  return'data:image/svg+xml;base64,'+btoa(svg);
+}
+
 // CART
 const cart={
   items:[],
@@ -1180,7 +1187,7 @@ const cart={
       con.innerHTML=`<div class="cart-empty"><i class="fas fa-shopping-bag"></i><p style="font-family:var(--font-heading);font-size:1.1rem;text-transform:uppercase;margin-bottom:8px">Cart is empty</p><button class="btn btn-sm btn-dark" onclick="toggleCart()">Browse Products</button></div>`;
       foot.style.display='none';
     }else{
-      con.innerHTML=this.items.map((item,i)=>`<div class="cart-item"><div class="ci-img"><img src="${item.image||''}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/70'"></div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">Size: <strong>${item.size}</strong></div><div class="ci-price">Ksh ${(item.price*item.quantity).toLocaleString()}</div><div class="ci-qty"><button class="qty-btn" onclick="cart.changeQty(${i},-1)">−</button><span class="qty-num">${item.quantity}</span><button class="qty-btn" onclick="cart.changeQty(${i},1)">+</button></div></div><div class="ci-rm" onclick="cart.remove(${i})"><i class="fas fa-times"></i></div></div>`).join('');
+      con.innerHTML=this.items.map((item,i)=>`<div class="cart-item"><div class="ci-img"><img src="${item.image||PH(70)}" alt="${item.name}" onerror="this.src=PH(70)"></div><div class="ci-info"><div class="ci-name">${item.name}</div><div class="ci-meta">Size: <strong>${item.size}</strong></div><div class="ci-price">Ksh ${(item.price*item.quantity).toLocaleString()}</div><div class="ci-qty"><button class="qty-btn" onclick="cart.changeQty(${i},-1)">−</button><span class="qty-num">${item.quantity}</span><button class="qty-btn" onclick="cart.changeQty(${i},1)">+</button></div></div><div class="ci-rm" onclick="cart.remove(${i})"><i class="fas fa-times"></i></div></div>`).join('');
       foot.style.display='block';
     }
   }
@@ -1217,7 +1224,7 @@ function renderProducts(){
     return`<div class="pcard" onclick="viewProduct(${p.id})">
       ${p.badge?`<div class="pcard-badge ${badgeClass(p.badge)}">${p.badge}</div>`:''}
       ${disc>0&&!p.badge?`<div class="pcard-badge sale">-${disc}%</div>`:''}
-      <div class="pcard-img"><img src="${p.image||''}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x240'">
+      <div class="pcard-img"><img src="${p.image||''}" alt="${p.name}" loading="lazy" onerror="this.src=PH(400,240)">
       <div class="pcard-overlay">
         <button class="pcard-qbtn" onclick="event.stopPropagation();openSizeModal(${p.id})" title="Add to Cart"><i class="fas fa-shopping-bag"></i></button>
         <button class="pcard-qbtn" onclick="event.stopPropagation();viewProduct(${p.id})" title="Quick View"><i class="fas fa-eye"></i></button>
@@ -1270,7 +1277,7 @@ function renderPartners(){
     return`<div class="partner-card" onclick="viewPartner(${p.id})">
       <div class="partner-cover">
         ${p.cover?`<img class="cover-img" src="${p.cover}" alt="">`:''}
-        <div class="partner-logo-wrap"><img src="${p.logo||'https://via.placeholder.com/150'}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/150'"></div>
+        <div class="partner-logo-wrap"><img src="${p.logo||PH(150)}" alt="${p.name}" onerror="this.src=PH(150)"></div>
       </div>
       <div class="partner-body">
         <div class="partner-badge">Official Partner</div>
@@ -1290,7 +1297,7 @@ function openPartnerModal(id){
   const waMsg=encodeURIComponent(`Hello ${p.name}! I found you through Stawear and I'm interested in your products.`);
   document.getElementById('partnerModalContent').innerHTML=`
     <div class="partner-hero">
-      <div class="partner-hero-logo"><img src="${p.logo||'https://via.placeholder.com/150'}" alt="${p.name}"></div>
+      <div class="partner-hero-logo"><img src="${p.logo||PH(150)}" alt="${p.name}"></div>
       <h2>${p.name}</h2>
       <p>${p.description||''}</p>
       <div class="partner-hero-links">
@@ -1311,7 +1318,7 @@ function partnerCardHtml(p){
   const sizes=p.sizes||[];
   return`<div class="pcard" onclick="viewPartnerProduct(${p.partner_id},${p.id})">
     <div class="pcard-badge hot">PARTNER</div>
-    <div class="pcard-img"><img src="${p.image||''}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x240'">
+    <div class="pcard-img"><img src="${p.image||''}" alt="${p.name}" loading="lazy" onerror="this.src=PH(400,240)">
     <div class="pcard-overlay"><button class="pcard-qbtn" onclick="event.stopPropagation();viewPartnerProduct(${p.partner_id},${p.id})" title="Quick View"><i class="fas fa-eye"></i></button></div></div>
     <div class="pcard-body">
       <div class="pcard-cat">${p.category||''}</div>
@@ -1374,7 +1381,7 @@ function viewProduct(id){
 // Builds the image list for a product/partner-product: uses `images` array if present, falls back to the single `image`.
 function buildGallery(p){
   const list=(Array.isArray(p.images)&&p.images.length?p.images:[p.image]).filter(Boolean);
-  return list.length?list:['https://via.placeholder.com/800x600'];
+  return list.length?list:[PH(800,600)];
 }
 function setGalleryImage(i){
   if(!galleryList.length)return;
@@ -1510,7 +1517,7 @@ function buildOrderSummary(){
   document.getElementById('orderSummaryMini').innerHTML=`
     <div style="background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #f0f0f0">
       <div style="font-weight:700;font-size:.82rem;margin-bottom:10px;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Order Summary</div>
-      ${cart.items.map(item=>`<div class="order-ri"><img src="${item.image||''}" onerror="this.src='https://via.placeholder.com/52'"><div><div style="font-weight:700;font-size:.85rem">${item.name}</div><div style="font-size:.75rem;color:var(--gray)">Size: ${item.size} × ${item.quantity}</div><div style="font-weight:800;color:var(--red);font-size:.88rem">Ksh ${(item.price*item.quantity).toLocaleString()}</div></div></div>`).join('')}
+      ${cart.items.map(item=>`<div class="order-ri"><img src="${item.image||PH(52)}" onerror="this.src=PH(52)"><div><div style="font-weight:700;font-size:.85rem">${item.name}</div><div style="font-size:.75rem;color:var(--gray)">Size: ${item.size} × ${item.quantity}</div><div style="font-weight:800;color:var(--red);font-size:.88rem">Ksh ${(item.price*item.quantity).toLocaleString()}</div></div></div>`).join('')}
       <table class="order-totals"><tr><td>Subtotal</td><td>Ksh ${cart.subtotal.toLocaleString()}</td></tr><tr><td>Delivery</td><td>Ksh ${d.toLocaleString()}</td></tr><tr class="tot-row"><td>Total</td><td>Ksh ${(cart.subtotal+d).toLocaleString()}</td></tr></table>
     </div>`;
 }
