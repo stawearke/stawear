@@ -609,7 +609,20 @@ select:focus{border-color:var(--red)}
       <input type="hidden" id="partnerId">
       <div class="form-group"><label>Partner / Brand Name *</label><input type="text" id="partnerName" required placeholder="e.g. Dojo Supplies KE"></div>
       <div class="form-row">
-        <div class="form-group"><label>Logo Image URL</label><input type="url" id="partnerLogo" placeholder="https://..."></div>
+        <div class="form-group">
+  <label>Partner Logo</label>
+  <div class="image-upload-area" id="partnerLogoUploadArea" onclick="document.getElementById('partnerLogoFileInput').click()">
+    <img id="partnerLogoPreview" src="" alt="" style="display:none">
+    <div class="image-upload-placeholder" id="partnerLogoPlaceholder">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p>Click to upload logo</p>
+      <small>PNG, JPG, WebP · Max 5MB</small>
+    </div>
+  </div>
+  <input type="file" id="partnerLogoFileInput" accept="image/*" style="display:none" onchange="handlePartnerLogoSelect(event)">
+  <input type="hidden" id="partnerLogo">
+  <div class="upload-status" id="partnerLogoStatus"></div>
+</div>
         <div class="form-group"><label>Cover Image URL <small style="font-weight:400;color:var(--text3)">(optional)</small></label><input type="url" id="partnerCover" placeholder="https://..."></div>
       </div>
       <div class="form-group"><label>Description</label><textarea id="partnerDescription" rows="3" placeholder="A short blurb about this partner brand..."></textarea></div>
