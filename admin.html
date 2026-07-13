@@ -455,6 +455,10 @@ select:focus{border-color:var(--red)}
           <i class="fas fa-star sb-icon"></i> Reviews
           <span class="sb-badge" id="reviewCount">0</span>
         </div>
+        <div class="sb-item" data-section="partners" onclick="showSection('partners')">
+          <i class="fas fa-handshake sb-icon"></i> Partners
+          <span class="sb-badge" id="partnerCount">0</span>
+        </div>
         <div class="sb-divider"></div>
         <div class="sb-section-label">Insights</div>
         <div class="sb-item" data-section="analytics" onclick="showSection('analytics')">
@@ -550,6 +554,10 @@ select:focus{border-color:var(--red)}
         <div class="upload-status" id="imageUploadStatus"></div>
       </div>
       <div class="form-group">
+        <label>Gallery Images <small style="font-weight:400;color:var(--text3)">(optional — paste extra photo URLs, one per line, for the product's zoom gallery)</small></label>
+        <textarea id="productGalleryImages" rows="3" placeholder="https://example.com/photo2.jpg&#10;https://example.com/photo3.jpg"></textarea>
+      </div>
+      <div class="form-group">
         <label>Stock by Size</label>
         <div class="form-row">
           <div class="form-group"><label>S</label><input type="number" id="sizeS" min="0" value="0"></div>
@@ -587,6 +595,65 @@ select:focus{border-color:var(--red)}
       <button class="btn btn-secondary" onclick="closeBulkUploadModal()">Cancel</button>
       <button class="btn btn-primary" id="bulkUploadBtn" onclick="processBulkUpload()"><i class="fas fa-cloud-upload-alt"></i> Upload Products</button>
     </div>
+  </div>
+</div>
+
+<!-- ===== PARTNER MODAL ===== -->
+<div class="modal" id="partnerModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="partnerModalTitle"><i class="fas fa-plus"></i> Add Partner</h2>
+      <div class="modal-x" onclick="closePartnerModal()">&times;</div>
+    </div>
+    <form id="partnerForm" onsubmit="savePartner(event)">
+      <input type="hidden" id="partnerId">
+      <div class="form-group"><label>Partner / Brand Name *</label><input type="text" id="partnerName" required placeholder="e.g. Dojo Supplies KE"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Logo Image URL</label><input type="url" id="partnerLogo" placeholder="https://..."></div>
+        <div class="form-group"><label>Cover Image URL <small style="font-weight:400;color:var(--text3)">(optional)</small></label><input type="url" id="partnerCover" placeholder="https://..."></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="partnerDescription" rows="3" placeholder="A short blurb about this partner brand..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>WhatsApp Number *</label><input type="text" id="partnerWhatsapp" required placeholder="0727394165 or 254727394165"></div>
+        <div class="form-group"><label>Website <small style="font-weight:400;color:var(--text3)">(optional)</small></label><input type="url" id="partnerWebsite" placeholder="https://..."></div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closePartnerModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Partner</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== PARTNER PRODUCT MODAL ===== -->
+<div class="modal" id="partnerProductModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="partnerProductModalTitle"><i class="fas fa-plus"></i> Add Partner Product</h2>
+      <div class="modal-x" onclick="closePartnerProductModal()">&times;</div>
+    </div>
+    <form id="partnerProductForm" onsubmit="savePartnerProduct(event)">
+      <input type="hidden" id="partnerProductId">
+      <div class="form-group"><label>Partner Brand *</label><select id="partnerProductPartner" required></select></div>
+      <div class="form-row">
+        <div class="form-group"><label>Product Name *</label><input type="text" id="partnerProductName" required placeholder="e.g. Adult Sparring Head Gear"></div>
+        <div class="form-group"><label>Category</label><input type="text" id="partnerProductCategory" placeholder="e.g. Protective Gear"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (Ksh) *</label><input type="number" id="partnerProductPrice" required min="0" placeholder="2200"></div>
+        <div class="form-group"><label>Sizes <small style="font-weight:400;color:var(--text3)">(comma-separated, optional)</small></label><input type="text" id="partnerProductSizes" placeholder="S, M, L, XL"></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="partnerProductDescription" rows="3" placeholder="Brief product description..."></textarea></div>
+      <div class="form-group"><label>Cover Image URL *</label><input type="url" id="partnerProductImage" required placeholder="https://..."></div>
+      <div class="form-group">
+        <label>Gallery Images <small style="font-weight:400;color:var(--text3)">(optional — one URL per line)</small></label>
+        <textarea id="partnerProductGalleryImages" rows="3" placeholder="https://example.com/photo2.jpg&#10;https://example.com/photo3.jpg"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closePartnerProductModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Product</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -702,7 +769,7 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 emailjs.init('Pb1AX0JB8oSz8LV-3');
 const EMAILJS_SERVICE='service_ym1oijj', ORDER_TEMPLATE='template_jra9me1';
 
-let products=[],orders=[],brandingRequests=[],customers=[],reviews=[];
+let products=[],orders=[],brandingRequests=[],customers=[],reviews=[],partners=[],partnerProducts=[];
 let currentSection='dashboard',analyticsCharts=[];
 
 // ===== TOAST =====
@@ -772,7 +839,7 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // ===== DATA =====
 async function loadAllData(){
-  await Promise.all([loadProducts(),loadOrders(),loadBrandingRequests(),loadReviews()]);
+  await Promise.all([loadProducts(),loadOrders(),loadBrandingRequests(),loadReviews(),loadPartners(),loadPartnerProducts()]);
   loadCustomersFromOrders();updateBadges();
 }
 async function loadProducts(){const{data,error}=await sb.from('products').select('*').order('id',{ascending:false});products=error?[]:(data||[])}
@@ -780,6 +847,8 @@ async function loadOrders(){const{data,error}=await sb.from('orders').select('*'
 async function loadBrandingRequests(){const{data,error}=await sb.from('branding_requests').select('*').order('date',{ascending:false});brandingRequests=error?[]:(data||[])}
 
 async function loadReviews(){const{data,error}=await sb.from('reviews').select('*').order('created_at',{ascending:false});reviews=error?[]:(data||[])}
+async function loadPartners(){const{data,error}=await sb.from('partners').select('*').order('id',{ascending:false});partners=error?[]:(data||[])}
+async function loadPartnerProducts(){const{data,error}=await sb.from('partner_products').select('*').order('id',{ascending:false});partnerProducts=error?[]:(data||[])}
 
 function loadCustomersFromOrders(){
   const map=new Map();
@@ -797,12 +866,13 @@ function updateBadges(){
   document.getElementById('customerCount').textContent=customers.length;
   document.getElementById('brandingCount').textContent=brandingRequests.length;
   document.getElementById('reviewCount').textContent=reviews.length;
+  document.getElementById('partnerCount').textContent=partners.length;
   const pending=orders.filter(o=>o.status==='pending').length+brandingRequests.filter(r=>r.status==='pending').length;
   document.getElementById('notificationBadge').textContent=pending;
 }
 
 // ===== NAVIGATION =====
-const sectionTitles={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',analytics:'Analytics'};
+const sectionTitles={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',partners:'Partners',analytics:'Analytics'};
 
 async function showSection(section){
   closeSidebar();currentSection=section;
@@ -817,6 +887,7 @@ async function showSection(section){
   else if(section==='customers')await renderCustomers();
   else if(section==='branding')await renderBranding();
   else if(section==='reviews')await renderReviews();
+  else if(section==='partners')await renderPartnersSection();
   else if(section==='analytics')await renderAnalytics();
 }
 
@@ -899,6 +970,7 @@ function openProductModal(id=null){
       document.getElementById('sizeL').value=st.L||0;
       document.getElementById('sizeXL').value=st.XL||0;
       document.getElementById('sizeXXL').value=st.XXL||0;
+      document.getElementById('productGalleryImages').value=Array.isArray(p.images)?p.images.join('\n'):'';
       if(p.image)setImagePreview(p.image);
     }
   }
@@ -911,7 +983,8 @@ async function saveProduct(e){
   e.preventDefault();
   const id=document.getElementById('productId').value;
   const stock={S:+document.getElementById('sizeS').value,M:+document.getElementById('sizeM').value,L:+document.getElementById('sizeL').value,XL:+document.getElementById('sizeXL').value,XXL:+document.getElementById('sizeXXL').value};
-  const productData={name:document.getElementById('productName').value,category:document.getElementById('productCategory').value,price:+document.getElementById('productPrice').value,originalPrice:+document.getElementById('productOriginalPrice').value||null,description:document.getElementById('productDescription').value,image:document.getElementById('productImage').value||'https://via.placeholder.com/500',stock,sizes:Object.keys(stock).filter(s=>stock[s]>0),updated_at:new Date().toISOString()};
+  const galleryImages=document.getElementById('productGalleryImages').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  const productData={name:document.getElementById('productName').value,category:document.getElementById('productCategory').value,price:+document.getElementById('productPrice').value,originalPrice:+document.getElementById('productOriginalPrice').value||null,description:document.getElementById('productDescription').value,image:document.getElementById('productImage').value||'https://via.placeholder.com/500',images:galleryImages,stock,sizes:Object.keys(stock).filter(s=>stock[s]>0),updated_at:new Date().toISOString()};
   let result;
   if(id)result=await sb.from('products').update(productData).eq('id',parseInt(id));
   else{productData.created_at=new Date().toISOString();result=await sb.from('products').insert([productData])}
@@ -1275,6 +1348,167 @@ async function saveNewReview(e){
   if(error){showToast('Error: '+error.message,'error');return}
   showToast(editingReviewId?'Review updated! ✏️':'Review added! ⭐','success');
   closeAddReviewModal();await renderReviews();updateBadges();
+}
+
+// ===== PARTNERS =====
+let partnerProductsFilterId='all';
+async function renderPartnersSection(){
+  await Promise.all([loadPartners(),loadPartnerProducts()]);
+  document.getElementById('contentArea').innerHTML=`
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-handshake"></i> Partner Brands (${partners.length})</div>
+        <div class="card-actions">
+          <button class="btn btn-primary" onclick="openPartnerModal()"><i class="fas fa-plus"></i> Add Partner</button>
+        </div>
+      </div>
+      ${partners.length===0?'<div class="empty-state"><i class="fas fa-handshake"></i><p>No partner brands yet — add one to start listing their products.</p></div>':`
+      <div class="table-wrap"><table><thead><tr><th>Logo</th><th>Name</th><th>WhatsApp</th><th>Products</th><th>Actions</th></tr></thead>
+      <tbody>${partners.map(p=>`<tr>
+        <td><div class="product-thumb"><img src="${p.logo||'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
+        <td><strong>${p.name}</strong><br><small style="color:var(--text3)">${(p.description||'').slice(0,60)}${(p.description||'').length>60?'…':''}</small></td>
+        <td>${p.whatsapp?`<button class="action-btn view-btn" onclick="contactViaWhatsApp('${p.whatsapp}')"><i class="fab fa-whatsapp"></i> ${p.whatsapp}</button>`:'N/A'}</td>
+        <td><span class="badge status-processing">${partnerProducts.filter(x=>x.partner_id===p.id).length}</span></td>
+        <td><div class="action-btns">
+          <button class="action-btn view-btn" onclick="filterPartnerProducts(${p.id})" title="View Products"><i class="fas fa-box"></i></button>
+          <button class="action-btn edit-btn" onclick="openPartnerModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-btn delete-btn" onclick="confirmDeletePartner(${p.id},'${(p.name||'').replace(/'/g,"\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`).join('')}</tbody></table></div>`}
+    </div>
+
+    <div class="card" style="margin-top:1.5rem">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-box-open"></i> Partner Products (${(partnerProductsFilterId==='all'?partnerProducts:partnerProducts.filter(x=>x.partner_id===partnerProductsFilterId)).length})</div>
+        <div class="card-actions">
+          <select id="partnerProductFilterSelect" onchange="filterPartnerProducts(this.value==='all'?'all':+this.value)" style="padding:9px 14px;border-radius:8px;background:var(--card2);color:inherit;border:1px solid var(--card-border)">
+            <option value="all">All Partners</option>
+            ${partners.map(p=>`<option value="${p.id}" ${partnerProductsFilterId===p.id?'selected':''}>${p.name}</option>`).join('')}
+          </select>
+          <button class="btn btn-primary" onclick="openPartnerProductModal()" ${partners.length===0?'disabled title="Add a partner brand first"':''}><i class="fas fa-plus"></i> Add Partner Product</button>
+        </div>
+      </div>
+      ${(()=>{const list=partnerProductsFilterId==='all'?partnerProducts:partnerProducts.filter(x=>x.partner_id===partnerProductsFilterId);
+        if(!list.length)return'<div class="empty-state"><i class="fas fa-box-open"></i><p>No partner products yet.</p></div>';
+        return`<div class="table-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Partner</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+        <tbody>${list.map(p=>{const owner=partners.find(x=>x.id===p.partner_id);return`<tr>
+          <td><div class="product-thumb"><img src="${p.image||'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
+          <td><strong>${p.name}</strong></td>
+          <td><span class="badge status-processing">${owner?owner.name:'Unknown'}</span></td>
+          <td>${p.category||'N/A'}</td>
+          <td><strong style="color:var(--orange)">Ksh ${(p.price||0).toLocaleString()}</strong></td>
+          <td><div class="action-btns">
+            <button class="action-btn edit-btn" onclick="openPartnerProductModal(${p.id})" title="Edit"><i class="fas fa-edit"></i></button>
+            <button class="action-btn delete-btn" onclick="confirmDeletePartnerProduct(${p.id},'${(p.name||'').replace(/'/g,"\\'")}')" title="Delete"><i class="fas fa-trash"></i></button>
+          </div></td>
+        </tr>`}).join('')}</tbody></table></div>`;
+      })()}
+    </div>`;
+}
+function filterPartnerProducts(id){partnerProductsFilterId=id;renderPartnersSection()}
+
+// -- Partner brand modal --
+function openPartnerModal(id=null){
+  document.getElementById('partnerForm').reset();
+  document.getElementById('partnerId').value='';
+  document.getElementById('partnerModalTitle').innerHTML='<i class="fas fa-plus"></i> Add Partner';
+  if(id){
+    const p=partners.find(x=>x.id===id);
+    if(p){
+      document.getElementById('partnerModalTitle').innerHTML='<i class="fas fa-edit"></i> Edit Partner';
+      document.getElementById('partnerId').value=p.id;
+      document.getElementById('partnerName').value=p.name||'';
+      document.getElementById('partnerLogo').value=p.logo||'';
+      document.getElementById('partnerCover').value=p.cover||'';
+      document.getElementById('partnerDescription').value=p.description||'';
+      document.getElementById('partnerWhatsapp').value=p.whatsapp||'';
+      document.getElementById('partnerWebsite').value=p.website||'';
+    }
+  }
+  document.getElementById('partnerModal').classList.add('active');
+}
+function closePartnerModal(){document.getElementById('partnerModal').classList.remove('active')}
+async function savePartner(e){
+  e.preventDefault();
+  const id=document.getElementById('partnerId').value;
+  const partnerData={
+    name:document.getElementById('partnerName').value,
+    logo:document.getElementById('partnerLogo').value||'https://via.placeholder.com/150',
+    cover:document.getElementById('partnerCover').value||'',
+    description:document.getElementById('partnerDescription').value,
+    whatsapp:document.getElementById('partnerWhatsapp').value.replace(/^0/,'254').replace(/\D/g,''),
+    website:document.getElementById('partnerWebsite').value||'',
+    updated_at:new Date().toISOString()
+  };
+  let result;
+  if(id)result=await sb.from('partners').update(partnerData).eq('id',parseInt(id));
+  else{partnerData.created_at=new Date().toISOString();result=await sb.from('partners').insert([partnerData])}
+  if(!result.error){closePartnerModal();showToast(id?'Partner updated!':'Partner added!','success');await renderPartnersSection();updateBadges()}
+  else showToast('Error: '+result.error.message,'error');
+}
+function confirmDeletePartner(id,name){
+  showConfirm('Delete Partner',`Delete "${name}" and all their listed products? This cannot be undone.`,async()=>{
+    await sb.from('partner_products').delete().eq('partner_id',id);
+    const{error}=await sb.from('partners').delete().eq('id',id);
+    if(!error){showToast('Partner deleted','warning');await renderPartnersSection();updateBadges()}
+    else showToast('Error deleting partner','error');
+  });
+}
+
+// -- Partner product modal --
+function openPartnerProductModal(id=null){
+  document.getElementById('partnerProductForm').reset();
+  document.getElementById('partnerProductId').value='';
+  document.getElementById('partnerProductModalTitle').innerHTML='<i class="fas fa-plus"></i> Add Partner Product';
+  const select=document.getElementById('partnerProductPartner');
+  select.innerHTML=partners.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  if(partnerProductsFilterId!=='all')select.value=partnerProductsFilterId;
+  if(id){
+    const p=partnerProducts.find(x=>x.id===id);
+    if(p){
+      document.getElementById('partnerProductModalTitle').innerHTML='<i class="fas fa-edit"></i> Edit Partner Product';
+      document.getElementById('partnerProductId').value=p.id;
+      select.value=p.partner_id;
+      document.getElementById('partnerProductName').value=p.name||'';
+      document.getElementById('partnerProductCategory').value=p.category||'';
+      document.getElementById('partnerProductPrice').value=p.price||'';
+      document.getElementById('partnerProductDescription').value=p.description||'';
+      document.getElementById('partnerProductImage').value=p.image||'';
+      document.getElementById('partnerProductGalleryImages').value=Array.isArray(p.images)?p.images.join('\n'):'';
+      document.getElementById('partnerProductSizes').value=Array.isArray(p.sizes)?p.sizes.join(', '):'';
+    }
+  }
+  document.getElementById('partnerProductModal').classList.add('active');
+}
+function closePartnerProductModal(){document.getElementById('partnerProductModal').classList.remove('active')}
+async function savePartnerProduct(e){
+  e.preventDefault();
+  const id=document.getElementById('partnerProductId').value;
+  const gallery=document.getElementById('partnerProductGalleryImages').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  const sizes=document.getElementById('partnerProductSizes').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const data={
+    partner_id:+document.getElementById('partnerProductPartner').value,
+    name:document.getElementById('partnerProductName').value,
+    category:document.getElementById('partnerProductCategory').value,
+    price:+document.getElementById('partnerProductPrice').value,
+    description:document.getElementById('partnerProductDescription').value,
+    image:document.getElementById('partnerProductImage').value||'https://via.placeholder.com/500',
+    images:gallery,
+    sizes,
+    updated_at:new Date().toISOString()
+  };
+  let result;
+  if(id)result=await sb.from('partner_products').update(data).eq('id',parseInt(id));
+  else{data.created_at=new Date().toISOString();result=await sb.from('partner_products').insert([data])}
+  if(!result.error){closePartnerProductModal();showToast(id?'Partner product updated!':'Partner product added!','success');await renderPartnersSection();updateBadges()}
+  else showToast('Error: '+result.error.message,'error');
+}
+function confirmDeletePartnerProduct(id,name){
+  showConfirm('Delete Product',`Delete "${name}"? This cannot be undone.`,async()=>{
+    const{error}=await sb.from('partner_products').delete().eq('id',id);
+    if(!error){showToast('Partner product deleted','warning');await renderPartnersSection();updateBadges()}
+    else showToast('Error deleting partner product','error');
+  });
 }
 
 // ===== ANALYTICS =====
