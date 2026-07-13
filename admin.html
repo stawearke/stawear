@@ -609,20 +609,7 @@ select:focus{border-color:var(--red)}
       <input type="hidden" id="partnerId">
       <div class="form-group"><label>Partner / Brand Name *</label><input type="text" id="partnerName" required placeholder="e.g. Dojo Supplies KE"></div>
       <div class="form-row">
-        <div class="form-group">
-  <label>Partner Logo</label>
-  <div class="image-upload-area" id="partnerLogoUploadArea" onclick="document.getElementById('partnerLogoFileInput').click()">
-    <img id="partnerLogoPreview" src="" alt="" style="display:none">
-    <div class="image-upload-placeholder" id="partnerLogoPlaceholder">
-      <i class="fas fa-cloud-upload-alt"></i>
-      <p>Click to upload logo</p>
-      <small>PNG, JPG, WebP · Max 5MB</small>
-    </div>
-  </div>
-  <input type="file" id="partnerLogoFileInput" accept="image/*" style="display:none" onchange="handlePartnerLogoSelect(event)">
-  <input type="hidden" id="partnerLogo">
-  <div class="upload-status" id="partnerLogoStatus"></div>
-</div>
+        <div class="form-group"><label>Logo Image URL</label><input type="url" id="partnerLogo" placeholder="https://..."></div>
         <div class="form-group"><label>Cover Image URL <small style="font-weight:400;color:var(--text3)">(optional)</small></label><input type="url" id="partnerCover" placeholder="https://..."></div>
       </div>
       <div class="form-group"><label>Description</label><textarea id="partnerDescription" rows="3" placeholder="A short blurb about this partner brand..."></textarea></div>
@@ -782,6 +769,12 @@ const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 emailjs.init('Pb1AX0JB8oSz8LV-3');
 const EMAILJS_SERVICE='service_ym1oijj', ORDER_TEMPLATE='template_jra9me1';
 
+// Local, network-independent placeholder image (no third-party host to go down).
+function phImg(w,h){
+  h=h||w;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><rect width="100%" height="100%" fill="#eceded"/><g fill="#bfc2c5"><circle cx="${w/2}" cy="${h*0.42}" r="${Math.min(w,h)*0.16}"/><path d="M${w*0.18} ${h*0.82} Q${w*0.5} ${h*0.52} ${w*0.82} ${h*0.82} L${w*0.82} ${h} L${w*0.18} ${h} Z"/></g></svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
 let products=[],orders=[],brandingRequests=[],customers=[],reviews=[],partners=[],partnerProducts=[];
 let currentSection='dashboard',analyticsCharts=[];
 
@@ -949,7 +942,7 @@ async function renderProducts(filterTerm=''){
       ${filtered.length===0?'<div class="empty-state"><i class="fas fa-tshirt"></i><p>No products found</p></div>':`
       <div class="table-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
       <tbody>${filtered.map(p=>`<tr>
-        <td><div class="product-thumb"><img src="${p.image||'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
+        <td><div class="product-thumb"><img src="${p.image||phImg(50)}" onerror="this.onerror=null;this.src=phImg(50)" alt="${p.name}"></div></td>
         <td><strong>${p.name}</strong>${p.originalPrice?`<br><small style="color:var(--text3);text-decoration:line-through">Ksh ${p.originalPrice}</small>`:''}${p.badge?`<br><span class="badge status-processing" style="font-size:.6rem">${p.badge}</span>`:''}</td>
         <td><span class="badge status-processing">${p.category||'N/A'}</span></td>
         <td><strong style="color:var(--orange)">Ksh ${(p.price||0).toLocaleString()}</strong></td>
@@ -997,7 +990,7 @@ async function saveProduct(e){
   const id=document.getElementById('productId').value;
   const stock={S:+document.getElementById('sizeS').value,M:+document.getElementById('sizeM').value,L:+document.getElementById('sizeL').value,XL:+document.getElementById('sizeXL').value,XXL:+document.getElementById('sizeXXL').value};
   const galleryImages=document.getElementById('productGalleryImages').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
-  const productData={name:document.getElementById('productName').value,category:document.getElementById('productCategory').value,price:+document.getElementById('productPrice').value,originalPrice:+document.getElementById('productOriginalPrice').value||null,description:document.getElementById('productDescription').value,image:document.getElementById('productImage').value||'https://via.placeholder.com/500',images:galleryImages,stock,sizes:Object.keys(stock).filter(s=>stock[s]>0),updated_at:new Date().toISOString()};
+  const productData={name:document.getElementById('productName').value,category:document.getElementById('productCategory').value,price:+document.getElementById('productPrice').value,originalPrice:+document.getElementById('productOriginalPrice').value||null,description:document.getElementById('productDescription').value,image:document.getElementById('productImage').value||phImg(500),images:galleryImages,stock,sizes:Object.keys(stock).filter(s=>stock[s]>0),updated_at:new Date().toISOString()};
   let result;
   if(id)result=await sb.from('products').update(productData).eq('id',parseInt(id));
   else{productData.created_at=new Date().toISOString();result=await sb.from('products').insert([productData])}
@@ -1038,7 +1031,7 @@ function previewBulkUpload(){
     for(let i=1;i<lines.length;i++){
       if(!lines[i].trim())continue;
       const v=lines[i].split(',');if(v.length<3)continue;
-      const p={name:v[headers.indexOf('name')]?.trim(),category:v[headers.indexOf('category')]?.trim()||'Hoodies',price:parseInt(v[headers.indexOf('price')]?.trim())||0,originalPrice:headers.includes('originalprice')?parseInt(v[headers.indexOf('originalprice')]?.trim())||null:null,image:headers.includes('image')?v[headers.indexOf('image')]?.trim():'https://via.placeholder.com/500',description:headers.includes('description')?v[headers.indexOf('description')]?.trim():'',stock:{S:parseInt(v[headers.indexOf('stock_s')]?.trim())||0,M:parseInt(v[headers.indexOf('stock_m')]?.trim())||0,L:parseInt(v[headers.indexOf('stock_l')]?.trim())||0,XL:parseInt(v[headers.indexOf('stock_xl')]?.trim())||0,XXL:parseInt(v[headers.indexOf('stock_xxl')]?.trim())||0}};
+      const p={name:v[headers.indexOf('name')]?.trim(),category:v[headers.indexOf('category')]?.trim()||'Hoodies',price:parseInt(v[headers.indexOf('price')]?.trim())||0,originalPrice:headers.includes('originalprice')?parseInt(v[headers.indexOf('originalprice')]?.trim())||null:null,image:headers.includes('image')?v[headers.indexOf('image')]?.trim():phImg(500),description:headers.includes('description')?v[headers.indexOf('description')]?.trim():'',stock:{S:parseInt(v[headers.indexOf('stock_s')]?.trim())||0,M:parseInt(v[headers.indexOf('stock_m')]?.trim())||0,L:parseInt(v[headers.indexOf('stock_l')]?.trim())||0,XL:parseInt(v[headers.indexOf('stock_xl')]?.trim())||0,XXL:parseInt(v[headers.indexOf('stock_xxl')]?.trim())||0}};
       if(p.name&&p.price>0)prods.push(p);
     }
     document.getElementById('previewCount').textContent=prods.length;
@@ -1378,7 +1371,7 @@ async function renderPartnersSection(){
       ${partners.length===0?'<div class="empty-state"><i class="fas fa-handshake"></i><p>No partner brands yet — add one to start listing their products.</p></div>':`
       <div class="table-wrap"><table><thead><tr><th>Logo</th><th>Name</th><th>WhatsApp</th><th>Products</th><th>Actions</th></tr></thead>
       <tbody>${partners.map(p=>`<tr>
-        <td><div class="product-thumb"><img src="${p.logo||'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
+        <td><div class="product-thumb"><img src="${p.logo||phImg(50)}" onerror="this.onerror=null;this.src=phImg(50)" alt="${p.name}"></div></td>
         <td><strong>${p.name}</strong><br><small style="color:var(--text3)">${(p.description||'').slice(0,60)}${(p.description||'').length>60?'…':''}</small></td>
         <td>${p.whatsapp?`<button class="action-btn view-btn" onclick="contactViaWhatsApp('${p.whatsapp}')"><i class="fab fa-whatsapp"></i> ${p.whatsapp}</button>`:'N/A'}</td>
         <td><span class="badge status-processing">${partnerProducts.filter(x=>x.partner_id===p.id).length}</span></td>
@@ -1405,7 +1398,7 @@ async function renderPartnersSection(){
         if(!list.length)return'<div class="empty-state"><i class="fas fa-box-open"></i><p>No partner products yet.</p></div>';
         return`<div class="table-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Partner</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
         <tbody>${list.map(p=>{const owner=partners.find(x=>x.id===p.partner_id);return`<tr>
-          <td><div class="product-thumb"><img src="${p.image||'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" alt="${p.name}"></div></td>
+          <td><div class="product-thumb"><img src="${p.image||phImg(50)}" onerror="this.onerror=null;this.src=phImg(50)" alt="${p.name}"></div></td>
           <td><strong>${p.name}</strong></td>
           <td><span class="badge status-processing">${owner?owner.name:'Unknown'}</span></td>
           <td>${p.category||'N/A'}</td>
@@ -1446,7 +1439,7 @@ async function savePartner(e){
   const id=document.getElementById('partnerId').value;
   const partnerData={
     name:document.getElementById('partnerName').value,
-    logo:document.getElementById('partnerLogo').value||'https://via.placeholder.com/150',
+    logo:document.getElementById('partnerLogo').value||phImg(150),
     cover:document.getElementById('partnerCover').value||'',
     description:document.getElementById('partnerDescription').value,
     whatsapp:document.getElementById('partnerWhatsapp').value.replace(/^0/,'254').replace(/\D/g,''),
@@ -1505,7 +1498,7 @@ async function savePartnerProduct(e){
     category:document.getElementById('partnerProductCategory').value,
     price:+document.getElementById('partnerProductPrice').value,
     description:document.getElementById('partnerProductDescription').value,
-    image:document.getElementById('partnerProductImage').value||'https://via.placeholder.com/500',
+    image:document.getElementById('partnerProductImage').value||phImg(500),
     images:gallery,
     sizes,
     updated_at:new Date().toISOString()
