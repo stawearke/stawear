@@ -1088,7 +1088,7 @@ async function renderOrders(filter=ordersFilter){
       <div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
       <tbody>${filtered.map(o=>`<tr>
         <td><strong style="color:var(--orange)">#${String(o.id).slice(-6)}</strong></td>
-        <td><strong>${o.customer_name||'N/A'}</strong><br><small style="color:var(--text3)">${o.customer_phone||''}</small></td>
+        <td><strong>${o.customer_name||'N/A'}</strong> ${o.fulfillment_method==='pickup'?'<span title="Pickup" style="font-size:.7rem;background:var(--orange);color:#000;padding:1px 6px;border-radius:8px;font-weight:700">PICKUP</span>':''}<br><small style="color:var(--text3)">${o.customer_phone||''}</small></td>
         <td><strong style="color:#fff">Ksh ${(o.total||0).toLocaleString()}</strong></td>
         <td><select onchange="updateOrderStatus('${o.id}',this.value)" style="font-size:.76rem;padding:4px 8px;background:var(--card2)"><option value="pending" ${o.status==='pending'?'selected':''}>Pending</option><option value="processing" ${o.status==='processing'?'selected':''}>Processing</option><option value="completed" ${o.status==='completed'?'selected':''}>Completed</option><option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option></select></td>
         <td style="color:var(--text2)">${o.date?new Date(o.date).toLocaleDateString('en-KE'):'N/A'}</td>
@@ -1126,7 +1126,8 @@ function viewOrder(id){
     <div class="detail-row"><strong>Customer</strong>${o.customer_name||'N/A'}</div>
     <div class="detail-row"><strong>Phone</strong>${o.customer_phone||'N/A'}</div>
     <div class="detail-row"><strong>Email</strong>${o.customer_email||'N/A'}</div>
-    <div class="detail-row"><strong>Address</strong>${o.delivery_address||'N/A'}</div>
+    <div class="detail-row"><strong>Fulfillment</strong><span style="font-weight:700;${o.fulfillment_method==='pickup'?'color:var(--orange)':''}">${o.fulfillment_method==='pickup'?'🏬 Pickup':'🚚 Delivery'}</span></div>
+    <div class="detail-row"><strong>${o.fulfillment_method==='pickup'?'Pickup Location':'Address'}</strong>${o.delivery_address||'N/A'}</div>
     <div class="detail-row"><strong>M-Pesa Code</strong><span style="font-family:monospace;color:var(--green)">${o.mpesa_code||'N/A'}</span></div>
     <div class="detail-row"><strong>Total</strong><span style="color:var(--red);font-weight:800;font-size:1.05rem">Ksh ${(o.total||0).toLocaleString()}</span></div>
     <div class="detail-row"><strong>Status</strong><span class="badge status-${o.status||'pending'}">${o.status||'pending'}</span></div>
