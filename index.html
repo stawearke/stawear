@@ -1738,6 +1738,12 @@ function handleQuickBrand(e){
   if(mBox){mBox.value=qty;updateItemsTotal()}
   openCustomModal();
 }
+async function customOrderProduct(id){
+  if(!allProducts.length)await loadProducts();
+  document.getElementById('itemRows').innerHTML='';
+  addItemRow(`product::${id}`);
+  openCustomModal();
+}
 async function openCustomModal(){
   if(!allProducts.length)await loadProducts();
   if(!document.querySelectorAll('#itemRows .item-row').length){addItemRow()}
