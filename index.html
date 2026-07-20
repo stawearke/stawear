@@ -399,6 +399,12 @@ nav ul li a:hover{color:#fff;background:rgba(232,25,44,.15)}
 .size-btn:hover{border-color:var(--dark)}
 .size-btn.active{border-color:var(--dark);background:var(--dark);color:#fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.5)}
 .size-btn.out{opacity:.3;cursor:not-allowed;text-decoration:line-through}
+.fulfill-toggle{display:flex;gap:10px;margin-bottom:4px}
+.fulfill-opt{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 10px;border:1.5px solid #e0e0e0;background:#fff;border-radius:12px;font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;color:var(--dark);font-family:var(--font-body)}
+.fulfill-opt:hover{border-color:var(--dark)}
+.fulfill-opt.active{border-color:var(--red);background:var(--red);color:#fff;box-shadow:0 8px 20px -8px rgba(224,32,32,.5)}
+.pickup-box{background:#f9f9f9;border:1px solid #f0f0f0;border-radius:12px;padding:14px;font-size:.85rem;color:var(--dark);margin-bottom:14px}
+.pickup-box i{color:var(--red);margin-right:6px}
 .qty-row{display:flex;align-items:center;gap:18px;margin-bottom:20px}
 .qty-row label{font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:#555}
 .qty-ctl{display:flex;align-items:center;gap:12px}
@@ -1000,16 +1006,28 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
         <div class="form-group"><label>Phone (M-Pesa) *</label><input type="tel" id="custPhone" required placeholder="0712 345 678"></div>
         <div class="form-group"><label>Email *</label><input type="email" id="custEmail" required placeholder="you@example.com"></div>
       </div>
-      <div class="form-group"><label>County (Delivery) *</label>
-        <select id="delCounty" onchange="updateDelivery()">
-          <option value="200">Nairobi — Ksh 200</option><option value="250">Kiambu — Ksh 250</option>
-          <option value="300">Machakos — Ksh 300</option><option value="350">Nakuru — Ksh 350</option>
-          <option value="400">Eldoret — Ksh 400</option><option value="450">Kisumu — Ksh 450</option>
-          <option value="500">Mombasa — Ksh 500</option><option value="550">Nyeri — Ksh 550</option>
-          <option value="600">Other County — Ksh 600</option>
-        </select>
+      <div class="form-group">
+        <label>Fulfillment Method *</label>
+        <div class="fulfill-toggle">
+          <button type="button" class="fulfill-opt active" id="fulfillDeliveryBtn" onclick="setFulfillMethod('delivery')"><i class="fas fa-truck"></i> Delivery</button>
+          <button type="button" class="fulfill-opt" id="fulfillPickupBtn" onclick="setFulfillMethod('pickup')"><i class="fas fa-store"></i> Pickup</button>
+        </div>
       </div>
-      <div class="form-group"><label>Delivery Address *</label><textarea id="delAddress" required rows="2" placeholder="Street, building, landmark, estate..."></textarea></div>
+      <div id="deliveryFields">
+        <div class="form-group"><label>County (Delivery) *</label>
+          <select id="delCounty" onchange="updateDelivery()">
+            <option value="200">Nairobi — Ksh 200</option><option value="250">Kiambu — Ksh 250</option>
+            <option value="300">Machakos — Ksh 300</option><option value="350">Nakuru — Ksh 350</option>
+            <option value="400">Eldoret — Ksh 400</option><option value="450">Kisumu — Ksh 450</option>
+            <option value="500">Mombasa — Ksh 500</option><option value="550">Nyeri — Ksh 550</option>
+            <option value="600">Other County — Ksh 600</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Delivery Address *</label><textarea id="delAddress" rows="2" placeholder="Street, building, landmark, estate..."></textarea></div>
+      </div>
+      <div id="pickupFields" style="display:none">
+        <div class="pickup-box"><i class="fas fa-map-marker-alt"></i><strong>Pickup Point:</strong> Stawear HQ, Nairobi CBD — we'll confirm the exact location and let you know via WhatsApp/SMS once your order is ready. No delivery fee applies.</div>
+      </div>
       <button class="btn btn-block btn-lg" onclick="goStep(2)"><i class="fas fa-arrow-right"></i> Continue to Payment</button>
     </div>
     <!-- Step 2 -->
@@ -1480,13 +1498,23 @@ function toggleCart(){
 }
 
 // CHECKOUT
+let fulfillMethod='delivery';
+function setFulfillMethod(m){
+  fulfillMethod=m;
+  document.getElementById('fulfillDeliveryBtn').classList.toggle('active',m==='delivery');
+  document.getElementById('fulfillPickupBtn').classList.toggle('active',m==='pickup');
+  document.getElementById('deliveryFields').style.display=m==='delivery'?'block':'none';
+  document.getElementById('pickupFields').style.display=m==='pickup'?'block':'none';
+  document.getElementById('delAddress').required=(m==='delivery');
+  updateDelivery();
+}
 function openCheckout(){
   if(!cart.items.length){showToast('Your cart is empty','error');return}
   coStep=1;updateCoSteps();
   document.getElementById('checkoutModal').classList.add('active');
   document.getElementById('cartSide').classList.remove('active');
   document.getElementById('cartOverlay').classList.remove('active');
-  updateDelivery();
+  setFulfillMethod('delivery');
 }
 function closeCheckout(){
   document.getElementById('checkoutModal').classList.remove('active');
@@ -1498,26 +1526,31 @@ function goStep(n){
     const phone=document.getElementById('custPhone').value.trim();
     const email=document.getElementById('custEmail').value.trim();
     const addr=document.getElementById('delAddress').value.trim();
-    if(!name||!phone||!email||!addr){showToast('Please fill in all required fields','error');return}
+    if(!name||!phone||!email){showToast('Please fill in all required fields','error');return}
+    if(fulfillMethod==='delivery'&&!addr){showToast('Please enter your delivery address','error');return}
     if(!/^07\d{8}$/.test(phone.replace(/\s/g,''))){showToast('Enter a valid Kenyan phone (07xxxxxxxx)','error');return}
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email','error');return}
     buildOrderSummary();
   }
   coStep=n;updateCoSteps();
 }
+function getDeliveryCost(){
+  return fulfillMethod==='pickup'?0:(parseInt(document.getElementById('delCounty').value)||200);
+}
 function updateDelivery(){
-  const d=parseInt(document.getElementById('delCounty').value)||200;
+  const d=getDeliveryCost();
   const t=cart.subtotal+d;
   ['mpesaTotal','mpesaAmt','mpesaStepAmt'].forEach(id=>document.getElementById(id).textContent=t.toLocaleString());
 }
 function buildOrderSummary(){
   updateDelivery();
-  const d=parseInt(document.getElementById('delCounty').value)||200;
+  const d=getDeliveryCost();
+  const feeLabel=fulfillMethod==='pickup'?'Pickup (Free)':'Delivery';
   document.getElementById('orderSummaryMini').innerHTML=`
     <div style="background:#f9f9f9;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #f0f0f0">
       <div style="font-weight:700;font-size:.82rem;margin-bottom:10px;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Order Summary</div>
       ${cart.items.map(item=>`<div class="order-ri"><img src="${item.image||''}" onerror="this.onerror=null;this.src=phImg(52)"><div><div style="font-weight:700;font-size:.85rem">${item.name}</div><div style="font-size:.75rem;color:var(--gray)">Size: ${item.size} × ${item.quantity}</div><div style="font-weight:800;color:var(--red);font-size:.88rem">Ksh ${(item.price*item.quantity).toLocaleString()}</div></div></div>`).join('')}
-      <table class="order-totals"><tr><td>Subtotal</td><td>Ksh ${cart.subtotal.toLocaleString()}</td></tr><tr><td>Delivery</td><td>Ksh ${d.toLocaleString()}</td></tr><tr class="tot-row"><td>Total</td><td>Ksh ${(cart.subtotal+d).toLocaleString()}</td></tr></table>
+      <table class="order-totals"><tr><td>Subtotal</td><td>Ksh ${cart.subtotal.toLocaleString()}</td></tr><tr><td>${feeLabel}</td><td>Ksh ${d.toLocaleString()}</td></tr><tr class="tot-row"><td>Total</td><td>Ksh ${(cart.subtotal+d).toLocaleString()}</td></tr></table>
     </div>`;
 }
 function updateCoSteps(){
@@ -1542,14 +1575,14 @@ async function placeOrder(){
   if(!/^[A-Z0-9]{8,12}$/.test(mpesa.toUpperCase())){showToast('Invalid M-Pesa code format (e.g. QBC1234XYZ)','error');return}
   const btn=document.getElementById('placeOrderBtn');
   btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Processing...';
-  const d=parseInt(document.getElementById('delCounty').value)||200;
+  const d=getDeliveryCost();
   const total=cart.subtotal+d;
   const orderId='STA'+Date.now()+Math.floor(Math.random()*1000);
   const name=document.getElementById('custName').value.trim();
   const phone=document.getElementById('custPhone').value.trim();
   const email=document.getElementById('custEmail').value.trim();
-  const address=document.getElementById('delAddress').value.trim();
-  const od={id:orderId,customer_name:name,customer_phone:phone,customer_email:email,delivery_address:address,delivery_cost:d,items:cart.items.map(i=>({name:i.name,size:i.size,quantity:i.quantity,price:i.price})),total,status:'pending',payment_method:'mpesa',mpesa_code:mpesa.toUpperCase(),date:new Date().toISOString()};
+  const address=fulfillMethod==='pickup'?'PICKUP — Stawear HQ, Nairobi CBD':document.getElementById('delAddress').value.trim();
+  const od={id:orderId,customer_name:name,customer_phone:phone,customer_email:email,delivery_address:address,delivery_cost:d,fulfillment_method:fulfillMethod,items:cart.items.map(i=>({name:i.name,size:i.size,quantity:i.quantity,price:i.price})),total,status:'pending',payment_method:'mpesa',mpesa_code:mpesa.toUpperCase(),date:new Date().toISOString()};
   const{error}=await sb.from('orders').insert([od]);
   if(error){btn.disabled=false;btn.innerHTML='<i class="fas fa-check-circle"></i> Confirm Order';showToast('Error saving order. Please try again.','error');return}
   const sent=await sendReceipt(od,cart.items,cart.subtotal);
