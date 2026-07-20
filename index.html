@@ -1037,15 +1037,28 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       <div class="mpesa-box">
         <h4><i class="fas fa-mobile-alt" style="color:#15803d"></i> Pay via M-Pesa</h4>
         <div class="mpesa-amount">Ksh <span id="mpesaTotal">0</span></div>
-        <p style="text-align:center;font-size:.82rem;color:var(--gray);margin-top:-6px">We'll send a payment prompt straight to your phone. Enter your M-Pesa PIN to confirm — no need to copy any code.</p>
+        <div class="mpesa-detail">
+          <p>Account Number: <strong>0727394165</strong></p>
+          <p>Amount: <strong>Ksh <span id="mpesaAmt">0</span></strong></p>
+        </div>
+        <ul class="mpesa-steps">
+          <li><div class="ms-num">1</div><span>Go to <strong>M-Pesa</strong> on your phone</span></li>
+          <li><div class="ms-num">2</div><span>Select <strong>Lipa na M-Pesa → Pay Bill</strong></span></li>
+          <li><div class="ms-num">3</div><span>Business No: <strong>400200</strong></span></li>
+          <li><div class="ms-num">4</div><span>Account No: <strong>01101068566001</strong></span></li>
+          <li><div class="ms-num">5</div><span>Amount: <strong>Ksh <span id="mpesaStepAmt">0</span></strong></span></li>
+          <li><div class="ms-num">6</div><span>Enter your M-Pesa PIN and confirm</span></li>
+          <li><div class="ms-num">7</div><span>Enter the <strong>SMS confirmation code</strong> below</span></li>
+        </ul>
       </div>
-      <div id="stkStatusBox" style="display:none;text-align:center;padding:18px;background:var(--light);border-radius:12px;margin:14px 0">
-        <i class="fas fa-circle-notch fa-spin" style="font-size:1.4rem;color:var(--red)"></i>
-        <p id="stkStatusText" style="margin-top:8px;font-weight:600">Sending prompt to your phone…</p>
+      <div class="form-group">
+        <label>M-Pesa Confirmation Code *</label>
+        <input type="text" id="mpesaCode" placeholder="e.g. QBC1234XYZ" style="font-size:1.1rem;letter-spacing:2px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+        <small style="color:var(--gray);font-size:.76rem">Enter the code from your M-Pesa SMS confirmation</small>
       </div>
       <div style="display:flex;gap:12px;margin-top:5px">
-        <button class="btn btn-dark" onclick="goStep(1)" style="flex:1" id="step2BackBtn"><i class="fas fa-arrow-left"></i> Back</button>
-        <button class="btn btn-lg" onclick="placeOrder()" style="flex:2" id="placeOrderBtn"><i class="fas fa-mobile-alt"></i> Send Payment Request</button>
+        <button class="btn btn-dark" onclick="goStep(1)" style="flex:1"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn btn-lg" onclick="placeOrder()" style="flex:2" id="placeOrderBtn"><i class="fas fa-check-circle"></i> Confirm Order</button>
       </div>
     </div>
     <!-- Step 3 -->
@@ -1526,7 +1539,7 @@ function getDeliveryCost(){
 function updateDelivery(){
   const d=getDeliveryCost();
   const t=cart.subtotal+d;
-  document.getElementById('mpesaTotal').textContent=t.toLocaleString();
+  ['mpesaTotal','mpesaAmt','mpesaStepAmt'].forEach(id=>document.getElementById(id).textContent=t.toLocaleString());
 }
 function buildOrderSummary(){
   updateDelivery();
@@ -1550,63 +1563,31 @@ function updateCoSteps(){
 async function sendReceipt(od,items,sub){
   try{
     const itemsText=items.map(i=>`${i.name} (Size: ${i.size}) x${i.quantity} — Ksh ${(i.price*i.quantity).toLocaleString()}`).join('\n');
-    await emailjs.send(EJS_SVC,EJS_TPL,{to_email:od.customer_email,order_id:od.id,order_date:new Date().toLocaleString('en-KE'),customer_name:od.customer_name,customer_phone:od.customer_phone,customer_email:od.customer_email,delivery_address:od.delivery_address,delivery_cost:`Ksh ${od.delivery_cost.toLocaleString()}`,subtotal:`Ksh ${sub.toLocaleString()}`,total:`Ksh ${od.total.toLocaleString()}`,mpesa_code:od.mpesa_receipt||'',items:itemsText});
+    await emailjs.send(EJS_SVC,EJS_TPL,{to_email:od.customer_email,order_id:od.id,order_date:new Date().toLocaleString('en-KE'),customer_name:od.customer_name,customer_phone:od.customer_phone,customer_email:od.customer_email,delivery_address:od.delivery_address,delivery_cost:`Ksh ${od.delivery_cost.toLocaleString()}`,subtotal:`Ksh ${sub.toLocaleString()}`,total:`Ksh ${od.total.toLocaleString()}`,mpesa_code:od.mpesa_code,items:itemsText});
     return true;
   }catch(e){console.error(e);return false}
 }
-function setStkStatus(msg,ok){
-  const box=document.getElementById('stkStatusBox'),txt=document.getElementById('stkStatusText');
-  box.style.display='block';
-  txt.textContent=msg;
-  box.querySelector('i').className=ok===true?'fas fa-check-circle':ok===false?'fas fa-times-circle':'fas fa-circle-notch fa-spin';
-  box.querySelector('i').style.color=ok===true?'#22c55e':ok===false?'var(--red)':'var(--red)';
-}
-async function pollPaymentStatus(orderId,attempts){
-  attempts=attempts||0;
-  const{data}=await sb.from('orders').select('payment_status,mpesa_receipt').eq('id',orderId).single();
-  if(data&&data.payment_status==='paid')return{paid:true,receipt:data.mpesa_receipt};
-  if(data&&data.payment_status==='failed')return{paid:false};
-  if(attempts>=30)return{paid:false,timeout:true}; // ~90s at 3s intervals
-  await new Promise(r=>setTimeout(r,3000));
-  return pollPaymentStatus(orderId,attempts+1);
-}
 async function placeOrder(){
+  const mpesa=document.getElementById('mpesaCode').value.trim();
+  if(!mpesa){showToast('Please enter your M-Pesa confirmation code','error');return}
+  if(!/^[A-Z0-9]{8,12}$/.test(mpesa.toUpperCase())){showToast('Invalid M-Pesa code format (e.g. QBC1234XYZ)','error');return}
   const phone=document.getElementById('custPhone').value.trim();
   const btn=document.getElementById('placeOrderBtn');
-  btn.disabled=true;document.getElementById('step2BackBtn').disabled=true;
-  btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Sending prompt...';
-  setStkStatus('Sending payment prompt to your phone…');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Processing...';
   const d=getDeliveryCost();
   const total=cart.subtotal+d;
   const orderId='STA'+Date.now()+Math.floor(Math.random()*1000);
   const name=document.getElementById('custName').value.trim();
   const email=document.getElementById('custEmail').value.trim();
   const address=fulfillMethod==='pickup'?'PICKUP — Stawear HQ, Nairobi CBD':document.getElementById('delAddress').value.trim();
-  const od={id:orderId,customer_name:name,customer_phone:phone,customer_email:email,delivery_address:address,delivery_cost:d,fulfillment_method:fulfillMethod,items:cart.items.map(i=>({name:i.name,size:i.size,quantity:i.quantity,price:i.price})),total,date:new Date().toISOString()};
-
-  const{data:initData,error:initErr}=await sb.functions.invoke('initiate-payment',{body:{order:od,phone}});
-  if(initErr||!initData||initData.error){
-    setStkStatus(initData&&initData.error?initData.error:'Could not reach payment service. Please try again.',false);
-    btn.disabled=false;document.getElementById('step2BackBtn').disabled=false;
-    btn.innerHTML='<i class="fas fa-mobile-alt"></i> Send Payment Request';
-    return;
-  }
-  setStkStatus('Prompt sent! Enter your M-Pesa PIN on your phone to confirm…');
-  const result=await pollPaymentStatus(initData.orderId||orderId);
-  if(!result.paid){
-    setStkStatus(result.timeout?'Still waiting — did the prompt reach your phone? You can try again.':'Payment was not completed. Please try again.',false);
-    btn.disabled=false;document.getElementById('step2BackBtn').disabled=false;
-    btn.innerHTML='<i class="fas fa-mobile-alt"></i> Send Payment Request';
-    return;
-  }
-  setStkStatus('Payment confirmed! ✅',true);
-  od.mpesa_receipt=result.receipt;
+  const od={id:orderId,customer_name:name,customer_phone:phone,customer_email:email,delivery_address:address,delivery_cost:d,fulfillment_method:fulfillMethod,items:cart.items.map(i=>({name:i.name,size:i.size,quantity:i.quantity,price:i.price})),total,status:'pending',payment_method:'mpesa',mpesa_code:mpesa.toUpperCase(),date:new Date().toISOString()};
+  const{error}=await sb.from('orders').insert([od]);
+  if(error){btn.disabled=false;btn.innerHTML='<i class="fas fa-check-circle"></i> Confirm Order';showToast('Error saving order. Please try again.','error');return}
   const sent=await sendReceipt(od,cart.items,cart.subtotal);
-  const waMsg=encodeURIComponent(`Hello Stawear! I just placed an order.\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nItems: ${cart.items.map(i=>`${i.name} (${i.size}) x${i.quantity}`).join(', ')}\nTotal: Ksh ${total.toLocaleString()}\nM-Pesa Receipt: ${result.receipt||'confirmed'}`);
+  const waMsg=encodeURIComponent(`Hello Stawear! I just placed an order.\n\nOrder ID: ${orderId}\nName: ${name}\nPhone: ${phone}\nItems: ${cart.items.map(i=>`${i.name} (${i.size}) x${i.quantity}`).join(', ')}\nTotal: Ksh ${total.toLocaleString()}\nM-Pesa Code: ${mpesa}`);
   document.getElementById('waConfirm').href=`https://wa.me/${WA}?text=${waMsg}`;
   document.getElementById('successOrderId').textContent=orderId;
-  btn.disabled=false;document.getElementById('step2BackBtn').disabled=false;
-  btn.innerHTML='<i class="fas fa-mobile-alt"></i> Send Payment Request';
+  btn.disabled=false;btn.innerHTML='<i class="fas fa-check-circle"></i> Confirm Order';
   goStep(3);
   showToast(sent?'Order placed! Receipt sent to your email. 📧':'Order placed! Please confirm via WhatsApp.');
   cart.clear();
