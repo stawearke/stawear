@@ -37,13 +37,16 @@ input,select,textarea,button{font-family:var(--font)}
 
 /* ─── LOGIN ─── */
 #loginPage{
-  display:flex;align-items:center;justify-content:center;min-height:100vh;
+  display:none;align-items:center;justify-content:center;min-height:100vh;
   background:
     radial-gradient(900px 600px at 20% 30%,rgba(232,25,44,.22),transparent 60%),
     radial-gradient(700px 500px at 90% 70%,rgba(255,140,0,.15),transparent 60%),
     var(--bg);
   position:relative;overflow:hidden;
 }
+#loginPage.active{display:flex}
+#authChecking{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:var(--bg);color:var(--text2);font-size:.85rem}
+#authChecking i{font-size:1.6rem;color:var(--red)}
 #loginPage::before{
   content:"";position:absolute;inset:0;z-index:0;
   background-image:
@@ -389,6 +392,9 @@ select:focus{border-color:var(--red)}
 </head>
 <body>
 
+<!-- ===== SESSION CHECK SPLASH — avoids flashing the login screen on mobile page reloads ===== -->
+<div id="authChecking"><i class="fas fa-circle-notch fa-spin"></i><span>Restoring your session…</span></div>
+
 <!-- ===== LOGIN PAGE ===== -->
 <div id="loginPage">
   <div class="login-wrap">
@@ -533,7 +539,7 @@ select:focus{border-color:var(--red)}
       <div class="form-group"><label>Description</label><textarea id="productDescription" rows="3" placeholder="Brief product description..."></textarea></div>
       <div class="form-group">
         <label>Product Image</label>
-        <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageFileInput').click()">
+        <div class="image-upload-area" id="imageUploadArea" onclick="saveProductDraft();document.getElementById('imageFileInput').click()">
           <img id="imagePreview" src="" alt="">
           <div class="image-upload-placeholder" id="imageUploadPlaceholder">
             <i class="fas fa-cloud-upload-alt"></i>
@@ -541,7 +547,7 @@ select:focus{border-color:var(--red)}
             <small>PNG, JPG, WebP · Max 5MB</small>
           </div>
           <div class="image-upload-overlay" id="imageUploadOverlay">
-            <button type="button" onclick="event.stopPropagation();document.getElementById('imageFileInput').click()"><i class="fas fa-redo"></i> Change</button>
+            <button type="button" onclick="event.stopPropagation();saveProductDraft();document.getElementById('imageFileInput').click()"><i class="fas fa-redo"></i> Change</button>
             <button type="button" onclick="event.stopPropagation();resetImageUpload()"><i class="fas fa-trash"></i> Remove</button>
           </div>
         </div>
@@ -830,20 +836,30 @@ async function checkIsAdmin(){
 document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 
+function showLogin(){
+  document.getElementById('authChecking').style.display='none';
+  document.getElementById('loginPage').classList.add('active');
+  document.getElementById('dashboard').style.display='none';
+}
 async function doLogout(){
   showConfirm('Logout','Are you sure you want to logout?',async()=>{
     await sb.auth.signOut();
+    clearProductDraft();
     document.getElementById('dashboard').style.display='none';
-    document.getElementById('loginPage').style.display='flex';
+    showLogin();
     document.getElementById('loginPassword').value='';
     showToast('Logged out','info');
   },'Logout');
 }
 
 function showDashboard(){
-  document.getElementById('loginPage').style.display='none';
+  document.getElementById('authChecking').style.display='none';
+  document.getElementById('loginPage').classList.remove('active');
   document.getElementById('dashboard').style.display='block';
-  loadAllData().then(()=>showSection('dashboard'));
+  loadAllData().then(()=>{
+    showSection('dashboard');
+    restoreProductDraftIfAny();
+  });
 }
 
 (async()=>{
@@ -851,7 +867,9 @@ function showDashboard(){
   if(session){
     const isAdmin=await checkIsAdmin();
     if(isAdmin)showDashboard();
-    else await sb.auth.signOut();
+    else{await sb.auth.signOut();showLogin()}
+  }else{
+    showLogin();
   }
 })();
 
@@ -998,7 +1016,50 @@ function openProductModal(id=null){
   document.getElementById('productModal').classList.add('active');
 }
 
-function closeProductModal(){document.getElementById('productModal').classList.remove('active');resetImageUpload()}
+function closeProductModal(){document.getElementById('productModal').classList.remove('active');resetImageUpload();clearProductDraft()}
+
+const PRODUCT_DRAFT_KEY='stawear_admin_product_draft';
+function saveProductDraft(){
+  if(!document.getElementById('productModal').classList.contains('active'))return;
+  const draft={
+    id:document.getElementById('productId').value,
+    name:document.getElementById('productName').value,
+    category:document.getElementById('productCategory').value,
+    price:document.getElementById('productPrice').value,
+    originalPrice:document.getElementById('productOriginalPrice').value,
+    description:document.getElementById('productDescription').value,
+    image:document.getElementById('productImage').value,
+    galleryImages:document.getElementById('productGalleryImages').value,
+    sizeS:document.getElementById('sizeS').value,sizeM:document.getElementById('sizeM').value,
+    sizeL:document.getElementById('sizeL').value,sizeXL:document.getElementById('sizeXL').value,sizeXXL:document.getElementById('sizeXXL').value,
+    savedAt:Date.now()
+  };
+  try{localStorage.setItem(PRODUCT_DRAFT_KEY,JSON.stringify(draft))}catch(e){}
+}
+function clearProductDraft(){try{localStorage.removeItem(PRODUCT_DRAFT_KEY)}catch(e){}}
+function restoreProductDraftIfAny(){
+  let raw;
+  try{raw=localStorage.getItem(PRODUCT_DRAFT_KEY)}catch(e){return}
+  if(!raw)return;
+  let draft;
+  try{draft=JSON.parse(raw)}catch(e){clearProductDraft();return}
+  if(!draft||Date.now()-draft.savedAt>30*60*1000){clearProductDraft();return} // ignore drafts older than 30min
+  openProductModal(draft.id?parseInt(draft.id):null);
+  document.getElementById('productName').value=draft.name||'';
+  document.getElementById('productCategory').value=draft.category||'Hoodies';
+  document.getElementById('productPrice').value=draft.price||'';
+  document.getElementById('productOriginalPrice').value=draft.originalPrice||'';
+  document.getElementById('productDescription').value=draft.description||'';
+  document.getElementById('productImage').value=draft.image||'';
+  document.getElementById('productGalleryImages').value=draft.galleryImages||'';
+  document.getElementById('sizeS').value=draft.sizeS||0;
+  document.getElementById('sizeM').value=draft.sizeM||0;
+  document.getElementById('sizeL').value=draft.sizeL||0;
+  document.getElementById('sizeXL').value=draft.sizeXL||0;
+  document.getElementById('sizeXXL').value=draft.sizeXXL||0;
+  if(draft.image)setImagePreview(draft.image);
+  showToast('Restored your unsaved product edits from before the page reloaded','info');
+}
 
 async function saveProduct(e){
   e.preventDefault();
