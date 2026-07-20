@@ -543,6 +543,8 @@ nav ul li a:hover{color:#fff;background:rgba(232,25,44,.15)}
 .ir-product-preview img{width:38px;height:38px;border-radius:8px;object-fit:cover;flex-shrink:0}
 .ir-product-preview .ir-pp-name{font-weight:700;color:var(--dark)}
 .ir-product-preview .ir-pp-price{color:var(--red);font-weight:800;margin-left:auto}
+.items-total-price-bar{margin-top:-8px;background:#fff8f0;border:1px dashed var(--red);color:var(--red)}
+.ir-row-price{font-size:.75rem;color:var(--gray);font-weight:600;margin-left:8px}
 .modal-close{position:absolute;top:14px;right:16px;font-size:1.6rem;cursor:pointer;width:40px;height:40px;background:#f0f0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;color:#555}
 .modal-close:hover{background:var(--red);color:#fff;transform:rotate(90deg)}
 
@@ -1099,6 +1101,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       <div id="itemRows"></div>
       <button type="button" class="add-item-btn" onclick="addItemRow()"><i class="fas fa-plus"></i> Add Another Item</button>
       <div class="items-total-bar"><span><i class="fas fa-layer-group"></i> Total Pieces (All Sizes)</span><span id="itemsTotalQty">0</span></div>
+      <div class="items-total-bar items-total-price-bar" id="itemsTotalPriceBar" style="display:none"><span><i class="fas fa-tag"></i> Estimated Total <small style="font-weight:400;opacity:.75">(catalog items only)</small></span><span id="itemsTotalPrice">Ksh 0</span></div>
       <div class="form-group"><label>Urgency</label>
         <select id="urgency"><option value="standard">Standard (2–3 weeks)</option><option value="express">Express (1 week)</option><option value="urgent">Urgent (3–4 days)</option></select>
       </div>
@@ -1613,7 +1616,7 @@ function itemRowHtml(id,selectedVal='',color=''){
       <button type="button" class="item-row-remove" onclick="removeItemRow(${id})" title="Remove item"><i class="fas fa-times"></i></button>
     </div>
     <div class="ir-product-preview"><img src=""><span class="ir-pp-name"></span><span class="ir-pp-price"></span></div>
-    <div class="size-breakdown-label"><span>Size Breakdown *</span><span class="ir-row-total">0 pcs</span></div>
+    <div class="size-breakdown-label"><span>Size Breakdown *</span><span><span class="ir-row-total">0 pcs</span><span class="ir-row-price"></span></span></div>
     <div class="size-breakdown-wrap">${sizeBreakdownHtml(ORDER_SIZES)}</div>
   </div>`;
 }
@@ -1625,6 +1628,7 @@ function onItemTypeChange(sel){
   const preview=row.querySelector('.ir-product-preview');
   const [kind,val]=sel.value.split('::');
   let sizes=ORDER_SIZES;
+  row.dataset.unitPrice='';
   if(kind==='product'){
     const p=allProducts.find(x=>String(x.id)===String(val));
     if(p){
@@ -1634,6 +1638,7 @@ function onItemTypeChange(sel){
       preview.querySelector('.ir-pp-name').textContent=p.name;
       preview.querySelector('.ir-pp-price').textContent=`Ksh ${(p.price||0).toLocaleString()} base`;
       preview.classList.add('active');
+      row.dataset.unitPrice=p.price||0;
     }
   }else{
     preview.classList.remove('active');
@@ -1660,14 +1665,32 @@ function updateRemoveButtons(){
   rows.forEach(r=>r.querySelector('.item-row-remove').disabled=rows.length<=1);
 }
 function updateItemsTotal(){
-  let grandTotal=0;
+  let grandTotal=0,grandPrice=0,hasUnpricedRow=false,anyPricedRow=false;
   document.querySelectorAll('#itemRows .item-row').forEach(row=>{
     let rowTotal=0;
     row.querySelectorAll('.ir-size-qty').forEach(inp=>{rowTotal+=parseInt(inp.value)||0});
     row.querySelector('.ir-row-total').textContent=`${rowTotal} pcs`;
     grandTotal+=rowTotal;
+    const unitPrice=parseFloat(row.dataset.unitPrice);
+    const priceLabel=row.querySelector('.ir-row-price');
+    if(!isNaN(unitPrice)&&row.dataset.unitPrice!==''){
+      const rowPrice=unitPrice*rowTotal;
+      grandPrice+=rowPrice;
+      anyPricedRow=true;
+      priceLabel.textContent=rowTotal>0?`≈ Ksh ${rowPrice.toLocaleString()}`:'';
+    }else{
+      priceLabel.textContent='';
+      if(rowTotal>0)hasUnpricedRow=true;
+    }
   });
   document.getElementById('itemsTotalQty').textContent=grandTotal;
+  const priceBar=document.getElementById('itemsTotalPriceBar');
+  if(anyPricedRow){
+    priceBar.style.display='flex';
+    document.getElementById('itemsTotalPrice').textContent=`Ksh ${grandPrice.toLocaleString()}${hasUnpricedRow?' +':''}`;
+  }else{
+    priceBar.style.display='none';
+  }
 }
 function getOrderItems(){
   const items=[];
@@ -1675,10 +1698,11 @@ function getOrderItems(){
     const selVal=row.querySelector('.ir-type').value;
     if(!selVal)return;
     const[kind,val]=selVal.split('::');
-    let item_type=val,product_id=null;
+    let item_type=val,product_id=null,unit_price=null;
     if(kind==='product'){
       const p=allProducts.find(x=>String(x.id)===String(val));
       item_type=p?p.name:val;product_id=val;
+      unit_price=p?(p.price||0):null;
     }
     const color=row.querySelector('.ir-color').value;
     const sizes={};
@@ -1687,9 +1711,19 @@ function getOrderItems(){
       const q=parseInt(inp.value)||0;
       if(q>0){sizes[inp.dataset.size]=q;quantity+=q}
     });
-    if(item_type&&quantity>0)items.push({item_type,product_id,color,sizes,quantity});
+    if(item_type&&quantity>0){
+      const line_total=unit_price!=null?unit_price*quantity:null;
+      items.push({item_type,product_id,unit_price,color,sizes,quantity,line_total});
+    }
   });
   return items;
+}
+function getOrderEstimate(items){
+  const priced=items.filter(i=>i.line_total!=null);
+  if(!priced.length)return null;
+  const total=priced.reduce((s,i)=>s+i.line_total,0);
+  const hasUnpriced=items.some(i=>i.line_total==null);
+  return{total,hasUnpriced};
 }
 function handleQuickBrand(e){
   e.preventDefault();
@@ -1726,12 +1760,14 @@ async function submitCustomOrder(e){
   const totalQty=items.reduce((s,i)=>s+i.quantity,0);
   const itemSummary=items.map(i=>`${i.quantity}x ${i.item_type} (${formatSizes(i.sizes)})`).join('; ');
   const colors=[...new Set(items.map(i=>i.color).filter(c=>c&&c!=='Not specified'))];
-  const data={name:document.getElementById('customName').value,phone,email:document.getElementById('customEmail').value,dojang:document.getElementById('dojangName').value,items,item_type:itemSummary,quantity:totalQty,branding_type:document.getElementById('brandingType').value,print_location:document.getElementById('printLoc').value,color:document.getElementById('selectedColor').value||(colors.length?colors.join(', '):'Not specified'),urgency:document.getElementById('urgency').value,need_design:document.getElementById('needDesign').checked,sample_needed:document.getElementById('sampleNeeded').checked,description:document.getElementById('designDesc').value,status:'pending',date:new Date().toISOString()};
+  const estimate=getOrderEstimate(items);
+  const data={name:document.getElementById('customName').value,phone,email:document.getElementById('customEmail').value,dojang:document.getElementById('dojangName').value,items,item_type:itemSummary,quantity:totalQty,estimated_total:estimate?estimate.total:null,estimate_partial:estimate?estimate.hasUnpriced:false,branding_type:document.getElementById('brandingType').value,print_location:document.getElementById('printLoc').value,color:document.getElementById('selectedColor').value||(colors.length?colors.join(', '):'Not specified'),urgency:document.getElementById('urgency').value,need_design:document.getElementById('needDesign').checked,sample_needed:document.getElementById('sampleNeeded').checked,description:document.getElementById('designDesc').value,status:'pending',date:new Date().toISOString()};
   const{error}=await sb.from('branding_requests').insert([data]);
   btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Request';
   if(error){showToast('Error submitting. Please try again.','error');return}
   const itemsText=items.map(i=>`${i.item_type} x${i.quantity} [${formatSizes(i.sizes)}]${i.color&&i.color!=='Not specified'?` — ${i.color}`:''}`).join('\n');
-  const waMsg=encodeURIComponent(`Hello Stawear! I just submitted a branding request.\n\nName: ${data.name}\nDojang: ${data.dojang}\nItems:\n${itemsText}\nBranding: ${data.branding_type}\nUrgency: ${data.urgency}\nDescription: ${data.description}`);
+  const estimateText=estimate?`\nEstimated Total: Ksh ${estimate.total.toLocaleString()}${estimate.hasUnpriced?' + custom items (TBC)':''}`:'';
+  const waMsg=encodeURIComponent(`Hello Stawear! I just submitted a branding request.\n\nName: ${data.name}\nDojang: ${data.dojang}\nItems:\n${itemsText}${estimateText}\nBranding: ${data.branding_type}\nUrgency: ${data.urgency}\nDescription: ${data.description}`);
   window.open(`https://wa.me/${WA}?text=${waMsg}`,'_blank');
   showToast('Branding request submitted! We will contact you shortly. 🎨');
   closeCustomModal();document.getElementById('customForm').reset();
