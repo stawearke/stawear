@@ -1200,12 +1200,13 @@ async function renderBranding(filter='all'){
         <div class="filter-tabs">${['all','pending','completed'].map(f=>`<button class="filter-tab ${filter===f?'active':''}" onclick="renderBranding('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div>
       </div>
       ${filtered.length===0?'<div class="empty-state"><i class="fas fa-palette"></i><p>No branding requests</p></div>':`
-      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Dojang</th><th>Items</th><th>Total Qty</th><th>Color</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Dojang</th><th>Items</th><th>Total Qty</th><th>Est. Total</th><th>Color</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
       <tbody>${filtered.map(r=>`<tr>
         <td><strong>${r.name||'N/A'}</strong></td>
         <td>${r.dojang||'N/A'}</td>
         <td style="font-size:.78rem;color:var(--text2)">${Array.isArray(r.items)&&r.items.length?r.items.map(i=>`${i.quantity}× ${i.item_type}${i.sizes&&Object.keys(i.sizes).length?` (${Object.entries(i.sizes).map(([s,q])=>`${s}:${q}`).join(', ')})`:''}`).join('<br>'):(r.item_type||'N/A')}</td>
         <td><span class="badge status-processing">${r.quantity||0}</span></td>
+        <td style="font-size:.78rem;color:var(--text2)">${r.estimated_total?`Ksh ${Number(r.estimated_total).toLocaleString()}${r.estimate_partial?' +':''}`:'—'}</td>
         <td><span style="font-size:.78rem;color:var(--text2)">${r.color||'—'}</span></td>
         <td><span class="badge status-${r.status||'pending'}">${r.status||'pending'}</span></td>
         <td style="color:var(--text2)">${r.date?new Date(r.date).toLocaleDateString('en-KE'):'N/A'}</td>
@@ -1226,7 +1227,8 @@ function viewBrandingRequest(id){
       <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Order Items (${r.items.length})</div>
       <div class="table-wrap"><table style="min-width:auto"><thead><tr><th>Item Type</th><th>Sizes</th><th>Qty</th><th>Color</th></tr></thead><tbody>${r.items.map(i=>`<tr><td>${i.item_type||'N/A'}</td><td>${i.sizes&&Object.keys(i.sizes).length?Object.entries(i.sizes).map(([s,q])=>`${s}:${q}`).join(', '):'—'}</td><td>${i.quantity||0}</td><td>${i.color&&i.color!=='Not specified'?i.color:'—'}</td></tr>`).join('')}</tbody></table></div>
     </div>
-    <div class="detail-row"><strong>Total Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>`:`
+    <div class="detail-row"><strong>Total Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>
+    ${r.estimated_total?`<div class="detail-row"><strong>Estimated Total</strong><span style="color:var(--green);font-weight:700">Ksh ${Number(r.estimated_total).toLocaleString()}${r.estimate_partial?' + custom items (TBC)':''}</span></div>`:''}`:`
     <div class="detail-row"><strong>Item Type</strong>${r.item_type||'N/A'}</div>
     <div class="detail-row"><strong>Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>`}
     <div class="detail-row"><strong>Branding</strong>${r.branding_type||'N/A'}</div>
