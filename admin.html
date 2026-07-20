@@ -494,7 +494,7 @@ select:focus{border-color:var(--red)}
             <i class="fas fa-bell"></i>
             <div class="tb-badge" id="notificationBadge">0</div>
           </div>
-          <a href="https://stawear.netlify.app" target="_blank" class="topbar-btn" title="View Store"><i class="fas fa-external-link-alt"></i></a>
+          <a href="stawear-store.html" target="_blank" class="topbar-btn" title="View Store"><i class="fas fa-external-link-alt"></i></a>
         </div>
       </div>
 
@@ -1200,11 +1200,11 @@ async function renderBranding(filter='all'){
         <div class="filter-tabs">${['all','pending','completed'].map(f=>`<button class="filter-tab ${filter===f?'active':''}" onclick="renderBranding('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('')}</div>
       </div>
       ${filtered.length===0?'<div class="empty-state"><i class="fas fa-palette"></i><p>No branding requests</p></div>':`
-      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Dojang</th><th>Item</th><th>Qty</th><th>Color</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Dojang</th><th>Items</th><th>Total Qty</th><th>Color</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
       <tbody>${filtered.map(r=>`<tr>
         <td><strong>${r.name||'N/A'}</strong></td>
         <td>${r.dojang||'N/A'}</td>
-        <td>${r.item_type||'N/A'}</td>
+        <td style="font-size:.78rem;color:var(--text2)">${Array.isArray(r.items)&&r.items.length?r.items.map(i=>`${i.quantity}× ${i.item_type}`).join(', '):(r.item_type||'N/A')}</td>
         <td><span class="badge status-processing">${r.quantity||0}</span></td>
         <td><span style="font-size:.78rem;color:var(--text2)">${r.color||'—'}</span></td>
         <td><span class="badge status-${r.status||'pending'}">${r.status||'pending'}</span></td>
@@ -1221,8 +1221,14 @@ function viewBrandingRequest(id){
     <div class="detail-row"><strong>Phone</strong>${r.phone||'N/A'}</div>
     <div class="detail-row"><strong>Email</strong>${r.email||'N/A'}</div>
     <div class="detail-row"><strong>Dojang</strong>${r.dojang||'N/A'}</div>
+    ${Array.isArray(r.items)&&r.items.length?`
+    <div style="margin:14px 0;padding-top:14px;border-top:1px solid var(--card-border)">
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">Order Items (${r.items.length})</div>
+      <div class="table-wrap"><table style="min-width:auto"><thead><tr><th>Item Type</th><th>Qty</th><th>Color</th></tr></thead><tbody>${r.items.map(i=>`<tr><td>${i.item_type||'N/A'}</td><td>${i.quantity||0}</td><td>${i.color&&i.color!=='Not specified'?i.color:'—'}</td></tr>`).join('')}</tbody></table></div>
+    </div>
+    <div class="detail-row"><strong>Total Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>`:`
     <div class="detail-row"><strong>Item Type</strong>${r.item_type||'N/A'}</div>
-    <div class="detail-row"><strong>Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>
+    <div class="detail-row"><strong>Quantity</strong><span class="badge status-processing">${r.quantity||0}</span></div>`}
     <div class="detail-row"><strong>Branding</strong>${r.branding_type||'N/A'}</div>
     <div class="detail-row"><strong>Color</strong>${r.color||'Not specified'}</div>
     <div class="detail-row"><strong>Urgency</strong>${r.urgency||'Standard'}</div>
