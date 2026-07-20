@@ -520,6 +520,15 @@ nav ul li a:hover{color:#fff;background:rgba(232,25,44,.15)}
 .color-opt.selected{border-color:var(--dark);transform:scale(1.18);box-shadow:0 0 0 3px var(--red),0 4px 16px rgba(0,0,0,.25)}
 .cb-wrap{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:.9rem;color:#555}
 .cb-wrap input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--red)}
+.item-row{display:grid;grid-template-columns:1.6fr 0.8fr 1fr auto;gap:10px;align-items:end;padding:14px;background:#f9f9f9;border:1px solid #f0f0f0;border-radius:12px;margin-bottom:10px}
+@media(max-width:600px){.item-row{grid-template-columns:1fr 1fr;grid-template-areas:"type type" "qty color" "remove remove"}.item-row>*:nth-child(1){grid-area:type}.item-row>*:nth-child(2){grid-area:qty}.item-row>*:nth-child(3){grid-area:color}.item-row>*:nth-child(4){grid-area:remove}}
+.item-row .form-group{margin:0}
+.item-row-remove{background:#fff;border:1.5px solid #e0e0e0;color:var(--red);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1rem;transition:.2s;flex-shrink:0}
+.item-row-remove:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.item-row-remove:disabled{opacity:.3;cursor:not-allowed}
+.add-item-btn{width:100%;padding:12px;border:1.5px dashed #ccc;background:#fff;border-radius:12px;color:var(--dark);font-weight:700;font-size:.85rem;cursor:pointer;transition:.2s;margin-bottom:16px}
+.add-item-btn:hover{border-color:var(--red);color:var(--red);background:#fff5f5}
+.items-total-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--dark);color:#fff;border-radius:10px;font-size:.85rem;font-weight:700;margin-bottom:16px}
 .modal-close{position:absolute;top:14px;right:16px;font-size:1.6rem;cursor:pointer;width:40px;height:40px;background:#f0f0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;color:#555}
 .modal-close:hover{background:var(--red);color:#fff;transform:rotate(90deg)}
 
@@ -1072,15 +1081,12 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
         <div class="form-group"><label>Email *</label><input type="email" id="customEmail" required placeholder="you@example.com"></div>
         <div class="form-group"><label>Dojang / Team *</label><input type="text" id="dojangName" required placeholder="Nairobi TKD Club"></div>
       </div>
-      <div class="form-sec-title"><i class="fas fa-box-open"></i> 2. Order Details</div>
-      <div class="form-row-3">
-        <div class="form-group"><label>Item Type *</label>
-          <select id="itemType" required><option value="">Select...</option><option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option><option>Full Uniforms</option><option>Caps</option><option>Bags</option></select>
-        </div>
-        <div class="form-group"><label>Quantity *</label><input type="number" id="customQty" required min="1" value="10"></div>
-        <div class="form-group"><label>Urgency</label>
-          <select id="urgency"><option value="standard">Standard (2–3 weeks)</option><option value="express">Express (1 week)</option><option value="urgent">Urgent (3–4 days)</option></select>
-        </div>
+      <div class="form-sec-title"><i class="fas fa-box-open"></i> 2. Order Items <span style="font-weight:400;font-size:.72rem;color:var(--gray);text-transform:none">— add as many as you need</span></div>
+      <div id="itemRows"></div>
+      <button type="button" class="add-item-btn" onclick="addItemRow()"><i class="fas fa-plus"></i> Add Another Item</button>
+      <div class="items-total-bar"><span><i class="fas fa-layer-group"></i> Total Items</span><span id="itemsTotalQty">0</span></div>
+      <div class="form-group"><label>Urgency</label>
+        <select id="urgency"><option value="standard">Standard (2–3 weeks)</option><option value="express">Express (1 week)</option><option value="urgent">Urgent (3–4 days)</option></select>
       </div>
       <div class="form-sec-title"><i class="fas fa-paint-brush"></i> 3. Branding Details</div>
       <div class="form-row">
@@ -1092,7 +1098,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
         </div>
       </div>
       <div class="form-group">
-        <label>Preferred Color</label>
+        <label>Overall Preferred Color / Theme <span style="font-weight:400;color:var(--gray);text-transform:none;font-size:.72rem">(each item can override this below)</span></label>
         <div class="color-picker">
           <div class="color-opt" style="background:#000" title="Black" onclick="pickColor('Black',this)"></div>
           <div class="color-opt" style="background:#fff;border:2px solid #ddd" title="White" onclick="pickColor('White',this)"></div>
@@ -1570,17 +1576,66 @@ async function placeOrder(){
   cart.clear();
 }
 
-// CUSTOM BRANDING
+// CUSTOM BRANDING — multi-item order builder
+const ITEM_TYPES=['Hoodies','T-Shirts','Jackets','Tracksuits','Full Uniforms','Caps','Bags'];
+const ITEM_COLORS=['Not specified','Black','White','Red','Navy Blue','Green','Orange','Purple','Grey'];
+let itemRowSeq=0;
+function itemRowHtml(id,type='',qty=10,color=''){
+  return `<div class="item-row" data-row-id="${id}">
+    <div class="form-group"><label>Item Type *</label>
+      <select class="ir-type" required onchange="updateItemsTotal()"><option value="">Select...</option>${ITEM_TYPES.map(t=>`<option ${t===type?'selected':''}>${t}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label>Quantity *</label><input type="number" class="ir-qty" required min="1" value="${qty}" oninput="updateItemsTotal()"></div>
+    <div class="form-group"><label>Color</label>
+      <select class="ir-color">${ITEM_COLORS.map(c=>`<option ${c===color?'selected':''}>${c}</option>`).join('')}</select>
+    </div>
+    <button type="button" class="item-row-remove" onclick="removeItemRow(${id})" title="Remove item"><i class="fas fa-times"></i></button>
+  </div>`;
+}
+function addItemRow(type='',qty=10,color=''){
+  itemRowSeq++;
+  document.getElementById('itemRows').insertAdjacentHTML('beforeend',itemRowHtml(itemRowSeq,type,qty,color));
+  updateRemoveButtons();updateItemsTotal();
+}
+function removeItemRow(id){
+  const rows=document.querySelectorAll('#itemRows .item-row');
+  if(rows.length<=1)return;
+  const row=document.querySelector(`#itemRows .item-row[data-row-id="${id}"]`);
+  if(row)row.remove();
+  updateRemoveButtons();updateItemsTotal();
+}
+function updateRemoveButtons(){
+  const rows=document.querySelectorAll('#itemRows .item-row');
+  rows.forEach(r=>r.querySelector('.item-row-remove').disabled=rows.length<=1);
+}
+function updateItemsTotal(){
+  let total=0;
+  document.querySelectorAll('#itemRows .item-row').forEach(r=>{total+=parseInt(r.querySelector('.ir-qty').value)||0});
+  document.getElementById('itemsTotalQty').textContent=total;
+}
+function getOrderItems(){
+  const items=[];
+  document.querySelectorAll('#itemRows .item-row').forEach(r=>{
+    const item_type=r.querySelector('.ir-type').value;
+    const quantity=parseInt(r.querySelector('.ir-qty').value)||0;
+    const color=r.querySelector('.ir-color').value;
+    if(item_type&&quantity>0)items.push({item_type,quantity,color});
+  });
+  return items;
+}
 function handleQuickBrand(e){
   e.preventDefault();
   document.getElementById('customName').value=document.getElementById('quickName').value;
   document.getElementById('customEmail').value=document.getElementById('quickEmail').value;
   document.getElementById('dojangName').value=document.getElementById('quickDojang').value;
-  document.getElementById('itemType').value=document.getElementById('quickItem').value;
-  document.getElementById('customQty').value=document.getElementById('quickQty').value;
+  document.getElementById('itemRows').innerHTML='';
+  addItemRow(document.getElementById('quickItem').value,parseInt(document.getElementById('quickQty').value)||10);
   openCustomModal();
 }
-function openCustomModal(){document.getElementById('customModal').classList.add('active');document.body.style.overflow='hidden';closeMobNav()}
+function openCustomModal(){
+  if(!document.querySelectorAll('#itemRows .item-row').length){addItemRow()}
+  document.getElementById('customModal').classList.add('active');document.body.style.overflow='hidden';closeMobNav();
+}
 function closeCustomModal(){document.getElementById('customModal').classList.remove('active');document.body.style.overflow=''}
 function pickColor(c,el){document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');document.getElementById('selectedColor').value=c}
 async function submitCustomOrder(e){
@@ -1588,15 +1643,22 @@ async function submitCustomOrder(e){
   const btn=document.getElementById('brandSubmitBtn');
   const phone=document.getElementById('customPhone').value.trim();
   if(!/^07\d{8}$/.test(phone.replace(/\s/g,''))){showToast('Enter a valid Kenyan phone (07xxxxxxxx)','error');return}
+  const items=getOrderItems();
+  if(!items.length){showToast('Please add at least one item with a type and quantity','error');return}
   btn.disabled=true;btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Submitting...';
-  const data={name:document.getElementById('customName').value,phone,email:document.getElementById('customEmail').value,dojang:document.getElementById('dojangName').value,item_type:document.getElementById('itemType').value,quantity:parseInt(document.getElementById('customQty').value),branding_type:document.getElementById('brandingType').value,print_location:document.getElementById('printLoc').value,color:document.getElementById('selectedColor').value||'Not specified',urgency:document.getElementById('urgency').value,need_design:document.getElementById('needDesign').checked,sample_needed:document.getElementById('sampleNeeded').checked,description:document.getElementById('designDesc').value,status:'pending',date:new Date().toISOString()};
+  const totalQty=items.reduce((s,i)=>s+i.quantity,0);
+  const itemSummary=items.map(i=>`${i.quantity}x ${i.item_type}`).join(', ');
+  const colors=[...new Set(items.map(i=>i.color).filter(c=>c&&c!=='Not specified'))];
+  const data={name:document.getElementById('customName').value,phone,email:document.getElementById('customEmail').value,dojang:document.getElementById('dojangName').value,items,item_type:itemSummary,quantity:totalQty,branding_type:document.getElementById('brandingType').value,print_location:document.getElementById('printLoc').value,color:document.getElementById('selectedColor').value||(colors.length?colors.join(', '):'Not specified'),urgency:document.getElementById('urgency').value,need_design:document.getElementById('needDesign').checked,sample_needed:document.getElementById('sampleNeeded').checked,description:document.getElementById('designDesc').value,status:'pending',date:new Date().toISOString()};
   const{error}=await sb.from('branding_requests').insert([data]);
   btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Request';
   if(error){showToast('Error submitting. Please try again.','error');return}
-  const waMsg=encodeURIComponent(`Hello Stawear! I just submitted a branding request.\n\nName: ${data.name}\nDojang: ${data.dojang}\nItem: ${data.item_type} x${data.quantity}\nBranding: ${data.branding_type}\nUrgency: ${data.urgency}\nDescription: ${data.description}`);
+  const itemsText=items.map(i=>`${i.item_type} x${i.quantity}${i.color&&i.color!=='Not specified'?` (${i.color})`:''}`).join('\n');
+  const waMsg=encodeURIComponent(`Hello Stawear! I just submitted a branding request.\n\nName: ${data.name}\nDojang: ${data.dojang}\nItems:\n${itemsText}\nBranding: ${data.branding_type}\nUrgency: ${data.urgency}\nDescription: ${data.description}`);
   window.open(`https://wa.me/${WA}?text=${waMsg}`,'_blank');
   showToast('Branding request submitted! We will contact you shortly. 🎨');
   closeCustomModal();document.getElementById('customForm').reset();
+  document.getElementById('itemRows').innerHTML='';addItemRow();
   document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected'));
 }
 
