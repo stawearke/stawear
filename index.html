@@ -501,6 +501,7 @@ nav ul li a:hover{color:#fff;background:rgba(232,25,44,.15)}
 @media(max-width:900px){.reviews-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.reviews-grid{grid-template-columns:1fr}}
 .rev-card{background:#fff;border-radius:20px;padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;transition:.3s}
+.rev-featured-badge{position:absolute;top:-10px;right:16px;background:var(--red);color:#fff;font-size:.68rem;font-weight:800;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;box-shadow:0 4px 10px -2px rgba(224,32,32,.5);letter-spacing:.3px}
 .rev-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px -18px rgba(232,25,44,.25)}
 .rev-card::before{content:'"';position:absolute;top:4px;left:16px;font-size:4rem;color:var(--red);opacity:.1;font-family:serif;line-height:1}
 .rev-stars{color:var(--orange);font-size:.92rem;margin-bottom:10px;letter-spacing:1px}
@@ -833,7 +834,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       <h2 class="sec-title">WHAT <span>CHAMPIONS</span> SAY</h2>
       <div class="sec-bar"></div>
     </div>
-    <div class="test-grid">
+    <div class="test-grid" id="testimonialsGrid">
       <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">Best quality Martial Arts gear in Kenya! We ordered 30 custom t-shirts and they were perfect. The printing quality is excellent and delivery was fast.</p><div class="test-author">Sensei Kamau</div><div class="test-role">Nairobi Martial Arts Club</div></div>
       <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">Stawear delivered our tournament uniforms on time. The design was exactly what we wanted and the material is perfect for active training sessions.</p><div class="test-author">Coach Wanjiku</div><div class="test-role">Mombasa Martial Arts Academy</div></div>
       <div class="test-card"><div class="test-stars">★★★★★</div><p class="test-text">As a national competitor I need gear that handles intense training. Stawear's hoodies are durable, comfortable and look amazing on the mat.</p><div class="test-author">David Omondi</div><div class="test-role">National Martial Arts Team</div></div>
@@ -1648,12 +1649,20 @@ async function trackOrder(){
 }
 
 // REVIEWS
+async function loadTestimonials(){
+  const grid=document.getElementById('testimonialsGrid');
+  try{
+    const{data,error}=await sb.from('reviews').select('*').eq('featured',true).order('created_at',{ascending:false}).limit(3);
+    if(error||!data||!data.length)return; // keep the static fallback cards already in the HTML
+    grid.innerHTML=data.map(r=>`<div class="test-card"><div class="test-stars">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</div><p class="test-text">${r.text||''}</p><div class="test-author">${r.name||'Anonymous'}</div>${r.order_id?`<div class="test-role"><i class="fas fa-check-circle" style="color:var(--green,#16a34a)"></i> Verified Purchase</div>`:''}</div>`).join('');
+  }catch(e){/* keep static fallback */}
+}
 async function loadReviews(){
   const grid=document.getElementById('reviewsGrid');
   try{
-    const{data,error}=await sb.from('reviews').select('*').order('created_at',{ascending:false}).limit(20);
+    const{data,error}=await sb.from('reviews').select('*').order('featured',{ascending:false}).order('created_at',{ascending:false}).limit(20);
     if(error||!data||!data.length)throw new Error('none');
-    grid.innerHTML=data.map(r=>`<div class="rev-card"><div class="rev-stars">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</div><p class="rev-text">${r.text||''}</p><div class="rev-author">${r.name||'Anonymous'}</div>${r.order_id?`<div style="font-size:.72rem;color:var(--gray)">Order: ${r.order_id.slice(-8)}</div>`:''}<div class="rev-date">${r.created_at?new Date(r.created_at).toLocaleDateString('en-KE',{month:'short',day:'numeric',year:'numeric'}):''}</div>${r.order_id?`<div class="rev-verified"><i class="fas fa-check-circle"></i> Verified Purchase</div>`:''}</div>`).join('');
+    grid.innerHTML=data.map(r=>`<div class="rev-card">${r.featured?`<div class="rev-featured-badge"><i class="fas fa-star"></i> Featured</div>`:''}<div class="rev-stars">${'★'.repeat(r.rating||5)}${'☆'.repeat(5-(r.rating||5))}</div><p class="rev-text">${r.text||''}</p><div class="rev-author">${r.name||'Anonymous'}</div>${r.order_id?`<div style="font-size:.72rem;color:var(--gray)">Order: ${r.order_id.slice(-8)}</div>`:''}<div class="rev-date">${r.created_at?new Date(r.created_at).toLocaleDateString('en-KE',{month:'short',day:'numeric',year:'numeric'}):''}</div>${r.order_id?`<div class="rev-verified"><i class="fas fa-check-circle"></i> Verified Purchase</div>`:''}</div>`).join('');
   }catch{
     grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray)"><i class="fas fa-star" style="font-size:2.5rem;display:block;margin-bottom:12px;opacity:.2"></i><p style="font-weight:700">No reviews yet. Be the first!</p></div>`;
   }
@@ -1752,7 +1761,7 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('hashchange',router);
 document.addEventListener('DOMContentLoaded',async()=>{
   cart.load();
-  await Promise.all([loadProducts(),loadPartners(),loadReviews()]);
+  await Promise.all([loadProducts(),loadPartners(),loadReviews(),loadTestimonials()]);
   router(); // handle a direct/deep link (e.g. #/partner/1, #/product/5) now that data is loaded
 });
 </script>
