@@ -813,8 +813,19 @@ async function doLogin(){
   const{data,error}=await sb.auth.signInWithPassword({email,password});
   btn.disabled=false;
   document.getElementById('loginBtnText').innerHTML='<i class="fas fa-arrow-right"></i> Access System';
-  if(error){err.textContent='Invalid credentials. Please try again.';err.style.display='block'}
-  else showDashboard();
+  if(error){err.textContent='Invalid credentials. Please try again.';err.style.display='block';return}
+  const isAdmin=await checkIsAdmin();
+  if(!isAdmin){
+    await sb.auth.signOut();
+    err.textContent='This account is not authorized as an admin.';err.style.display='block';
+    return;
+  }
+  showDashboard();
+}
+
+async function checkIsAdmin(){
+  const{data,error}=await sb.rpc('is_admin');
+  return !error && data===true;
 }
 document.getElementById('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('loginEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
@@ -837,7 +848,11 @@ function showDashboard(){
 
 (async()=>{
   const{data:{session}}=await sb.auth.getSession();
-  if(session)showDashboard();
+  if(session){
+    const isAdmin=await checkIsAdmin();
+    if(isAdmin)showDashboard();
+    else await sb.auth.signOut();
+  }
 })();
 
 function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('active')}
