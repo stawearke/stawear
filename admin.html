@@ -445,6 +445,9 @@ select:focus{border-color:var(--red)}
           <i class="fas fa-tshirt sb-icon"></i> Products
           <span class="sb-badge" id="productCount">0</span>
         </div>
+        <div class="sb-item" data-section="categories" onclick="showSection('categories')">
+          <i class="fas fa-tags sb-icon"></i> Categories
+        </div>
         <div class="sb-item" data-section="orders" onclick="showSection('orders')">
           <i class="fas fa-shopping-bag sb-icon"></i> Orders
           <span class="sb-badge" id="orderCount">0</span>
@@ -605,6 +608,31 @@ select:focus{border-color:var(--red)}
 </div>
 
 <!-- ===== PARTNER MODAL ===== -->
+<div class="modal" id="categoryModal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-head">
+      <h2 id="categoryModalTitle"><i class="fas fa-plus"></i> Add Category</h2>
+      <div class="modal-x" onclick="closeCategoryModal()">&times;</div>
+    </div>
+    <form id="categoryForm" onsubmit="saveCategory(event)">
+      <input type="hidden" id="categorySlug">
+      <div class="form-group"><label>Category Name *</label><input type="text" id="categoryName" required placeholder="e.g. Taekwondo Gloves"></div>
+      <div class="form-group"><label>Category Image</label>
+        <div style="display:flex;align-items:center;gap:14px">
+          <img id="categoryImgPreview" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;background:var(--card2);border:1px solid var(--card-border)">
+          <div style="flex:1"><input type="file" id="categoryFile" accept="image/*" onchange="handleCategoryImage(event)">
+            <small id="categoryImgStatus" style="display:block;margin-top:6px;color:var(--text3)">Any photo works — it is automatically cropped square and made small.</small></div>
+        </div>
+        <input type="hidden" id="categoryImage">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="categorySaveBtn"><i class="fas fa-save"></i> Save Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal" id="partnerModal">
   <div class="modal-box">
     <div class="modal-head">
@@ -878,7 +906,7 @@ function closeSidebar(){document.getElementById('sidebar').classList.remove('ope
 
 // ===== DATA =====
 async function loadAllData(){
-  await Promise.all([loadProducts(),loadOrders(),loadBrandingRequests(),loadReviews(),loadPartners(),loadPartnerProducts()]);
+  await Promise.all([loadCategories(),loadProducts(),loadOrders(),loadBrandingRequests(),loadReviews(),loadPartners(),loadPartnerProducts()]);
   loadCustomersFromOrders();updateBadges();
 }
 async function loadProducts(){const{data,error}=await sb.from('products').select('*').order('id',{ascending:false});products=error?[]:(data||[])}
@@ -911,7 +939,7 @@ function updateBadges(){
 }
 
 // ===== NAVIGATION =====
-const sectionTitles={dashboard:'Dashboard',products:'Products',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',partners:'Partners',analytics:'Analytics'};
+const sectionTitles={dashboard:'Dashboard',products:'Products',categories:'Categories',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',partners:'Partners',analytics:'Analytics'};
 
 async function showSection(section){
   closeSidebar();currentSection=section;
@@ -922,6 +950,7 @@ async function showSection(section){
   analyticsCharts.forEach(c=>c.destroy());analyticsCharts=[];
   if(section==='dashboard')await renderDashboard();
   else if(section==='products')await renderProducts();
+  else if(section==='categories')await renderCategoriesSection();
   else if(section==='orders')await renderOrders();
   else if(section==='customers')await renderCustomers();
   else if(section==='branding')await renderBranding();
@@ -1439,6 +1468,110 @@ async function saveNewReview(e){
   if(error){showToast('Error: '+error.message,'error');return}
   showToast(editingReviewId?'Review updated! ✏️':'Review added! ⭐','success');
   closeAddReviewModal();await renderReviews();updateBadges();
+}
+
+// ===== CATEGORIES =====
+const DEFAULT_CATS=[
+  {slug:'doboks',name:'Doboks & Uniforms'},{slug:'belts',name:'Belts'},{slug:'sparring',name:'Sparring Gear'},
+  {slug:'pads',name:'Pads & Targets'},{slug:'apparel',name:'Training Wear'},{slug:'bags',name:'Bags & Carry'},{slug:'accessories',name:'Accessories'}
+];
+let categoryRows=[],categoriesTableOk=true;
+async function loadCategories(){
+  const{data,error}=await sb.from('categories').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true});
+  categoriesTableOk=!error;categoryRows=error?[]:(data||[]);
+  fillCategorySelect();
+}
+function allCats(){
+  const bySlug=Object.fromEntries(categoryRows.map(r=>[r.slug,r]));
+  const base=DEFAULT_CATS.map(d=>({slug:d.slug,name:(bySlug[d.slug]||{}).name||d.name,image:(bySlug[d.slug]||{}).image||'',builtin:true,saved:!!bySlug[d.slug]}));
+  const extra=categoryRows.filter(r=>!DEFAULT_CATS.some(d=>d.slug===r.slug)).map(r=>({slug:r.slug,name:r.name,image:r.image||'',builtin:false,saved:true}));
+  return base.concat(extra);
+}
+function fillCategorySelect(){
+  const sel=document.getElementById('productCategory');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML=allCats().map(c=>`<option value="${c.slug}">${c.name}</option>`).join('')+'<option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option>';
+  if(cur)sel.value=cur;
+}
+async function renderCategoriesSection(){
+  await loadCategories();
+  const cats=allCats();
+  document.getElementById('contentArea').innerHTML=`
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-tags"></i> Shop Categories (${cats.length})</div>
+        <div class="card-actions"><button class="btn btn-primary" onclick="openCategoryModal()"><i class="fas fa-plus"></i> Add Category</button></div>
+      </div>
+      ${categoriesTableOk?'':`<div style="padding:14px 18px;margin:0 0 12px;border-radius:10px;background:rgba(255,140,0,.12);color:var(--orange)"><strong>Categories table not found.</strong> Run the SQL setup in Supabase (SQL Editor) once, then refresh. Until then images cannot be saved.</div>`}
+      <div class="table-wrap"><table><thead><tr><th>Image</th><th>Name</th><th>Products</th><th>Actions</th></tr></thead>
+      <tbody>${cats.map(c=>`<tr>
+        <td><div class="product-thumb"><img src="${c.image||phImg(50)}" onerror="this.onerror=null;this.src=phImg(50)" alt=""></div></td>
+        <td><strong>${c.name}</strong>${c.builtin?' <small style="color:var(--text3)">· built-in</small>':''}</td>
+        <td><span class="badge status-processing">${products.filter(p=>p.category===c.slug||(c.builtin&&String(p.category||'').toLowerCase()===c.name.toLowerCase())).length}</span></td>
+        <td><div class="action-btns">
+          <button class="action-btn edit-btn" onclick="openCategoryModal('${c.slug}')" title="Edit"><i class="fas fa-edit"></i></button>
+          ${c.builtin?(c.saved?`<button class="action-btn delete-btn" onclick="confirmDeleteCategory('${c.slug}','${c.name.replace(/'/g,"\\'")}',true)" title="Reset to default"><i class="fas fa-undo"></i></button>`:''):`<button class="action-btn delete-btn" onclick="confirmDeleteCategory('${c.slug}','${c.name.replace(/'/g,"\\'")}',false)" title="Delete"><i class="fas fa-trash"></i></button>`}
+        </div></td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+}
+function openCategoryModal(slug=null){
+  document.getElementById('categoryForm').reset();
+  document.getElementById('categorySlug').value='';document.getElementById('categoryImage').value='';
+  document.getElementById('categoryImgPreview').src=phImg(72);
+  document.getElementById('categoryImgStatus').textContent='Any photo works — it is automatically cropped square and made small.';
+  document.getElementById('categoryModalTitle').innerHTML='<i class="fas fa-plus"></i> Add Category';
+  if(slug){
+    const c=allCats().find(x=>x.slug===slug);
+    if(c){document.getElementById('categoryModalTitle').innerHTML='<i class="fas fa-edit"></i> Edit Category';
+      document.getElementById('categorySlug').value=c.slug;document.getElementById('categoryName').value=c.name;
+      document.getElementById('categoryImage').value=c.image||'';document.getElementById('categoryImgPreview').src=c.image||phImg(72)}
+  }
+  document.getElementById('categoryModal').classList.add('active');
+}
+function closeCategoryModal(){document.getElementById('categoryModal').classList.remove('active')}
+// Crop to a centred square and shrink to 256px before upload — keeps category images small and fast.
+function shrinkImage(file,size=256){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{const s=Math.min(img.width,img.height),c=document.createElement('canvas');c.width=c.height=size;
+      c.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error('Could not process image')),'image/jpeg',.85)};
+    img.onerror=()=>rej(new Error('Not a valid image'));img.src=url;
+  });
+}
+async function handleCategoryImage(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const st=document.getElementById('categoryImgStatus'),btn=document.getElementById('categorySaveBtn');
+  st.textContent='Uploading…';btn.disabled=true;
+  try{
+    const blob=await shrinkImage(file);
+    const name=`category_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+    const{data,error}=await sb.storage.from(IMAGE_BUCKET).upload(name,blob,{cacheControl:'3600',upsert:false,contentType:'image/jpeg'});
+    if(error)throw error;
+    const url=sb.storage.from(IMAGE_BUCKET).getPublicUrl(data.path).data.publicUrl;
+    document.getElementById('categoryImage').value=url;document.getElementById('categoryImgPreview').src=url;
+    st.textContent='✓ Image ready';
+  }catch(e){st.textContent='Upload failed: '+(e.message||e)}
+  btn.disabled=false;
+}
+async function saveCategory(e){
+  e.preventDefault();
+  const name=document.getElementById('categoryName').value.trim();
+  let slug=document.getElementById('categorySlug').value;
+  if(!slug){slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');if(!slug){showToast('Enter a valid name','error');return}}
+  const row={name,slug,image:document.getElementById('categoryImage').value||null,updated_at:new Date().toISOString()};
+  const existing=categoryRows.find(r=>r.slug===slug);
+  let result;
+  if(existing)result=await sb.from('categories').update({name:row.name,image:row.image}).eq('slug',slug);
+  else result=await sb.from('categories').insert([{name:row.name,slug,image:row.image,sort_order:100+categoryRows.length}]);
+  if(!result.error){closeCategoryModal();showToast('Category saved!','success');await renderCategoriesSection()}
+  else showToast('Error: '+result.error.message,'error');
+}
+function confirmDeleteCategory(slug,name,isReset){
+  showConfirm(isReset?'Reset Category':'Delete Category',isReset?`Reset "${name}" to its default name and no image?`:`Delete "${name}"? Products using it will no longer show under a category tile.`,async()=>{
+    const{error}=await sb.from('categories').delete().eq('slug',slug);
+    if(!error){showToast(isReset?'Category reset':'Category deleted','warning');await renderCategoriesSection()}else showToast('Error: '+error.message,'error');
+  });
 }
 
 // ===== PARTNERS =====

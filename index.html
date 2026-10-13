@@ -644,6 +644,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
 .cat-tile:hover{transform:translateY(-6px);box-shadow:var(--shadow-red)}
 .cat-tile:hover::before{opacity:1}
 .cat-tile i{position:absolute;top:18px;left:16px;font-size:1.9rem;color:var(--orange);z-index:1}
+.cat-img{position:absolute;top:16px;left:16px;width:56px;height:56px;border-radius:14px;object-fit:cover;z-index:1;border:2px solid rgba(255,255,255,.25);box-shadow:0 6px 16px rgba(0,0,0,.4)}
 .cat-tile h3{position:relative;z-index:1;font-size:1rem;text-transform:uppercase;letter-spacing:.5px;line-height:1.1}
 .cat-tile small{position:relative;z-index:1;color:rgba(255,255,255,.55);font-size:.72rem;margin-top:5px;font-weight:600}
 .belt-strip{display:flex;align-items:stretch;height:44px;border-radius:var(--r-full);overflow:hidden;box-shadow:var(--shadow-sm);background:#fff}
@@ -1218,7 +1219,7 @@ async function loadProducts(){
 }
 
 // CATEGORIES — Taekwondo-first. `match` also covers legacy category names already in the database.
-const CATS=[
+let CATS=[
   {key:'doboks',label:'Doboks & Uniforms',icon:'fa-user-ninja',match:['doboks','dobok','uniforms','uniform','full uniforms','taekwondo uniforms']},
   {key:'belts',label:'Belts',icon:'fa-medal',match:['belts','belt']},
   {key:'sparring',label:'Sparring Gear',icon:'fa-shield-alt',match:['sparring gear','protective gear','protectors','head guards','headgear','chest guards']},
@@ -1229,10 +1230,25 @@ const CATS=[
 ];
 function catOf(p){const c=String(p.category||'').toLowerCase().trim();return CATS.find(g=>g.key===c||g.match.includes(c))||null}
 function resolveCat(c){if(!c||c==='all')return 'all';const g=catOf({category:c});return g?g.key:'all'}
+const CATS_DEFAULT=JSON.parse(JSON.stringify(CATS));
 let shopQ='',shopSort='new';
+// Built-in categories + anything added/edited in the admin "Categories" section (Supabase `categories` table).
+async function loadCategories(){
+  CATS=JSON.parse(JSON.stringify(CATS_DEFAULT));
+  try{
+    const{data,error}=await sb.from('categories').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true});
+    if(error||!data)throw 0;
+    data.forEach(r=>{
+      const g=CATS.find(c=>c.key===r.slug);
+      if(g){g.label=r.name||g.label;g.image=r.image||''}
+      else CATS.push({key:r.slug,label:r.name,icon:'fa-tag',image:r.image||'',match:[String(r.name).toLowerCase(),r.slug]});
+    });
+  }catch(e){}
+  renderCatUI();renderProducts();
+}
 function renderCatUI(){
   const n=k=>allProducts.filter(p=>{const g=catOf(p);return g&&g.key===k}).length;
-  document.getElementById('catTiles').innerHTML=CATS.map(g=>`<button class="cat-tile" onclick="filterProds('${g.key}')"><i class="fas ${g.icon}"></i><h3>${g.label}</h3>${allProducts.length?`<small>${n(g.key)} item${n(g.key)===1?'':'s'}</small>`:''}</button>`).join('');
+  document.getElementById('catTiles').innerHTML=CATS.map(g=>`<button class="cat-tile" onclick="filterProds('${g.key}')">${g.image?`<img class="cat-img" src="${g.image}" alt="" loading="lazy" onerror="this.remove()">`:`<i class="fas ${g.icon}"></i>`}<h3>${g.label}</h3>${allProducts.length?`<small>${n(g.key)} item${n(g.key)===1?'':'s'}</small>`:''}</button>`).join('');
   document.getElementById('catFilters').innerHTML=`<button class="cat-btn${currentCat==='all'?' active':''}" data-cat="all" onclick="filterProds('all')">All</button>`+CATS.map(g=>`<button class="cat-btn${currentCat===g.key?' active':''}" data-cat="${g.key}" onclick="filterProds('${g.key}')">${g.label}</button>`).join('');
 }
 function onShopSearch(v){shopQ=v.trim().toLowerCase();renderProducts()}
@@ -1920,7 +1936,7 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('hashchange',router);
 document.addEventListener('DOMContentLoaded',async()=>{
   cart.load();
-  await Promise.all([loadProducts(),loadPartners(),loadReviews()]);
+  await Promise.all([loadProducts(),loadPartners(),loadReviews(),loadCategories()]);
   router(); // handle a direct/deep link (e.g. #/partner/1, #/product/5) now that data is loaded
 });
 </script>
