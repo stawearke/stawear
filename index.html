@@ -3,19 +3,19 @@
 <head>
 <!-- Open Graph -->
 <meta property="og:title" content="Stawear - Kenya's #1 Martial Arts Branding Store" />
-<meta property="og:description" content="Premium custom Martial Arts apparel & branding for Kenyan dojangs. Hoodies, T-Shirts, Jackets, Tracksuits. M-Pesa accepted. Fast nationwide delivery." />
+<meta property="og:description" content="Doboks, belts, sparring gear, kicking pads and training wear for Taekwondo and martial arts in Kenya. M-Pesa accepted. Fast nationwide delivery." />
 <meta property="og:image" content="https://i.ibb.co/bMFqHhSL/chat-gpt-image-may-4-2026-09-37-10-pm.png" />
 <meta property="og:image:width" content="512" /><meta property="og:image:height" content="512" />
 <meta property="og:type" content="website" /><meta property="og:url" content="https://yourdomain.com" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Stawear - Kenya's #1 Martial Arts Branding Store" />
-<meta name="twitter:description" content="Premium custom Martial Arts apparel & branding for Kenyan dojangs." />
+<meta name="twitter:description" content="Doboks, belts, sparring gear and training wear for Kenyan Taekwondo athletes." />
 <meta name="twitter:image" content="https://i.ibb.co/bMFqHhSL/chat-gpt-image-may-4-2026-09-37-10-pm.png" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stawear — Kenya's #1 Martial Arts Branding Store</title>
+<title>Stawear — Kenya's Taekwondo & Martial Arts Shop</title>
 <link rel="icon" type="image/png" href="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png">
-<meta name="description" content="Premium Martial Arts apparel & custom branding for Kenyan dojangs. M-Pesa accepted. Fast nationwide delivery.">
+<meta name="description" content="Shop Taekwondo doboks, belts, sparring gear, kicking pads and training wear in Kenya. M-Pesa accepted. Fast nationwide delivery.">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -633,13 +633,39 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
   .prod-modal-box{flex-direction:column;max-height:95vh}
   .prod-modal-img{width:100%;height:220px}
 }
+
+/* ===== TKD SHOP ===== */
+.cat-tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:1100px){.cat-tiles{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.cat-tiles{grid-template-columns:repeat(2,1fr);gap:12px}}
+.cat-tile{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:22px 16px;min-height:170px;display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(160deg,var(--dark3),var(--dark));color:#fff;cursor:pointer;border:0;text-align:left;font-family:inherit;transition:.25s;box-shadow:var(--shadow-sm)}
+.cat-tile::before{content:"";position:absolute;inset:0;background:radial-gradient(220px 160px at 100% 0%,rgba(232,25,44,.55),transparent 70%);opacity:.8;transition:.25s}
+.cat-tile:hover{transform:translateY(-6px);box-shadow:var(--shadow-red)}
+.cat-tile:hover::before{opacity:1}
+.cat-tile i{position:absolute;top:18px;left:16px;font-size:1.9rem;color:var(--orange);z-index:1}
+.cat-tile h3{position:relative;z-index:1;font-size:1rem;text-transform:uppercase;letter-spacing:.5px;line-height:1.1}
+.cat-tile small{position:relative;z-index:1;color:rgba(255,255,255,.55);font-size:.72rem;margin-top:5px;font-weight:600}
+.belt-strip{display:flex;align-items:stretch;height:44px;border-radius:var(--r-full);overflow:hidden;box-shadow:var(--shadow-sm);background:#fff}
+.belt-strip span{flex:0 0 28px}
+.belt-strip a{flex:1;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);padding:0 12px;text-align:center}
+.belt-strip a b{color:var(--red);margin-left:8px}
+@media(max-width:600px){.belt-strip span{flex-basis:12px}.belt-strip a{font-size:.66rem}}
+.shop-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:1.6rem}
+.shop-search{flex:1;min-width:220px;position:relative}
+.shop-search i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray)}
+.shop-search input,.shop-bar select{width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(--border);border-radius:var(--r-full);font-family:var(--font-body);font-size:.9rem;background:#fff;color:var(--ink);outline:none}
+.shop-bar select{width:auto;padding:12px 18px;cursor:pointer}
+.shop-search input:focus,.shop-bar select:focus{border-color:var(--red)}
+.shop-count{font-size:.8rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.08em}
+.btn-wa-sm{background:var(--green-wa)!important;color:#fff!important;border-color:var(--green-wa)!important}
 </style>
 </head>
 <body>
 
 <!-- ANNOUNCE BAR -->
 <div class="announce-bar">
-  <span>🇰🇪 <strong>FREE DESIGN</strong> consultation on all bulk orders</span>
+  <span>🥋 New <strong>Dobok &amp; Sparring Gear</strong> arrivals · Shop now</span>
   <div class="adot"></div>
   <span>M-Pesa Accepted · <strong>Nationwide Delivery</strong></span>
   <div class="adot"></div>
@@ -651,13 +677,14 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
   <div class="container hdr-inner">
     <a class="logo" href="#/" onclick="navGo('home');return false;">
       <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" alt="Stawear" class="logo-img" onerror="this.style.display='none'">
-      <div><div class="logo-name">STA<em>WEAR</em></div><span class="logo-sub">Martial Arts Branding</span></div>
+      <div><div class="logo-name">STA<em>WEAR</em></div><span class="logo-sub">Taekwondo &amp; Martial Arts</span></div>
     </a>
     <nav><ul>
-      <li><a href="#/products" onclick="navGo('products');return false;"><i class="fas fa-tshirt"></i> Products</a></li>
-      <li><a href="#/partners" onclick="navGo('partners');return false;"><i class="fas fa-handshake"></i> Partners</a></li>
-      <li><a href="#/branding" onclick="navGo('branding');return false;"><i class="fas fa-palette"></i> Custom Branding</a></li>
-      <li><a href="#/reviews" onclick="navGo('reviews');return false;"><i class="fas fa-star"></i> Reviews</a></li>
+      <li><a href="#/products" onclick="navGo('products');return false;"><i class="fas fa-store"></i> Shop All</a></li>
+      <li><a href="#/products/doboks" onclick="filterProds('doboks');return false;"><i class="fas fa-user-ninja"></i> Doboks</a></li>
+      <li><a href="#/products/sparring" onclick="filterProds('sparring');return false;"><i class="fas fa-shield-alt"></i> Sparring Gear</a></li>
+      <li><a href="#/products/pads" onclick="filterProds('pads');return false;"><i class="fas fa-bullseye"></i> Pads</a></li>
+      <li><a href="#/partners" onclick="navGo('partners');return false;"><i class="fas fa-handshake"></i> Brands</a></li>
       <li><a href="#/track" onclick="navGo('track');return false;"><i class="fas fa-truck"></i> Track Order</a></li>
     </ul></nav>
     <div class="hdr-actions">
@@ -676,9 +703,13 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
 <div class="mob-nav" id="mobNav">
   <button class="mob-close" onclick="closeMobNav()"><i class="fas fa-times"></i></button>
   <a href="#/" onclick="navGo('home');return false;">Home</a>
-  <a href="#/products" onclick="navGo('products');return false;">Products</a>
-  <a href="#/partners" onclick="navGo('partners');return false;">Partners</a>
-  <a href="#/branding" onclick="openCustomModal();closeMobNav();return false;">Custom Branding</a>
+  <a href="#/products" onclick="navGo('products');return false;">Shop All</a>
+  <a href="#/products/doboks" onclick="filterProds('doboks');return false;">Doboks &amp; Uniforms</a>
+  <a href="#/products/belts" onclick="filterProds('belts');return false;">Belts</a>
+  <a href="#/products/sparring" onclick="filterProds('sparring');return false;">Sparring Gear</a>
+  <a href="#/products/pads" onclick="filterProds('pads');return false;">Pads &amp; Targets</a>
+  <a href="#/products/apparel" onclick="filterProds('apparel');return false;">Training Wear</a>
+  <a href="#/partners" onclick="navGo('partners');return false;">Brands</a>
   <a href="#/reviews" onclick="navGo('reviews');return false;">Reviews</a>
   <a href="#/track" onclick="navGo('track');return false;">Track Order</a>
   <a href="tel:0727394165" style="color:var(--orange);margin-top:10px"><i class="fas fa-phone-alt"></i> 0727394165</a>
@@ -692,12 +723,12 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
   <div class="container">
     <div class="hero-grid">
       <div>
-        <div class="hero-eyebrow"><i class="fas fa-bolt"></i> Kenya's #1 Martial Arts Store</div>
-        <h1>GEAR UP.<br>TRAIN HARD.<br><span>LOOK SHARP.</span></h1>
-        <p class="hero-desc">Premium custom apparel and branding for Kenyan dojangs and champions. Quality gear, authentic pride, fast delivery nationwide.</p>
+        <div class="hero-eyebrow"><i class="fas fa-bolt"></i> Kenya's Taekwondo Store</div>
+        <h1>TRAIN LIKE<br>A <span>CHAMPION.</span></h1>
+        <p class="hero-desc">Doboks, belts, sparring gear and kicking pads for every Taekwondo athlete — from white belt to black belt. Fast delivery across Kenya.</p>
         <div class="hero-btns">
-          <button class="btn btn-orange btn-lg" onclick="navGo('products')" type="button"><i class="fas fa-shopping-bag"></i> Shop Collection</button>
-          <button class="btn btn-outline btn-lg" onclick="openCustomModal()"><i class="fas fa-palette"></i> Custom Branding</button>
+          <button class="btn btn-orange btn-lg" onclick="filterProds('doboks')" type="button"><i class="fas fa-user-ninja"></i> Shop Doboks</button>
+          <button class="btn btn-outline btn-lg" onclick="filterProds('sparring')" type="button"><i class="fas fa-shield-alt"></i> Sparring Gear</button>
         </div>
         <div class="hero-stats">
           <div><div class="hero-stat-num">500<span>+</span></div><div class="hero-stat-lbl">Dojangs Served</div></div>
@@ -711,7 +742,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
           <div class="hero-img-badge">
             <div>
               <div class="hero-badge-stars">★★★★★</div>
-              <div class="hero-badge-txt">Premium Quality<small>100% Satisfaction Guaranteed</small></div>
+              <div class="hero-badge-txt">Built to Train<small>Gear for every belt level</small></div>
             </div>
           </div>
         </div>
@@ -725,9 +756,9 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
   <div class="trust-inner container">
     <div class="trust-item"><i class="fas fa-medal"></i><div><div class="trust-ttl">Premium Quality</div><div class="trust-sub">100% satisfaction guarantee</div></div></div>
     <div class="trust-item"><i class="fas fa-shipping-fast"></i><div><div class="trust-ttl">Nationwide Delivery</div><div class="trust-sub">All 47 counties covered</div></div></div>
-    <div class="trust-item"><i class="fas fa-mobile-alt"></i><div><div class="trust-ttl">M-Pesa Payments</div><div class="trust-sub">Paybill & STK push</div></div></div>
-    <div class="trust-item"><i class="fas fa-pencil-ruler"></i><div><div class="trust-ttl">Free Design Help</div><div class="trust-sub">Custom logos & branding</div></div></div>
-    <div class="trust-item"><i class="fas fa-clock"></i><div><div class="trust-ttl">Express Turnaround</div><div class="trust-sub">Ready in as little as 1 week</div></div></div>
+    <div class="trust-item"><i class="fas fa-mobile-alt"></i><div><div class="trust-ttl">M-Pesa Payments</div><div class="trust-sub">Paybill payment</div></div></div>
+    <div class="trust-item"><i class="fas fa-pencil-ruler"></i><div><div class="trust-ttl">Size Help</div><div class="trust-sub">Not sure? Ask on WhatsApp</div></div></div>
+    <div class="trust-item"><i class="fas fa-clock"></i><div><div class="trust-ttl">Fast Dispatch</div><div class="trust-sub">Quick processing on orders</div></div></div>
     <div class="trust-item"><i class="fas fa-headset"></i><div><div class="trust-ttl">Quick Support</div><div class="trust-sub"> in 2 hrs</div></div></div>
   </div>
 </div>
@@ -742,22 +773,36 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
   </div>
 </div>
 
+<!-- SHOP BY CATEGORY -->
+<section class="sec" id="categories" style="background:var(--light);padding-bottom:1rem">
+  <div class="container">
+    <div class="sec-hdr center">
+      <div class="sec-label">Shop by Category</div>
+      <h2 class="sec-title">EVERYTHING FOR THE <span>DOJANG</span></h2>
+      <div class="sec-bar"></div>
+    </div>
+    <div class="cat-tiles" id="catTiles"></div>
+    <div class="belt-strip" aria-label="Belt ranks">
+      <span style="background:#f4f4f4"></span><span style="background:#f5d90a"></span><span style="background:#f08c00"></span><span style="background:#2e9b3a"></span><span style="background:#1f6fd1"></span><span style="background:#d4202e"></span><span style="background:#111"></span>
+      <a href="#/products/belts" onclick="filterProds('belts');return false;">Every rank. Every belt. <b>Shop Belts →</b></a>
+    </div>
+  </div>
+</section>
+
 <!-- PRODUCTS -->
 <section class="sec" id="products" style="background:#fff">
   <div class="container">
     <div class="sec-hdr center">
-      <div class="sec-label">Our Collection</div>
-      <h2 class="sec-title">PREMIUM <span>GEAR</span></h2>
+      <div class="sec-label">The Shop</div>
+      <h2 class="sec-title">TAEKWONDO <span>GEAR</span></h2>
       <div class="sec-bar"></div>
-      <p class="sec-sub" style="margin-top:14px">Quality Martial Arts apparel crafted for champions — train, compete, and represent with pride.</p>
+      <p class="sec-sub" style="margin-top:14px">Doboks, protectors, pads and training wear — everything you need to train, spar and compete.</p>
     </div>
-    <div class="cat-filters">
-      <button class="cat-btn active" data-cat="all" onclick="filterProds('all')">All</button>
-      <button class="cat-btn" data-cat="Hoodies" onclick="filterProds('Hoodies')">Hoodies</button>
-      <button class="cat-btn" data-cat="T-Shirts" onclick="filterProds('T-Shirts')">T-Shirts</button>
-      <button class="cat-btn" data-cat="Jackets" onclick="filterProds('Jackets')">Jackets</button>
-      <button class="cat-btn" data-cat="Tracksuits" onclick="filterProds('Tracksuits')">Tracksuits</button>
-      <button class="cat-btn" data-cat="Accessories" onclick="filterProds('Accessories')">Accessories</button>
+    <div class="cat-filters" id="catFilters"></div>
+    <div class="shop-bar">
+      <div class="shop-search"><i class="fas fa-search"></i><input id="shopSearch" type="search" placeholder="Search doboks, belts, head guards…" oninput="onShopSearch(this.value)"></div>
+      <select id="shopSort" onchange="onShopSort(this.value)"><option value="new">Newest</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="az">Name: A–Z</option></select>
+      <span class="shop-count" id="shopCount"></span>
     </div>
     <div class="products-grid" id="productsGrid">
       <div class="loading-spin"><i class="fas fa-circle-notch"></i><span>Loading products...</span></div>
@@ -783,63 +828,6 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
 </section>
 
 <div class="divider"></div>
-
-<!-- HOW IT WORKS -->
-<section class="process-sec" id="process">
-  <div class="container">
-    <div class="sec-hdr center">
-      <div class="sec-label">Our Process</div>
-      <h2 class="sec-title">HOW CUSTOM <span>BRANDING</span> WORKS</h2>
-      <div class="sec-bar"></div>
-      <p class="sec-sub" style="margin-top:14px">Simple, fast, professional — from idea to your dojang in 4 steps.</p>
-    </div>
-    <div class="process-steps">
-      <div class="process-step"><div class="proc-num">01</div><h4>Submit Request</h4><p>Fill our quick branding form with your dojang name, item type, quantity and design notes.</p></div>
-      <div class="process-step"><div class="proc-num">02</div><h4>Design Review</h4><p>Our team creates a digital mockup and shares it with you via WhatsApp for approval.</p></div>
-      <div class="process-step"><div class="proc-num">03</div><h4>M-Pesa Payment</h4><p>Confirm with a 50% deposit via M-Pesa. Balance on delivery or collection.</p></div>
-      <div class="process-step"><div class="proc-num">04</div><h4>Delivery</h4><p>Your branded gear is shipped nationwide. Track your order with your unique ID.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- CUSTOM BRANDING -->
-<section class="brand-sec" id="branding">
-  <div class="container">
-    <div class="sec-hdr center" style="margin-bottom:3rem">
-      <div class="sec-label" style="color:var(--orange)">Custom Orders</div>
-      <h2 class="sec-title" style="color:#fff">BRAND YOUR <span style="color:var(--orange)">DOJANG</span></h2>
-      <p class="sec-sub" style="color:rgba(255,255,255,.55);margin:12px auto 0">Get your team wearing your identity. Minimum 5 pieces for custom orders.</p>
-    </div>
-    <div class="brand-grid">
-      <div class="brand-form-wrap">
-        <h3><i class="fas fa-pen-fancy"></i> Quick Branding Request</h3>
-        <form id="quickBrandForm" onsubmit="handleQuickBrand(event)">
-          <div class="form-group"><label>Your Name *</label><input type="text" id="quickName" required placeholder="John Kamau"></div>
-          <div class="form-group"><label>Email *</label><input type="email" id="quickEmail" required placeholder="you@example.com"></div>
-          <div class="form-group"><label>Dojang / Team Name *</label><input type="text" id="quickDojang" required placeholder="Nairobi Martial Arts Club"></div>
-          <div class="form-row">
-            <div class="form-group"><label>Item Type</label>
-              <select id="quickItem"><option>Hoodies</option><option>T-Shirts</option><option>Jackets</option><option>Tracksuits</option><option>Full Uniforms</option></select>
-            </div>
-            <div class="form-group"><label>Quantity</label><input type="number" id="quickQty" value="10" min="1"></div>
-          </div>
-          <button type="submit" class="btn btn-block" style="margin-top:8px"><i class="fas fa-arrow-right"></i> Open Full Form</button>
-        </form>
-      </div>
-      <div>
-        <ul class="brand-benefits">
-          <li><i class="fas fa-check-circle"></i><div><strong>Your Dojang Name & Logo</strong><small>Embroidered or printed on any item</small></div></li>
-          <li><i class="fas fa-palette"></i><div><strong>Choose Your Colors</strong><small>8+ color options available</small></div></li>
-          <li><i class="fas fa-boxes"></i><div><strong>Bulk Order Discounts</strong><small>Save up to 20% on orders over 50pcs</small></div></li>
-          <li><i class="fas fa-pencil-ruler"></i><div><strong>Free Design Consultation</strong><small>Our team creates the perfect design</small></div></li>
-          <li><i class="fas fa-shipping-fast"></i><div><strong>Fast Turnaround</strong><small>Standard: 2–3 weeks | Express: 1 week</small></div></li>
-          <li><i class="fas fa-medal"></i><div><strong>Quality Guaranteed</strong><small>100% satisfaction or we redo it</small></div></li>
-        </ul>
-        <a href="https://wa.me/254727394165?text=Hello%20Stawear!%20I'm%20interested%20in%20custom%20branding." target="_blank" class="btn btn-wa btn-block btn-lg" style="margin-top:2rem;justify-content:center"><i class="fab fa-whatsapp"></i> WhatsApp Quick Inquiry</a>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- REVIEWS -->
 <section class="sec" id="reviews" style="background:var(--light)">
@@ -882,8 +870,8 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
           <img src="https://www.image2url.com/r2/default/images/1777883385742-8d327177-7b3e-4ef0-bdcc-0bd1d62bc024.png" style="height:42px;width:auto" alt="Stawear">
           <span style="font-family:var(--font-display);font-size:1.5rem;color:#fff;letter-spacing:2px">STA<span style="color:var(--orange)">WEAR</span></span>
         </div>
-        <h3>Kenya's Premier Martial Arts Branding</h3>
-        <p>Quality martial arts apparel with authentic Kenyan style and pride. Serving dojangs nationwide since 2022.</p>
+        <h3>Kenya's Taekwondo &amp; Martial Arts Shop</h3>
+        <p>Doboks, belts, sparring gear and training wear for Kenyan athletes, dojangs and champions. Serving Taekwondo practitioners nationwide.</p>
         <div class="foot-social">
           <a href="https://wa.me/254727394165" target="_blank" class="soc-btn" style="background:#25D366"><i class="fab fa-whatsapp"></i></a>
           <a href="#" class="soc-btn" style="background:#E1306C"><i class="fab fa-instagram"></i></a>
@@ -897,7 +885,8 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
           <li><a href="#/" onclick="navGo('home');return false;"><i class="fas fa-chevron-right"></i> Home</a></li>
           <li><a href="#/products" onclick="navGo('products');return false;"><i class="fas fa-chevron-right"></i> Products</a></li>
           <li><a href="#/partners" onclick="navGo('partners');return false;"><i class="fas fa-chevron-right"></i> Partners</a></li>
-          <li><a href="#/branding" onclick="openCustomModal();return false;"><i class="fas fa-chevron-right"></i> Custom Branding</a></li>
+          <li><a href="#/products/doboks" onclick="filterProds('doboks');return false;"><i class="fas fa-chevron-right"></i> Doboks</a></li>
+          <li><a href="#/products/sparring" onclick="filterProds('sparring');return false;"><i class="fas fa-chevron-right"></i> Sparring Gear</a></li>
           <li><a href="#/reviews" onclick="navGo('reviews');return false;"><i class="fas fa-chevron-right"></i> Reviews</a></li>
           <li><a href="#/track" onclick="navGo('track');return false;"><i class="fas fa-chevron-right"></i> Track Order</a></li>
         </ul>
@@ -921,7 +910,7 @@ footer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;back
       </div>
     </div>
     <div class="foot-bottom">
-      <p>&copy; 2026 Stawear Martial Arts Branding Store. All rights reserved. Proudly Kenyan 🇰🇪</p>
+      <p>&copy; 2026 Stawear Taekwondo &amp; Martial Arts Store. All rights reserved. Proudly Kenyan 🇰🇪</p>
       <p style="color:rgba(255,255,255,.22);font-size:.72rem">Built with ❤️ in Nairobi</p>
     </div>
   </div>
@@ -1215,27 +1204,53 @@ async function loadProducts(){
     if(!error&&data&&data.length>0){allProducts=data;}else throw new Error('fallback');
   }catch{
     allProducts=[
-      {id:1,name:'Black Belt Master Hoodie',category:'Hoodies',price:2499,originalPrice:3200,image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80',description:'Premium heavyweight hoodie with embroidered black belt design. Made from 80% cotton, 20% polyester.',badge:'BEST SELLER',sizes:['S','M','L','XL']},
-      {id:2,name:'Kenyan TKD Champion Tee',category:'T-Shirts',price:1299,originalPrice:1800,image:'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80',description:'Lightweight 100% cotton tee with Kenyan flag colors and champion print.',badge:'NEW',sizes:['S','M','L','XL','XXL']},
-      {id:3,name:'Stawear Training Jacket',category:'Jackets',price:3499,originalPrice:4200,image:'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=500&q=80',description:'Windproof training jacket with full zip and embroidered Stawear logo.',badge:'HOT',sizes:['M','L','XL']},
-      {id:4,name:'Dojang Tracksuit Set',category:'Tracksuits',price:4999,originalPrice:6500,image:'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=500&q=80',description:'Full tracksuit set — top and pants included. Perfect for tournaments.',sizes:['S','M','L','XL','XXL']},
-      {id:5,name:'Champion Zip-Up Hoodie',category:'Hoodies',price:2799,originalPrice:3500,image:'https://images.unsplash.com/photo-1556821840-3a63f15232d0?auto=format&fit=crop&w=500&q=80',description:'Full-zip hoodie with side pockets. Perfect for warm-ups.',badge:'SALE',sizes:['S','M','L','XL']},
-      {id:6,name:'TKD Graphic Tee',category:'T-Shirts',price:999,image:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=500&q=80',description:'Bold Martial Arts graphic tee — wear your sport with pride.',sizes:['S','M','L','XL','XXL']},
-      {id:7,name:'Performance Sports Jacket',category:'Jackets',price:4299,originalPrice:5200,image:'https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=500&q=80',description:'Lightweight performance jacket for outdoor training in all weather.',sizes:['M','L','XL','XXL']},
-      {id:8,name:'Martial Arts Wristbands (Pair)',category:'Accessories',price:349,image:'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=500&q=80',description:'Moisture-wicking wristbands. One size fits all.',badge:'NEW',sizes:['One Size']}
+      {id:1,name:'Club Dobok — White V-Neck',category:'doboks',price:3200,originalPrice:3800,image:'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=500&q=80',description:'Lightweight poly-cotton Taekwondo uniform with V-neck top and elastic-waist pants. Ideal for daily class.',badge:'BEST SELLER',sizes:['110','130','150','170','190']},
+      {id:2,name:'Competition Dobok — Ribbed Fit',category:'doboks',price:5500,image:'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=500&q=80',description:'Ribbed, breathable fabric with a sharp competition fit.',badge:'NEW',sizes:['150','170','190','200']},
+      {id:3,name:'Taekwondo Belt (Colour Ranks)',category:'belts',price:600,image:'https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=500&q=80',description:'Cotton belt in all colour ranks. Choose your rank in the size selector.',sizes:['White','Yellow','Green','Blue','Red','Black']},
+      {id:4,name:'Sparring Head Guard',category:'sparring',price:2200,image:'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=500&q=80',description:'Padded head guard with a secure fit for sparring sessions.',badge:'HOT',sizes:['S','M','L']},
+      {id:5,name:'Chest Protector (Hogu)',category:'sparring',price:3800,image:'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=500&q=80',description:'Reversible chest guard with strong impact padding.',sizes:['S','M','L','XL']},
+      {id:6,name:'Kicking Pad (Single)',category:'pads',price:1800,image:'https://images.unsplash.com/photo-1517637382994-f02da38c6728?auto=format&fit=crop&w=500&q=80',description:'Durable kicking target for speed and power drills.',sizes:['One Size']},
+      {id:7,name:'Dojang Training Hoodie',category:'apparel',price:2499,originalPrice:3200,image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80',description:'Heavyweight hoodie for warm-ups and travel to tournaments.',badge:'SALE',sizes:['S','M','L','XL']},
+      {id:8,name:'TKD Champion Tee',category:'apparel',price:1299,image:'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?auto=format&fit=crop&w=500&q=80',description:'Lightweight cotton tee with bold Taekwondo print.',sizes:['S','M','L','XL','XXL']}
     ];
   }
-  renderProducts();
+  renderCatUI();renderProducts();
 }
 
+// CATEGORIES — Taekwondo-first. `match` also covers legacy category names already in the database.
+const CATS=[
+  {key:'doboks',label:'Doboks & Uniforms',icon:'fa-user-ninja',match:['doboks','dobok','uniforms','uniform','full uniforms','taekwondo uniforms']},
+  {key:'belts',label:'Belts',icon:'fa-medal',match:['belts','belt']},
+  {key:'sparring',label:'Sparring Gear',icon:'fa-shield-alt',match:['sparring gear','protective gear','protectors','head guards','headgear','chest guards']},
+  {key:'pads',label:'Pads & Targets',icon:'fa-bullseye',match:['pads','kicking pads','focus mitts','targets','training equipment','pads & targets']},
+  {key:'apparel',label:'Training Wear',icon:'fa-tshirt',match:['training wear','hoodies','t-shirts','jackets','tracksuits']},
+  {key:'bags',label:'Bags & Carry',icon:'fa-shopping-bag',match:['bags','gym bags','kit bags']},
+  {key:'accessories',label:'Accessories',icon:'fa-hand-rock',match:['accessories','caps','wristbands']}
+];
+function catOf(p){const c=String(p.category||'').toLowerCase().trim();return CATS.find(g=>g.key===c||g.match.includes(c))||null}
+function resolveCat(c){if(!c||c==='all')return 'all';const g=catOf({category:c});return g?g.key:'all'}
+let shopQ='',shopSort='new';
+function renderCatUI(){
+  const n=k=>allProducts.filter(p=>{const g=catOf(p);return g&&g.key===k}).length;
+  document.getElementById('catTiles').innerHTML=CATS.map(g=>`<button class="cat-tile" onclick="filterProds('${g.key}')"><i class="fas ${g.icon}"></i><h3>${g.label}</h3>${allProducts.length?`<small>${n(g.key)} item${n(g.key)===1?'':'s'}</small>`:''}</button>`).join('');
+  document.getElementById('catFilters').innerHTML=`<button class="cat-btn${currentCat==='all'?' active':''}" data-cat="all" onclick="filterProds('all')">All</button>`+CATS.map(g=>`<button class="cat-btn${currentCat===g.key?' active':''}" data-cat="${g.key}" onclick="filterProds('${g.key}')">${g.label}</button>`).join('');
+}
+function onShopSearch(v){shopQ=v.trim().toLowerCase();renderProducts()}
+function onShopSort(v){shopSort=v;renderProducts()}
 function badgeClass(b){const m={NEW:'new',SALE:'sale',HOT:'hot','BEST SELLER':'best'};return m[b]||'hot'}
 function renderProducts(){
   const grid=document.getElementById('productsGrid');
-  const list=currentCat==='all'?allProducts:allProducts.filter(p=>p.category===currentCat);
-  if(!list.length){grid.innerHTML=`<div class="empty-prods"><i class="fas fa-tshirt"></i><p style="font-weight:700">No products in this category yet.</p></div>`;return}
+  let list=allProducts.filter(p=>currentCat==='all'||(catOf(p)||{}).key===currentCat);
+  if(shopQ)list=list.filter(p=>(p.name+' '+(p.description||'')+' '+(p.category||'')).toLowerCase().includes(shopQ));
+  if(shopSort==='low')list=[...list].sort((a,b)=>a.price-b.price);
+  else if(shopSort==='high')list=[...list].sort((a,b)=>b.price-a.price);
+  else if(shopSort==='az')list=[...list].sort((a,b)=>a.name.localeCompare(b.name));
+  const cnt=document.getElementById('shopCount');if(cnt)cnt.textContent=`${list.length} product${list.length===1?'':'s'}`;
+  if(!list.length){grid.innerHTML=`<div class="empty-prods"><i class="fas fa-user-ninja"></i><p style="font-weight:700">Nothing here yet.</p><p style="margin-top:6px;font-size:.85rem;color:var(--gray)">Can't find your gear? <a style="color:var(--red);font-weight:700" target="_blank" href="https://wa.me/${WA}?text=Hello%20Stawear!%20Do%20you%20have%20${encodeURIComponent(shopQ||'Taekwondo gear')}%3F">Ask us on WhatsApp</a></p></div>`;return}
   grid.innerHTML=list.map(p=>{
     const sizes=p.sizes||['S','M','L','XL'];
     const disc=p.originalPrice?Math.round((1-p.price/p.originalPrice)*100):0;
+    const g=catOf(p);
     return`<div class="pcard" onclick="viewProduct(${p.id})">
       ${p.badge?`<div class="pcard-badge ${badgeClass(p.badge)}">${p.badge}</div>`:''}
       ${disc>0&&!p.badge?`<div class="pcard-badge sale">-${disc}%</div>`:''}
@@ -1243,18 +1258,16 @@ function renderProducts(){
       <div class="pcard-overlay">
         <button class="pcard-qbtn" onclick="event.stopPropagation();openSizeModal(${p.id})" title="Add to Cart"><i class="fas fa-shopping-bag"></i></button>
         <button class="pcard-qbtn" onclick="event.stopPropagation();viewProduct(${p.id})" title="Quick View"><i class="fas fa-eye"></i></button>
-        <button class="pcard-qbtn" onclick="event.stopPropagation();customOrderProduct(${p.id})" title="Bulk / Custom Order"><i class="fas fa-layer-group"></i></button>
       </div></div>
       <div class="pcard-body">
-        <div class="pcard-cat">${p.category}</div>
+        <div class="pcard-cat">${g?g.label:p.category||''}</div>
         <h3 class="pcard-name">${p.name}</h3>
         <p class="pcard-desc">${p.description||''}</p>
-        <div class="pcard-stars">★★★★★ <span style="color:var(--gray);font-size:.72rem">(${Math.floor(Math.random()*80)+12})</span></div>
         <div class="pcard-sizes">${sizes.map(s=>`<span class="size-pill">${s}</span>`).join('')}</div>
         <div class="pcard-price">Ksh ${p.price.toLocaleString()}${p.originalPrice?` <s>Ksh ${p.originalPrice.toLocaleString()}</s>`:''} ${disc>0?`<span class="disc">-${disc}%</span>`:''}</div>
         <div class="pcard-actions">
           <button class="btn btn-sm" onclick="event.stopPropagation();openSizeModal(${p.id})"><i class="fas fa-shopping-bag"></i> Add to Cart</button>
-          <button class="btn btn-sm btn-dark" onclick="event.stopPropagation();customOrderProduct(${p.id})" title="Bulk / Custom Order"><i class="fas fa-layer-group"></i></button>
+          <a class="btn btn-sm btn-wa-sm" onclick="event.stopPropagation()" target="_blank" href="https://wa.me/${WA}?text=${encodeURIComponent('Hello Stawear! I am interested in: '+p.name)}" title="Ask on WhatsApp"><i class="fab fa-whatsapp"></i></a>
         </div>
       </div></div>`;
   }).join('');
@@ -1356,10 +1369,11 @@ function closePartnerModal(silent){
 }
 
 function filterProds(cat){
-  setRoute(cat==='all'?'/products':'/products/'+encodeURIComponent(cat));
+  const k=resolveCat(cat);
+  setRoute(k==='all'?'/products':'/products/'+encodeURIComponent(k));
 }
 function setActiveCategory(cat){
-  currentCat=cat||'all';
+  currentCat=resolveCat(cat);
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===currentCat));
   renderProducts();
 }
@@ -1594,7 +1608,7 @@ async function placeOrder(){
 }
 
 // CUSTOM BRANDING — multi-item order builder with per-size breakdown, linked to real catalog products
-const ITEM_TYPES=['Hoodies','T-Shirts','Jackets','Tracksuits','Full Uniforms','Caps','Bags'];
+const ITEM_TYPES=['Doboks','Belts','Hoodies','T-Shirts','Jackets','Tracksuits','Caps','Bags'];
 const ITEM_COLORS=['Not specified','Black','White','Red','Navy Blue','Green','Orange','Purple','Grey'];
 const ORDER_SIZES=['XS','S','M','L','XL','XXL'];
 let itemRowSeq=0;
@@ -1830,7 +1844,7 @@ async function submitReview(e){
 // ===== ROUTER =====
 // Every page and every product gets its own shareable, bookmarkable URL (e.g. #/products,
 // #/products/Hoodies, #/branding, #/reviews, #/track, #/product/3). Back/forward works too.
-const PAGE_TITLE='Stawear — Kenya\'s #1 Martial Arts Branding Store';
+const PAGE_TITLE='Stawear — Kenya\'s Taekwondo & Martial Arts Shop';
 
 function parseRoute(){
   return location.hash.replace(/^#\/?/,'').split('/').filter(Boolean).map(p=>{
@@ -1856,7 +1870,7 @@ function router(){
   }else if(parts[0]==='products'){
     setActiveCategory(parts[1]||'all');
     scrollToSection('products');
-    document.title=(parts[1]?`${parts[1]} — `:'')+`Products — Stawear`;
+    {const g=CATS.find(c=>c.key===currentCat);document.title=(g?g.label+' — ':'')+'Shop — Stawear';}
   }else if(parts[0]==='partners'){
     closePartnerModal(true);
     scrollToSection('partners');
@@ -1869,8 +1883,7 @@ function router(){
       openPartnerProductModal(pid,parseInt(parts[3],10));
     }
   }else if(parts[0]==='branding'){
-    scrollToSection('branding');
-    document.title='Custom Branding — Stawear';
+    scrollToSection('products');
   }else if(parts[0]==='reviews'){
     scrollToSection('reviews');
     document.title='Reviews — Stawear';
