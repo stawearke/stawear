@@ -619,9 +619,9 @@ select:focus{border-color:var(--red)}
       <div class="form-group"><label>Category Name *</label><input type="text" id="categoryName" required placeholder="e.g. Taekwondo Gloves"></div>
       <div class="form-group"><label>Category Image</label>
         <div style="display:flex;align-items:center;gap:14px">
-          <img id="categoryImgPreview" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:cover;background:var(--card2);border:1px solid var(--card-border)">
+          <img id="categoryImgPreview" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:contain;background:var(--card2)">
           <div style="flex:1"><input type="file" id="categoryFile" accept="image/*" onchange="handleCategoryImage(event)">
-            <small id="categoryImgStatus" style="display:block;margin-top:6px;color:var(--text3)">Any photo works — it is automatically cropped square and made small.</small></div>
+            <small id="categoryImgStatus" style="display:block;margin-top:6px;color:var(--text3)">Any photo works — it is automatically made small. Transparent PNGs keep their see-through background.</small></div>
         </div>
         <input type="hidden" id="categoryImage">
       </div>
@@ -1518,7 +1518,7 @@ function openCategoryModal(slug=null){
   document.getElementById('categoryForm').reset();
   document.getElementById('categorySlug').value='';document.getElementById('categoryImage').value='';
   document.getElementById('categoryImgPreview').src=phImg(72);
-  document.getElementById('categoryImgStatus').textContent='Any photo works — it is automatically cropped square and made small.';
+  document.getElementById('categoryImgStatus').textContent='Any photo works — it is automatically made small. Transparent PNGs keep their see-through background.';
   document.getElementById('categoryModalTitle').innerHTML='<i class="fas fa-plus"></i> Add Category';
   if(slug){
     const c=allCats().find(x=>x.slug===slug);
@@ -1530,12 +1530,12 @@ function openCategoryModal(slug=null){
 }
 function closeCategoryModal(){document.getElementById('categoryModal').classList.remove('active')}
 // Crop to a centred square and shrink to 256px before upload — keeps category images small and fast.
-function shrinkImage(file,size=256){
+function shrinkImage(file,size=320){
   return new Promise((res,rej)=>{
     const img=new Image(),url=URL.createObjectURL(file);
-    img.onload=()=>{const s=Math.min(img.width,img.height),c=document.createElement('canvas');c.width=c.height=size;
-      c.getContext('2d').drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);URL.revokeObjectURL(url);
-      c.toBlob(b=>b?res(b):rej(new Error('Could not process image')),'image/jpeg',.85)};
+    img.onload=()=>{const k=Math.min(size/img.width,size/img.height,1),w=Math.round(img.width*k),h=Math.round(img.height*k),c=document.createElement('canvas');
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error('Could not process image')),'image/png')};
     img.onerror=()=>rej(new Error('Not a valid image'));img.src=url;
   });
 }
@@ -1545,8 +1545,8 @@ async function handleCategoryImage(ev){
   st.textContent='Uploading…';btn.disabled=true;
   try{
     const blob=await shrinkImage(file);
-    const name=`category_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
-    const{data,error}=await sb.storage.from(IMAGE_BUCKET).upload(name,blob,{cacheControl:'3600',upsert:false,contentType:'image/jpeg'});
+    const name=`category_${Date.now()}_${Math.random().toString(36).slice(2)}.png`;
+    const{data,error}=await sb.storage.from(IMAGE_BUCKET).upload(name,blob,{cacheControl:'3600',upsert:false,contentType:'image/png'});
     if(error)throw error;
     const url=sb.storage.from(IMAGE_BUCKET).getPublicUrl(data.path).data.publicUrl;
     document.getElementById('categoryImage').value=url;document.getElementById('categoryImgPreview').src=url;
