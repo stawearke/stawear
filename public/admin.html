@@ -455,6 +455,9 @@ select:focus{border-color:var(--red)}
         <div class="sb-item" data-section="categories" onclick="showSection('categories')">
           <i class="fas fa-tags sb-icon"></i> Categories
         </div>
+        <div class="sb-item" data-section="stories" onclick="showSection('stories')">
+          <i class="fas fa-newspaper sb-icon"></i> Stories
+        </div>
         <div class="sb-item" data-section="orders" onclick="showSection('orders')">
           <i class="fas fa-shopping-bag sb-icon"></i> Orders
           <span class="sb-badge" id="orderCount">0</span>
@@ -615,6 +618,34 @@ select:focus{border-color:var(--red)}
 </div>
 
 <!-- ===== PARTNER MODAL ===== -->
+<div class="modal" id="storyModal">
+  <div class="modal-box" style="max-width:720px">
+    <div class="modal-head">
+      <h2 id="storyModalTitle"><i class="fas fa-plus"></i> New Story</h2>
+      <div class="modal-x" onclick="closeStoryModal()">&times;</div>
+    </div>
+    <form id="storyForm" onsubmit="saveStory(event)">
+      <input type="hidden" id="storyId">
+      <div class="form-group"><label>Title *</label><input type="text" id="storyTitle" required placeholder="e.g. Stawear athletes win big at the Nairobi Open"></div>
+      <div class="form-group"><label>Cover Image (this is the picture shown when the story is shared)</label>
+        <div style="display:flex;align-items:center;gap:14px">
+          <img id="storyImgPreview" alt="" style="width:128px;height:68px;border-radius:10px;object-fit:cover;background:var(--card2)">
+          <div style="flex:1"><input type="file" id="storyFile" accept="image/*" onchange="handleStoryImage(event)">
+            <small id="storyImgStatus" style="display:block;margin-top:6px;color:var(--text3)">Any photo works. It is resized automatically for sharing.</small></div>
+        </div>
+        <input type="hidden" id="storyImage">
+      </div>
+      <div class="form-group"><label>Short Summary (shown in the share preview)</label><textarea id="storyExcerpt" rows="2" maxlength="200" placeholder="One or two sentences that make people want to read it."></textarea></div>
+      <div class="form-group"><label>Story *</label><textarea id="storyBody" rows="12" required placeholder="Write your story here. Leave a blank line between paragraphs.&#10;Start a line with ## to make a heading."></textarea></div>
+      <div class="form-group"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="storyPublished" checked style="width:auto"> Published (untick to keep it hidden as a draft)</label></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeStoryModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="storySaveBtn"><i class="fas fa-save"></i> Save Story</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal" id="categoryModal">
   <div class="modal-box" style="max-width:480px">
     <div class="modal-head">
@@ -946,7 +977,7 @@ function updateBadges(){
 }
 
 // ===== NAVIGATION =====
-const sectionTitles={dashboard:'Dashboard',products:'Products',categories:'Categories',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',partners:'Partners',analytics:'Analytics'};
+const sectionTitles={dashboard:'Dashboard',products:'Products',categories:'Categories',stories:'Stories',orders:'Orders',customers:'Customers',branding:'Branding Requests',reviews:'Reviews',partners:'Partners',analytics:'Analytics'};
 
 async function showSection(section){
   closeSidebar();currentSection=section;
@@ -958,6 +989,7 @@ async function showSection(section){
   if(section==='dashboard')await renderDashboard();
   else if(section==='products')await renderProducts();
   else if(section==='categories')await renderCategoriesSection();
+  else if(section==='stories')await renderStoriesSection();
   else if(section==='orders')await renderOrders();
   else if(section==='customers')await renderCustomers();
   else if(section==='branding')await renderBranding();
@@ -1578,6 +1610,110 @@ function confirmDeleteCategory(slug,name,isReset){
   showConfirm(isReset?'Reset Category':'Delete Category',isReset?`Reset "${name}" to its default name and no image?`:`Delete "${name}"? Products using it will no longer show under a category tile.`,async()=>{
     const{error}=await sb.from('categories').delete().eq('slug',slug);
     if(!error){showToast(isReset?'Category reset':'Category deleted','warning');await renderCategoriesSection()}else showToast('Error: '+error.message,'error');
+  });
+}
+
+// ===== STORIES =====
+const SITE_URL='https://stawear.co.ke';
+let storyRows=[],storiesTableOk=true;
+async function loadStories(){
+  const{data,error}=await sb.from('stories').select('*').order('created_at',{ascending:false});
+  storiesTableOk=!error;storyRows=error?[]:(data||[]);
+}
+function storyLink(s){return SITE_URL+'/s/'+s.slug}
+function copyStoryLink(slug){
+  const url=SITE_URL+'/s/'+slug;
+  (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>showToast('Link copied!','success')).catch(()=>{prompt('Copy this link:',url)});
+}
+async function renderStoriesSection(){
+  await loadStories();
+  document.getElementById('contentArea').innerHTML=`
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fas fa-newspaper"></i> Stories (${storyRows.length})</div>
+        <div class="card-actions"><button class="btn btn-primary" onclick="openStoryModal()"><i class="fas fa-plus"></i> New Story</button></div>
+      </div>
+      ${storiesTableOk?'':`<div style="padding:14px 18px;margin:0 0 12px;border-radius:10px;background:rgba(255,140,0,.12);color:var(--orange)"><strong>Stories table not found.</strong> Run the stories SQL in Supabase (SQL Editor) once, then refresh.</div>`}
+      ${storyRows.length?'':`<p style="padding:18px;color:var(--text3)">No stories yet. Click <strong>New Story</strong> to write your first one. Every story gets its own shareable link.</p>`}
+      <div class="table-wrap"><table><thead><tr><th>Cover</th><th>Title</th><th>Date</th><th>Status</th><th>Share Link</th><th>Actions</th></tr></thead>
+      <tbody>${storyRows.map(s=>`<tr>
+        <td><div class="product-thumb"><img src="${s.cover_image||phImg(50)}" onerror="this.onerror=null;this.src=phImg(50)" alt=""></div></td>
+        <td><strong>${s.title.replace(/</g,'&lt;')}</strong></td>
+        <td>${new Date(s.created_at).toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'})}</td>
+        <td><span class="badge ${s.published?'status-completed':'status-pending'}">${s.published?'Published':'Draft'}</span></td>
+        <td><button class="btn btn-secondary" style="padding:6px 12px;font-size:.78rem" onclick="copyStoryLink('${s.slug}')"><i class="fas fa-link"></i> Copy link</button></td>
+        <td><div class="action-btns">
+          <a class="action-btn" href="${storyLink(s)}" target="_blank" title="View"><i class="fas fa-eye"></i></a>
+          <button class="action-btn edit-btn" onclick="openStoryModal(${s.id})" title="Edit"><i class="fas fa-edit"></i></button>
+          <button class="action-btn delete-btn" onclick="confirmDeleteStory(${s.id})" title="Delete"><i class="fas fa-trash"></i></button>
+        </div></td></tr>`).join('')}</tbody></table></div>
+    </div>`;
+}
+function openStoryModal(id=null){
+  document.getElementById('storyForm').reset();
+  document.getElementById('storyId').value='';document.getElementById('storyImage').value='';
+  document.getElementById('storyImgPreview').src=phImg(128);
+  document.getElementById('storyImgStatus').textContent='Any photo works. It is resized automatically for sharing.';
+  document.getElementById('storyModalTitle').innerHTML='<i class="fas fa-plus"></i> New Story';
+  document.getElementById('storyPublished').checked=true;
+  if(id){
+    const s=storyRows.find(x=>x.id===id);
+    if(s){document.getElementById('storyModalTitle').innerHTML='<i class="fas fa-edit"></i> Edit Story';
+      document.getElementById('storyId').value=s.id;document.getElementById('storyTitle').value=s.title;
+      document.getElementById('storyExcerpt').value=s.excerpt||'';document.getElementById('storyBody').value=s.body||'';
+      document.getElementById('storyImage').value=s.cover_image||'';document.getElementById('storyImgPreview').src=s.cover_image||phImg(128);
+      document.getElementById('storyPublished').checked=!!s.published}
+  }
+  document.getElementById('storyModal').classList.add('active');
+}
+function closeStoryModal(){document.getElementById('storyModal').classList.remove('active')}
+// Crop to a 1200x630 banner (the size WhatsApp/Facebook previews use) before upload.
+function coverImage(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{const W=1200,H=630,c=document.createElement('canvas');c.width=W;c.height=H;
+      const k=Math.max(W/img.width,H/img.height),w=img.width*k,h=img.height*k;
+      c.getContext('2d').drawImage(img,(W-w)/2,(H-h)/2,w,h);URL.revokeObjectURL(url);
+      c.toBlob(b=>b?res(b):rej(new Error('Could not process image')),'image/jpeg',.85)};
+    img.onerror=()=>rej(new Error('Not a valid image'));img.src=url;
+  });
+}
+async function handleStoryImage(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const st=document.getElementById('storyImgStatus'),btn=document.getElementById('storySaveBtn');
+  st.textContent='Uploading…';btn.disabled=true;
+  try{
+    const blob=await coverImage(file);
+    const name=`story_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+    const{data,error}=await sb.storage.from(IMAGE_BUCKET).upload(name,blob,{cacheControl:'3600',upsert:false,contentType:'image/jpeg'});
+    if(error)throw error;
+    const url=sb.storage.from(IMAGE_BUCKET).getPublicUrl(data.path).data.publicUrl;
+    document.getElementById('storyImage').value=url;document.getElementById('storyImgPreview').src=url;st.textContent='✓ Image ready';
+  }catch(e){st.textContent='Upload failed: '+(e.message||e)}
+  btn.disabled=false;
+}
+function makeSlug(t){return t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70)||'story'}
+async function saveStory(e){
+  e.preventDefault();
+  const id=document.getElementById('storyId').value;
+  const title=document.getElementById('storyTitle').value.trim();
+  const row={title,excerpt:document.getElementById('storyExcerpt').value.trim()||null,body:document.getElementById('storyBody').value,
+    cover_image:document.getElementById('storyImage').value||null,published:document.getElementById('storyPublished').checked};
+  let result;
+  if(id){result=await sb.from('stories').update(row).eq('id',parseInt(id))}   // the link never changes after the first save
+  else{
+    let base=makeSlug(title),slug=base,n=2;
+    while(storyRows.some(s=>s.slug===slug))slug=base+'-'+(n++);
+    result=await sb.from('stories').insert([{...row,slug}]);
+  }
+  if(!result.error){closeStoryModal();showToast(id?'Story updated!':'Story published! Use "Copy link" to share it.','success');await renderStoriesSection()}
+  else showToast('Error: '+result.error.message,'error');
+}
+function confirmDeleteStory(id){
+  const s=storyRows.find(x=>x.id===id);if(!s)return;
+  showConfirm('Delete Story',`Delete "${s.title}"? Its link will stop working.`,async()=>{
+    const{error}=await sb.from('stories').delete().eq('id',id);
+    if(!error){showToast('Story deleted','warning');await renderStoriesSection()}else showToast('Error: '+error.message,'error');
   });
 }
 
