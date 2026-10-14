@@ -29,6 +29,7 @@ export function applyMeta(html, m) {
   for (const k of ['og:description', 'twitter:description', 'description']) h = setMeta(h, k, m.description);
   for (const k of ['og:image', 'og:image:secure_url', 'twitter:image']) h = setMeta(h, k, m.image);
   h = setMeta(h, 'og:url', m.url);
+  if (m.type) h = setMeta(h, 'og:type', m.type);
   h = h.replace(/(<link rel="canonical" href=")[^"]*(")/, (_, a, b) => a + esc(m.url) + b);
   if (m.image !== SITE + '/og-image.jpg') h = h.replace(/<meta property="og:image:(width|height|type)"[^>]*>/g, '');
   return h;
@@ -54,11 +55,21 @@ export function categoryMeta(slug, row) {
   };
 }
 
-export function buildSitemap(products, cats) {
+export function storyMeta(s) {
+  const img = s.cover_image && /^https:\/\//.test(s.cover_image) ? s.cover_image : SITE + '/og-image.jpg';
+  return {
+    title: s.title + ' — Stawear',
+    description: clip(s.excerpt || s.body || 'Read this story on Stawear.', 200),
+    image: img, url: SITE + '/s/' + s.slug, type: 'article'
+  };
+}
+
+export function buildSitemap(products, cats, stories) {
   const urls = [SITE + '/'];
   const slugs = new Set(Object.keys(CATS)); (cats || []).forEach(c => c.slug && slugs.add(c.slug));
   slugs.forEach(s => urls.push(SITE + '/c/' + encodeURIComponent(s)));
   (products || []).forEach(p => urls.push(SITE + '/p/' + p.id));
+  (stories || []).forEach(s => s.slug && urls.push(SITE + '/s/' + encodeURIComponent(s.slug)));
   return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     urls.map(u => '  <url><loc>' + esc(u) + '</loc></url>').join('\n') + '\n</urlset>\n';
 }
@@ -72,18 +83,22 @@ export default {
   async fetch(req, env) {
     const u = new URL(req.url);
     if (u.pathname === '/sitemap.xml') {
-      const [products, cats] = await Promise.all([sb('products?select=id'), sb('categories?select=slug')]);
-      return new Response(buildSitemap(products, cats), {
+      const [products, cats, stories] = await Promise.all([sb('products?select=id'), sb('categories?select=slug'), sb('stories?select=slug&published=eq.true')]);
+      return new Response(buildSitemap(products, cats, stories), {
         headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' }
       });
     }
-    const m = u.pathname.match(/^\/(p|c)\/([^/]+)\/?$/);
+    const m = u.pathname.match(/^\/(p|c|s)\/([^/]+)\/?$/);
     if (m) {
       const html = await pageHtml(req, env);
       let meta = null;
       if (m[1] === 'p' && /^\d+$/.test(m[2])) {
         const rows = await sb('products?id=eq.' + m[2] + '&select=id,name,description,image,price&limit=1');
         if (rows && rows[0]) meta = productMeta(rows[0]);
+      } else if (m[1] === 's') {
+        const slug = decodeURIComponent(m[2]).toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const rows = slug && await sb('stories?slug=eq.' + slug + '&published=eq.true&select=title,slug,excerpt,body,cover_image&limit=1');
+        if (rows && rows[0]) meta = storyMeta(rows[0]);
       } else if (m[1] === 'c') {
         const slug = decodeURIComponent(m[2]).toLowerCase().replace(/[^a-z0-9-]/g, '');
         const rows = await sb('categories?slug=eq.' + slug + '&select=name,image&limit=1');
