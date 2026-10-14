@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stawear.co.ke/sitemap.xml
